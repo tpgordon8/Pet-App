@@ -25,11 +25,13 @@ export default function App() {
 
   // 🎧 Listen for real-time updates from Firebase
   useEffect(() => {
+    console.log('🔌 Connecting to Firebase...');
     const activitiesRef = ref(database, 'activities');
 
     // This runs every time data changes in Firebase!
     const unsubscribe = onValue(activitiesRef, (snapshot) => {
       const data = snapshot.val();
+      console.log('📡 Firebase data received:', data);
       if (data) {
         // Convert object to array and sort by timestamp (newest first)
         const activitiesArray = Object.entries(data).map(([id, activity]) => ({
@@ -37,10 +39,15 @@ export default function App() {
           ...activity
         })).sort((a, b) => b.timestamp - a.timestamp);
 
+        console.log('✅ Activities:', activitiesArray.length);
         setActivities(activitiesArray);
       } else {
+        console.log('⚠️ No activities found');
         setActivities([]);
       }
+    }, (error) => {
+      console.log('❌ Firebase error:', error);
+      Alert.alert('Connection Error', 'Cannot connect to Firebase: ' + error.message);
     });
 
     // Cleanup listener when component unmounts
@@ -49,6 +56,7 @@ export default function App() {
 
   // 📝 Function to log an activity to Firebase
   const logActivity = (type, emoji) => {
+    console.log('🔵 Button pressed:', type);
     const activitiesRef = ref(database, 'activities');
 
     push(activitiesRef, {
@@ -57,8 +65,9 @@ export default function App() {
       timestamp: Date.now(),
       user: 'You' // Later we'll add real user names
     }).then(() => {
-      // Success! No need for alert, it'll appear in the feed
+      console.log('✅ Successfully logged:', type);
     }).catch((error) => {
+      console.log('❌ Error:', error);
       Alert.alert('Error', 'Failed to log activity: ' + error.message);
     });
   };
