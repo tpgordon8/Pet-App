@@ -97,39 +97,39 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
 
-      {/* 📋 Header section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>PetLog</Text>
-        <Text style={styles.subtitle}>Quick activity logging</Text>
-      </View>
+      <ScrollView>
+        {/* 📋 Header section */}
+        <View style={styles.header}>
+          <Text style={styles.title}>PetLog</Text>
+          <Text style={styles.subtitle}>Quick activity logging</Text>
+        </View>
 
-      {/* 🔘 Button section */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.poopButton]} onPress={handlePoop}>
-          <Text style={styles.buttonEmoji}>💩</Text>
-          <Text style={styles.buttonText}>Poop</Text>
-        </TouchableOpacity>
+        {/* 🔘 Button section */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.button, styles.poopButton]} onPress={handlePoop}>
+            <Text style={styles.buttonEmoji}>💩</Text>
+            <Text style={styles.buttonText}>Poop</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, styles.peeButton]} onPress={handlePee}>
-          <Text style={styles.buttonEmoji}>💧</Text>
-          <Text style={styles.buttonText}>Pee</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.peeButton]} onPress={handlePee}>
+            <Text style={styles.buttonEmoji}>💧</Text>
+            <Text style={styles.buttonText}>Pee</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, styles.foodButton]} onPress={handleFood}>
-          <Text style={styles.buttonEmoji}>🍖</Text>
-          <Text style={styles.buttonText}>Food</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.foodButton]} onPress={handleFood}>
+            <Text style={styles.buttonEmoji}>🍖</Text>
+            <Text style={styles.buttonText}>Food</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, styles.sleepButton]} onPress={handleSleep}>
-          <Text style={styles.buttonEmoji}>😴</Text>
-          <Text style={styles.buttonText}>Sleep</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={[styles.button, styles.sleepButton]} onPress={handleSleep}>
+            <Text style={styles.buttonEmoji}>😴</Text>
+            <Text style={styles.buttonText}>Sleep</Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* 📱 Activity Feed (iMessage style) */}
-      <View style={styles.feedContainer}>
-        <Text style={styles.feedTitle}>Recent Activity</Text>
-        <ScrollView style={styles.feedScroll}>
+        {/* 📱 Activity Feed (iMessage style) */}
+        <View style={styles.feedContainer}>
+          <Text style={styles.feedTitle}>Recent Activity</Text>
           {activities.length === 0 ? (
             <Text style={styles.emptyText}>No activities yet. Tap a button to start logging! 🐾</Text>
           ) : (
@@ -145,8 +145,8 @@ export default function App() {
               </View>
             ))
           )}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -212,14 +212,14 @@ const styles = StyleSheet.create({
 
   // 📱 Activity Feed Styles
   feedContainer: {
-    flex: 1,
     backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    borderRadius: 20,
+    padding: 20,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    minHeight: 300,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
@@ -229,9 +229,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 15,
-  },
-  feedScroll: {
-    flex: 1,
   },
   emptyText: {
     textAlign: 'center',
