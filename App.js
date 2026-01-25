@@ -100,7 +100,7 @@ export default function App() {
       <ScrollView>
         {/* 📋 Header section */}
         <View style={styles.header}>
-          <Text style={styles.title}>PetLog</Text>
+          <Text style={styles.title}>PetLog v2</Text>
           <Text style={styles.subtitle}>Quick activity logging</Text>
         </View>
 
