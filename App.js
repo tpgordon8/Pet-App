@@ -57,6 +57,8 @@ export default function App() {
   // 📝 Function to log an activity to Firebase
   const logActivity = (type, emoji) => {
     console.log('🔵 Button pressed:', type);
+    Alert.alert('Button Test', `You pressed ${type}! Saving to Firebase...`);
+
     const activitiesRef = ref(database, 'activities');
 
     push(activitiesRef, {
@@ -66,6 +68,7 @@ export default function App() {
       user: 'You' // Later we'll add real user names
     }).then(() => {
       console.log('✅ Successfully logged:', type);
+      Alert.alert('Success!', `${type} logged successfully!`);
     }).catch((error) => {
       console.log('❌ Error:', error);
       Alert.alert('Error', 'Failed to log activity: ' + error.message);
