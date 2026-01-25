@@ -56,9 +56,6 @@ export default function App() {
 
   // 📝 Function to log an activity to Firebase
   const logActivity = (type, emoji) => {
-    console.log('🔵 Button pressed:', type);
-    Alert.alert('Button Test', `You pressed ${type}! Saving to Firebase...`);
-
     const activitiesRef = ref(database, 'activities');
 
     push(activitiesRef, {
@@ -66,11 +63,7 @@ export default function App() {
       emoji: emoji,
       timestamp: Date.now(),
       user: 'You' // Later we'll add real user names
-    }).then(() => {
-      console.log('✅ Successfully logged:', type);
-      Alert.alert('Success!', `${type} logged successfully!`);
     }).catch((error) => {
-      console.log('❌ Error:', error);
       Alert.alert('Error', 'Failed to log activity: ' + error.message);
     });
   };
@@ -166,28 +159,28 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   title: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
   },
   buttonContainer: {
     paddingHorizontal: 20,
-    gap: 12,
-    marginBottom: 20,
+    gap: 10,
+    marginBottom: 15,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 20,
+    paddingVertical: 15,
     borderRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -208,11 +201,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#4169E1',
   },
   buttonEmoji: {
-    fontSize: 28,
-    marginRight: 10,
+    fontSize: 24,
+    marginRight: 8,
   },
   buttonText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     color: 'white',
   },
