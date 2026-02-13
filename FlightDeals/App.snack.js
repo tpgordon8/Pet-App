@@ -4,9 +4,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator,
-  TouchableOpacity, Alert, Modal, Linking,
+  TouchableOpacity, Alert, Modal, Linking, StatusBar,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 
 // ═══════════════════════════════════════════════════════════
 // THEME - First Class Lounge Aesthetic
@@ -369,7 +368,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.background }}>
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
       <View style={{ paddingTop: 60, paddingBottom: SP.lg, paddingHorizontal: SP.lg }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <View>
