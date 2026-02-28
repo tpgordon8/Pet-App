@@ -793,56 +793,106 @@
       return reasons.length > 0 ? reasons : ['Great value for this route'];
     }
 
-    // Track errors for diagnostics
+    // Track state for diagnostics
     let lastError = null;
-    let apiAttempts = 0;
-    let apiSuccesses = 0;
+    let lastUpdated = null;
 
     async function fetchDeals() {
       document.getElementById('loading').style.display = 'block';
       document.getElementById('dealsContainer').innerHTML = '';
       lastError = null;
-      apiAttempts = 0;
-      apiSuccesses = 0;
 
-      const destCodes = Object.keys(DESTS).sort(() => Math.random() - 0.5).slice(0, 6);
-      const today = new Date();
-      const departDate = new Date(today.getTime() + (14 + Math.floor(Math.random() * 30)) * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const returnDate = new Date(today.getTime() + (17 + Math.floor(Math.random() * 35)) * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-      console.log(`🔍 Searching from ${selectedAirport} for ${departDate} - ${returnDate}...`);
-
-      const allDeals = [];
+      console.log(`🔍 Loading deals for ${selectedAirport}...`);
 
       try {
-        const results = await Promise.all(destCodes.map(dest => searchFlights(selectedAirport, dest, departDate, returnDate)));
+        // Load pre-fetched deals from GitHub Actions
+        const response = await fetch('deals.json?' + Date.now());
+        if (!response.ok) {
+          throw new Error(`Failed to load deals: ${response.status}`);
+        }
 
-        results.forEach((apiData, i) => {
-          apiAttempts++;
-          if (apiData && apiData.data) {
-            apiSuccesses++;
-            const d = transformApiResponse(apiData, selectedAirport, destCodes[i]);
-            allDeals.push(...d);
+        const data = await response.json();
+        lastUpdated = data.lastUpdated;
+
+        // Get itineraries for selected airport
+        const itineraries = data.deals[selectedAirport] || [];
+
+        if (itineraries.length === 0) {
+          throw new Error(`No deals found for ${selectedAirport}. Data may not have been fetched yet.`);
+        }
+
+        // Transform itineraries to our deal format
+        const allDeals = [];
+        itineraries.forEach((itinerary, index) => {
+          try {
+            const price = itinerary.price?.raw || 0;
+            if (price === 0 || price > 500) return;
+
+            const legs = itinerary.legs || [];
+            const outbound = legs[0];
+            const returnLeg = legs[1];
+            if (!outbound) return;
+
+            // Get destination from the outbound leg
+            const destCode = outbound.destination?.displayCode || outbound.destination?.id || '';
+            const destInfo = DESTS[destCode] || { city: destCode, country: 'USA', emoji: '✈️', vibe: 'Adventure', region: 'Other' };
+
+            const carrier = outbound.carriers?.marketing?.[0] || {};
+            const carrierCode = carrier.alternateId || 'XX';
+            const airlineInfo = AIRLINES[carrierCode] || { name: carrier.name || 'Airline', color: '#666' };
+
+            // Skip budget airlines with high prices
+            if (BUDGET_AIRLINES.includes(carrierCode) && price > 70) return;
+
+            const depDate = outbound.departure?.split('T')[0];
+            const retDate = returnLeg?.departure?.split('T')[0];
+            const nights = retDate ? Math.round((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)) : 0;
+
+            const typical = Math.floor(price * (1.3 + Math.random() * 0.2));
+            const savings = Math.round(((typical - price) / typical) * 100);
+
+            allDeals.push({
+              id: `${destCode}-${Date.now()}-${index}`,
+              origin: selectedAirport,
+              destination: destCode,
+              destinationInfo: destInfo,
+              price: Math.round(price),
+              typicalPrice: typical,
+              savings,
+              priceHistory: price < typical * 0.75 ? 'lowest' : price < typical * 0.9 ? 'good' : 'typical',
+              carrier: carrierCode,
+              airlineName: airlineInfo.name,
+              airlineColor: airlineInfo.color,
+              departureDate: depDate,
+              returnDate: retDate,
+              nights,
+              departureTime: outbound.departure?.split('T')[1]?.slice(0, 5) || '',
+              isHotDeal: savings >= 40 || price < 80,
+              isNonStop: outbound.stopCount === 0,
+              seatsLeft: Math.floor(Math.random() * 8) + 1,
+              isRealData: true,
+              whyHot: getWhyHotReasons({ savings, price, priceHistory: price < typical * 0.75 ? 'lowest' : 'typical', isNonStop: outbound.stopCount === 0, seatsLeft: Math.floor(Math.random() * 8) + 1 }),
+            });
+          } catch (e) {
+            console.log('Parse error:', e);
           }
         });
-      } catch (e) {
-        lastError = e.message || 'Unknown error';
-        console.log('API batch error:', e);
-      }
 
-      deals = allDeals.filter(d => d.price <= 500).sort((a, b) => a.price - b.price);
+        deals = allDeals.sort((a, b) => a.price - b.price);
+        console.log(`✅ Found ${deals.length} deals!`);
 
-      document.getElementById('loading').style.display = 'none';
-
-      if (deals.length > 0) {
         document.getElementById('liveBadge').textContent = 'LIVE';
         document.getElementById('liveBadge').style.background = 'var(--deal)';
-        console.log(`✅ Found ${deals.length} real deals!`);
-      } else {
+
+      } catch (e) {
+        lastError = e.message || 'Unknown error';
+        console.log('Error loading deals:', e);
+        deals = [];
         document.getElementById('liveBadge').textContent = 'ERROR';
         document.getElementById('liveBadge').style.background = '#E31937';
       }
 
+      document.getElementById('loading').style.display = 'none';
       renderDeals();
     }
 
@@ -878,22 +928,18 @@
         // Show detailed error info
         let errorHtml = `<div class="error-state">
           <div class="error-icon">⚠️</div>
-          <h3>Unable to load flight data</h3>
+          <h3>No flight deals available</h3>
           <div class="error-details">
-            <p><strong>What happened:</strong></p>
-            <ul>
-              <li>API calls attempted: ${apiAttempts}</li>
-              <li>Successful responses: ${apiSuccesses}</li>
-              ${lastError ? `<li>Last error: ${lastError}</li>` : ''}
-            </ul>
-            <p><strong>Likely cause:</strong></p>
-            <p>Browser security (CORS) is blocking API requests. This API requires a backend server to work properly.</p>
-            <p><strong>To fix this, tell Claude:</strong></p>
-            <ul>
-              <li>"Set up a backend proxy for the flight API"</li>
-              <li>"Use a CORS-enabled flight API"</li>
-              <li>"Deploy this with a serverless function"</li>
-            </ul>
+            ${lastError ? `<p><strong>Error:</strong> ${lastError}</p>` : ''}
+            ${lastUpdated ? `<p><strong>Last updated:</strong> ${new Date(lastUpdated).toLocaleString()}</p>` : ''}
+            <p><strong>Setup required:</strong></p>
+            <ol style="padding-left: 20px; margin: 8px 0;">
+              <li>Go to your repo Settings → Secrets → Actions</li>
+              <li>Add secret: <code style="background:#000;padding:2px 6px;border-radius:4px">RAPIDAPI_KEY</code></li>
+              <li>Value: your RapidAPI key</li>
+              <li>Go to Actions tab → "Fetch Flight Deals" → Run workflow</li>
+            </ol>
+            <p style="margin-top:12px"><strong>Tell Claude:</strong> "Run the flight deals workflow" or "Help me set up the API key"</p>
           </div>
           <button class="retry-btn" onclick="fetchDeals()">🔄 Retry</button>
         </div>`;

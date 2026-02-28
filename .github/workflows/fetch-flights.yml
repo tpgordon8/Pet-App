@@ -1,0 +1,115 @@
+name: Fetch Flight Deals
+
+on:
+  schedule:
+    # Runs every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  fetch-deals:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/flight-deal-tracker-S9GVJ
+
+      - name: Fetch flight deals
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: |
+          # Airports to search from
+          ORIGINS=("PHL" "JFK" "EWR" "LGA" "BWI" "DCA" "BOS")
+
+          # Destinations with entity IDs
+          declare -A DESTS
+          DESTS[MIA]="27544850"
+          DESTS[MCO]="27539793"
+          DESTS[ATL]="27544008"
+          DESTS[BNA]="27539655"
+          DESTS[MSY]="27544061"
+          DESTS[ORD]="27539733"
+          DESTS[DEN]="27539465"
+          DESTS[LAS]="27544156"
+          DESTS[LAX]="27544850"
+          DESTS[SFO]="27539614"
+          DESTS[SEA]="27539609"
+          DESTS[DFW]="27539454"
+          DESTS[AUS]="27544010"
+          DESTS[SJU]="27546055"
+          DESTS[CUN]="27540568"
+
+          # Origin entity IDs
+          declare -A ORIGIN_IDS
+          ORIGIN_IDS[PHL]="27544008"
+          ORIGIN_IDS[JFK]="27537542"
+          ORIGIN_IDS[EWR]="27537564"
+          ORIGIN_IDS[LGA]="27537589"
+          ORIGIN_IDS[BWI]="27539604"
+          ORIGIN_IDS[DCA]="27539525"
+          ORIGIN_IDS[BOS]="27539525"
+
+          # Calculate dates (2-6 weeks out)
+          DEPART_DATE=$(date -d "+14 days" +%Y-%m-%d)
+          RETURN_DATE=$(date -d "+18 days" +%Y-%m-%d)
+
+          echo "Fetching flights for $DEPART_DATE - $RETURN_DATE"
+          echo '{"lastUpdated": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'", "deals": {}}' > deals.json
+
+          # For each origin, fetch deals to a few destinations
+          for ORIGIN in "${ORIGINS[@]}"; do
+            echo "Fetching from $ORIGIN..."
+            ORIGIN_ID="${ORIGIN_IDS[$ORIGIN]}"
+            DEALS_FOR_ORIGIN="[]"
+
+            # Pick 4 random destinations
+            DEST_KEYS=(${!DESTS[@]})
+            SHUFFLED=($(shuf -e "${DEST_KEYS[@]}" | head -4))
+
+            for DEST in "${SHUFFLED[@]}"; do
+              DEST_ID="${DESTS[$DEST]}"
+              echo "  -> $DEST"
+
+              RESPONSE=$(curl -s --max-time 30 \
+                "https://sky-scrapper.p.rapidapi.com/api/v2/flights/searchFlightsComplete?originSkyId=${ORIGIN}&destinationSkyId=${DEST}&originEntityId=${ORIGIN_ID}&destinationEntityId=${DEST_ID}&cabinClass=economy&adults=1&sortBy=best&currency=USD&market=en-US&countryCode=US&date=${DEPART_DATE}&returnDate=${RETURN_DATE}" \
+                -H "x-rapidapi-host: sky-scrapper.p.rapidapi.com" \
+                -H "x-rapidapi-key: ${RAPIDAPI_KEY}" || echo '{}')
+
+              # Extract itineraries and save
+              echo "$RESPONSE" | jq -c '.data.itineraries // []' >> /tmp/deals_${ORIGIN}.json 2>/dev/null || echo "[]" >> /tmp/deals_${ORIGIN}.json
+
+              sleep 1  # Rate limiting
+            done
+          done
+
+          # Combine all deals into final JSON
+          node -e "
+            const fs = require('fs');
+            const origins = ['PHL', 'JFK', 'EWR', 'LGA', 'BWI', 'DCA', 'BOS'];
+            const result = { lastUpdated: new Date().toISOString(), deals: {} };
+
+            origins.forEach(origin => {
+              try {
+                const file = '/tmp/deals_' + origin + '.json';
+                if (fs.existsSync(file)) {
+                  const content = fs.readFileSync(file, 'utf8');
+                  const lines = content.trim().split('\n').filter(l => l);
+                  result.deals[origin] = lines.flatMap(l => {
+                    try { return JSON.parse(l); } catch { return []; }
+                  });
+                }
+              } catch (e) {}
+            });
+
+            fs.writeFileSync('deals.json', JSON.stringify(result, null, 2));
+            console.log('Saved deals.json with', Object.keys(result.deals).length, 'origins');
+          "
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deals.json
+          git diff --staged --quiet || git commit -m "Update flight deals [skip ci]"
+          git push
