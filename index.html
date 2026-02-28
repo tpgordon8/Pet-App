@@ -541,20 +541,60 @@
     .airport-option .city { font-size: 14px; color: var(--text); }
     .airport-option .check { margin-left: auto; color: var(--gold); font-size: 20px; }
 
-    .info-banner {
-      background: rgba(201,169,98,0.15);
-      border: 1px solid var(--gold);
-      border-radius: 12px;
-      padding: 12px 16px;
+    .error-state {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: left;
+    }
+
+    .error-state .error-icon {
+      font-size: 48px;
+      text-align: center;
       margin-bottom: 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 13px;
+    }
+
+    .error-state h3 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: #E31937;
+      text-align: center;
+    }
+
+    .error-details {
+      background: var(--bg2);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    .error-details p { margin: 12px 0 8px; }
+    .error-details p:first-child { margin-top: 0; }
+    .error-details strong { color: var(--text); }
+
+    .error-details ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    .error-details li {
+      margin: 4px 0;
       color: var(--gold-light);
     }
 
-    .info-banner span:first-child { font-size: 16px; }
+    .retry-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -585,11 +625,6 @@
       <button class="filter-btn" data-region="South">South</button>
       <button class="filter-btn" data-region="Caribbean">Caribbean</button>
       <button class="filter-btn" data-region="Europe">Europe</button>
-    </div>
-
-    <div class="info-banner" id="infoBanner" style="display:none">
-      <span>💡</span>
-      <span>Showing sample prices. Tap any deal and "Search on Google Flights" for real-time pricing.</span>
     </div>
 
     <div id="loading" class="loading">
@@ -758,70 +793,17 @@
       return reasons.length > 0 ? reasons : ['Great value for this route'];
     }
 
-    // Generate realistic demo deals based on current date and origin
-    function generateDemoDeals(origin) {
-      const today = new Date();
-      const demoDeals = [];
-      const airlineKeys = Object.keys(AIRLINES);
-
-      // Price ranges by region (realistic for 2024-2026)
-      const priceRanges = {
-        'Southeast': { min: 79, max: 189 },
-        'Midwest': { min: 89, max: 199 },
-        'West': { min: 129, max: 299 },
-        'South': { min: 99, max: 229 },
-        'Caribbean': { min: 199, max: 399 },
-        'Europe': { min: 349, max: 699 },
-      };
-
-      Object.entries(DESTS).forEach(([code, dest], index) => {
-        const range = priceRanges[dest.region] || { min: 100, max: 300 };
-        const basePrice = range.min + Math.floor(Math.random() * (range.max - range.min));
-        const isHotDeal = Math.random() > 0.6;
-        const price = isHotDeal ? Math.floor(basePrice * 0.7) : basePrice;
-        const typical = Math.floor(price * (1.25 + Math.random() * 0.25));
-        const savings = Math.round(((typical - price) / typical) * 100);
-
-        const daysOut = 7 + Math.floor(Math.random() * 45);
-        const tripLength = 3 + Math.floor(Math.random() * 5);
-        const departDate = new Date(today.getTime() + daysOut * 24 * 60 * 60 * 1000);
-        const returnDate = new Date(departDate.getTime() + tripLength * 24 * 60 * 60 * 1000);
-
-        const carrierCode = airlineKeys[Math.floor(Math.random() * airlineKeys.length)];
-        const airline = AIRLINES[carrierCode];
-        const hours = 6 + Math.floor(Math.random() * 12);
-        const mins = Math.floor(Math.random() * 60);
-
-        demoDeals.push({
-          id: `${code}-demo-${Date.now()}-${index}`,
-          origin,
-          destination: code,
-          destinationInfo: dest,
-          price,
-          typicalPrice: typical,
-          savings,
-          priceHistory: savings >= 30 ? 'lowest' : savings >= 15 ? 'good' : 'typical',
-          carrier: carrierCode,
-          airlineName: airline.name,
-          airlineColor: airline.color,
-          departureDate: departDate.toISOString().split('T')[0],
-          returnDate: returnDate.toISOString().split('T')[0],
-          nights: tripLength,
-          departureTime: `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`,
-          isHotDeal,
-          isNonStop: Math.random() > 0.4,
-          seatsLeft: Math.floor(Math.random() * 8) + 1,
-          isRealData: false,
-          whyHot: getWhyHotReasons({ savings, price, priceHistory: savings >= 30 ? 'lowest' : 'typical', isNonStop: Math.random() > 0.4, seatsLeft: Math.floor(Math.random() * 8) + 1 }),
-        });
-      });
-
-      return demoDeals.sort((a, b) => a.price - b.price);
-    }
+    // Track errors for diagnostics
+    let lastError = null;
+    let apiAttempts = 0;
+    let apiSuccesses = 0;
 
     async function fetchDeals() {
       document.getElementById('loading').style.display = 'block';
       document.getElementById('dealsContainer').innerHTML = '';
+      lastError = null;
+      apiAttempts = 0;
+      apiSuccesses = 0;
 
       const destCodes = Object.keys(DESTS).sort(() => Math.random() - 0.5).slice(0, 6);
       const today = new Date();
@@ -831,37 +813,35 @@
       console.log(`🔍 Searching from ${selectedAirport} for ${departDate} - ${returnDate}...`);
 
       const allDeals = [];
-      let apiWorked = false;
 
       try {
         const results = await Promise.all(destCodes.map(dest => searchFlights(selectedAirport, dest, departDate, returnDate)));
 
         results.forEach((apiData, i) => {
+          apiAttempts++;
           if (apiData && apiData.data) {
-            apiWorked = true;
+            apiSuccesses++;
             const d = transformApiResponse(apiData, selectedAirport, destCodes[i]);
             allDeals.push(...d);
           }
         });
       } catch (e) {
+        lastError = e.message || 'Unknown error';
         console.log('API batch error:', e);
       }
 
-      // Use demo data if API didn't return results (CORS blocked or rate limited)
-      if (allDeals.length === 0) {
-        console.log('📊 Using demo prices (API blocked by CORS or rate limited). Click "Search on Google Flights" for live booking.');
-        deals = generateDemoDeals(selectedAirport);
-      } else {
-        deals = allDeals.filter(d => d.price <= 500).sort((a, b) => a.price - b.price);
-        console.log(`✅ Found ${deals.length} real deals!`);
-      }
+      deals = allDeals.filter(d => d.price <= 500).sort((a, b) => a.price - b.price);
 
       document.getElementById('loading').style.display = 'none';
 
-      const hasRealData = deals.some(d => d.isRealData);
-      document.getElementById('liveBadge').textContent = hasRealData ? 'LIVE' : 'DEMO';
-      document.getElementById('liveBadge').style.background = hasRealData ? 'var(--deal)' : 'var(--gold)';
-      document.getElementById('infoBanner').style.display = hasRealData ? 'none' : 'flex';
+      if (deals.length > 0) {
+        document.getElementById('liveBadge').textContent = 'LIVE';
+        document.getElementById('liveBadge').style.background = 'var(--deal)';
+        console.log(`✅ Found ${deals.length} real deals!`);
+      } else {
+        document.getElementById('liveBadge').textContent = 'ERROR';
+        document.getElementById('liveBadge').style.background = '#E31937';
+      }
 
       renderDeals();
     }
@@ -895,7 +875,29 @@
       document.getElementById('hotCount').textContent = `${hotCount} HOT`;
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="empty-state"><div class="emoji">✈️</div><h3>No deals found</h3><p>Try a different region or check back later</p></div>`;
+        // Show detailed error info
+        let errorHtml = `<div class="error-state">
+          <div class="error-icon">⚠️</div>
+          <h3>Unable to load flight data</h3>
+          <div class="error-details">
+            <p><strong>What happened:</strong></p>
+            <ul>
+              <li>API calls attempted: ${apiAttempts}</li>
+              <li>Successful responses: ${apiSuccesses}</li>
+              ${lastError ? `<li>Last error: ${lastError}</li>` : ''}
+            </ul>
+            <p><strong>Likely cause:</strong></p>
+            <p>Browser security (CORS) is blocking API requests. This API requires a backend server to work properly.</p>
+            <p><strong>To fix this, tell Claude:</strong></p>
+            <ul>
+              <li>"Set up a backend proxy for the flight API"</li>
+              <li>"Use a CORS-enabled flight API"</li>
+              <li>"Deploy this with a serverless function"</li>
+            </ul>
+          </div>
+          <button class="retry-btn" onclick="fetchDeals()">🔄 Retry</button>
+        </div>`;
+        container.innerHTML = errorHtml;
         return;
       }
 
