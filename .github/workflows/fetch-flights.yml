@@ -1,6 +1,12 @@
 name: Fetch Flight Deals
 
 on:
+  push:
+    branches:
+      - 'claude/flight-deal-tracker-*'
+    paths:
+      - '.github/workflows/fetch-flights.yml'
+      - 'fetch-deals.js'
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
