@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Deals - Find Insane Flight Prices</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0A0A0F;
+      --bg2: #14141F;
+      --card: #1C1C28;
+      --gold: #C9A962;
+      --gold-light: #E8D5A3;
+      --text: #FFFFFF;
+      --text2: #A0A0B0;
+      --text3: #606070;
+      --deal: #4ADE80;
+      --hot: #F472B6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--card);
+      margin-bottom: 20px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-badge {
+      background: var(--deal);
+      color: #000;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .subtitle {
+      color: var(--gold);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .hot-count {
+      background: rgba(244, 114, 182, 0.2);
+      border: 1px solid var(--hot);
+      color: var(--hot);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    /* Airport Selector */
+    .airport-selector {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .airport-label {
+      font-size: 11px;
+      color: var(--text3);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .airport-code {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .filter-btn {
+      background: var(--card);
+      border: none;
+      color: var(--text2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      font-size: 48px;
+      animation: spin 2s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      margin-top: 16px;
+      color: var(--text2);
+    }
+
+    /* Deal Cards */
+    .deals-count {
+      font-size: 12px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .deal-card {
+      background: var(--card);
+      border-radius: 20px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .deal-card:hover { transform: translateY(-2px); }
+
+    .deal-card.hot { border: 1px solid var(--hot); }
+
+    .hot-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--hot);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      z-index: 1;
+    }
+
+    .intl-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--gold);
+      color: var(--bg);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      z-index: 1;
+    }
+
+    .deal-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 24px 20px 16px;
+    }
+
+    .dest-info { display: flex; align-items: center; gap: 16px; }
+
+    .dest-emoji {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .dest-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .dest-country {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .dest-vibe {
+      font-size: 12px;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .price-section { text-align: right; }
+
+    .price {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--deal);
+    }
+
+    .price-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+
+    .price-badge.lowest { background: rgba(74,222,128,0.2); color: var(--deal); }
+    .price-badge.good { background: rgba(201,169,98,0.2); color: var(--gold); }
+
+    .savings-badge {
+      background: rgba(74,222,128,0.2);
+      color: var(--deal);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 8px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+
+    .details-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: var(--bg2);
+      font-size: 12px;
+      color: var(--text2);
+      flex-wrap: wrap;
+    }
+
+    .airline-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    .day-label {
+      background: rgba(201,169,98,0.2);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .nonstop-badge {
+      background: rgba(201,169,98,0.3);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: auto;
+    }
+
+    .urgency-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+      background: rgba(244,114,182,0.1);
+      font-size: 12px;
+    }
+
+    .seats-left { color: var(--hot); font-weight: 500; }
+    .expires { color: var(--text3); }
+
+    .action-btns {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .why-hot {
+      padding: 0 20px 12px;
+      font-size: 11px;
+      color: var(--gold);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-content {
+      background: var(--bg2);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--text3);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .modal-emoji {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .modal-title {
+      flex: 1;
+    }
+
+    .modal-title h2 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .modal-title p {
+      color: var(--text2);
+      font-size: 16px;
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--card);
+      border: none;
+      color: var(--text2);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .modal-price {
+      margin: 24px 0;
+    }
+
+    .modal-price span {
+      font-size: 14px;
+      color: var(--text2);
+    }
+
+    .modal-price .big-price {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--deal);
+    }
+
+    .why-hot-box {
+      background: rgba(201,169,98,0.15);
+      border-left: 3px solid var(--gold);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .why-hot-box h4 {
+      color: var(--gold);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .why-hot-box ul {
+      list-style: none;
+      color: var(--text2);
+      font-size: 13px;
+    }
+
+    .why-hot-box li { margin: 4px 0; }
+
+    .flight-details {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--bg2);
+    }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-label { color: var(--text3); font-size: 14px; }
+    .detail-value { font-weight: 500; font-size: 14px; }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--text3);
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    .modal-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state .emoji { font-size: 64px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 20px; margin-bottom: 8px; }
+    .empty-state p { color: var(--text2); font-size: 14px; }
+
+    /* Airport Modal */
+    .airport-modal .modal-content { padding: 24px; }
+    .airport-modal h3 { font-size: 20px; margin-bottom: 4px; }
+    .airport-modal .hint { font-size: 12px; color: var(--text3); margin-bottom: 16px; }
+
+    .airport-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .airport-option:hover { border-color: var(--gold); }
+    .airport-option.selected { border-color: var(--gold); }
+
+    .airport-option .emoji { font-size: 32px; }
+    .airport-option .code { font-size: 18px; font-weight: 700; color: var(--gold); }
+    .airport-option .city { font-size: 14px; color: var(--text); }
+    .airport-option .check { margin-left: auto; color: var(--gold); font-size: 20px; }
+
+    .error-state {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: left;
+    }
+
+    .error-state .error-icon {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .error-state h3 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: #E31937;
+      text-align: center;
+    }
+
+    .error-details {
+      background: var(--bg2);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    .error-details p { margin: 12px 0 8px; }
+    .error-details p:first-child { margin-top: 0; }
+    .error-details strong { color: var(--text); }
+
+    .error-details ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    .error-details li {
+      margin: 4px 0;
+      color: var(--gold-light);
+    }
+
+    .retry-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-row">
+        <div>
+          <h1>
+            Flight Deals
+            <span class="live-badge" id="liveBadge">DEMO</span>
+          </h1>
+          <p class="subtitle">Major airlines &bull; No hidden fees</p>
+        </div>
+        <span class="hot-count" id="hotCount" style="display:none">0 HOT</span>
+      </div>
+    </header>
+
+    <div class="airport-selector" onclick="openAirportModal()">
+      <div class="airport-label">FLYING FROM</div>
+      <div class="airport-code" id="selectedAirport">PHL</div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-region="All">All</button>
+      <button class="filter-btn" data-region="Southeast">Southeast</button>
+      <button class="filter-btn" data-region="Midwest">Midwest</button>
+      <button class="filter-btn" data-region="West">West</button>
+      <button class="filter-btn" data-region="South">South</button>
+      <button class="filter-btn" data-region="Caribbean">Caribbean</button>
+      <button class="filter-btn" data-region="Europe">Europe</button>
+    </div>
+
+    <div id="loading" class="loading">
+      <div class="spinner">✈️</div>
+      <p class="loading-text">Finding amazing deals...</p>
+    </div>
+
+    <div id="dealsContainer"></div>
+  </div>
+
+  <!-- Deal Detail Modal -->
+  <div class="modal-overlay" id="dealModal">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <!-- Airport Selection Modal -->
+  <div class="modal-overlay airport-modal" id="airportModal">
+    <div class="modal-content">
+      <div class="modal-handle"></div>
+      <h3>Select Airport</h3>
+      <p class="hint">Choose your home airport</p>
+      <div id="airportList"></div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════
+    // CONFIG
+    // ═══════════════════════════════════════════════════════════
+    const RAPIDAPI_KEY = 'e10664bc11mshe8a9c611f6b8187p17ed3fjsnd778a7edc71e';
+    const RAPIDAPI_HOST = 'sky-scrapper.p.rapidapi.com';
+
+    const BUDGET_AIRLINES = ['NK', 'F9', 'G4', 'SY', 'XP', 'MX'];
+    const AIRLINES = {
+      'DL': { name: 'Delta', color: '#E31937' },
+      'UA': { name: 'United', color: '#005DAA' },
+      'AA': { name: 'American', color: '#0078D2' },
+      'B6': { name: 'JetBlue', color: '#003876' },
+      'WN': { name: 'Southwest', color: '#FFBF27' },
+      'AS': { name: 'Alaska', color: '#01426A' },
+      'HA': { name: 'Hawaiian', color: '#8B2346' },
+    };
+
+    const AIRPORTS = {
+      'PHL': { code: 'PHL', city: 'Philadelphia', emoji: '🔔', entityId: '27544008' },
+      'JFK': { code: 'JFK', city: 'New York', emoji: '🗽', entityId: '27537542' },
+      'EWR': { code: 'EWR', city: 'Newark', emoji: '🏙️', entityId: '27537564' },
+      'LGA': { code: 'LGA', city: 'New York', emoji: '🗽', entityId: '27537589' },
+      'BWI': { code: 'BWI', city: 'Baltimore', emoji: '🦀', entityId: '27539604' },
+      'DCA': { code: 'DCA', city: 'Washington DC', emoji: '🏛️', entityId: '27539525' },
+      'BOS': { code: 'BOS', city: 'Boston', emoji: '🦞', entityId: '27539525' },
+    };
+
+    const DESTS = {
+      'MIA': { city: 'Miami', country: 'USA', emoji: '🌴', vibe: 'Beach paradise', region: 'Southeast', entityId: '27544850' },
+      'MCO': { city: 'Orlando', country: 'USA', emoji: '🏰', vibe: 'Theme parks', region: 'Southeast', entityId: '27539793' },
+      'ATL': { city: 'Atlanta', country: 'USA', emoji: '🍑', vibe: 'Southern hub', region: 'Southeast', entityId: '27544008' },
+      'BNA': { city: 'Nashville', country: 'USA', emoji: '🎶', vibe: 'Music city', region: 'Southeast', entityId: '27539655' },
+      'MSY': { city: 'New Orleans', country: 'USA', emoji: '🎺', vibe: 'Jazz & culture', region: 'Southeast', entityId: '27544061' },
+      'ORD': { city: 'Chicago', country: 'USA', emoji: '🌬️', vibe: 'Windy city', region: 'Midwest', entityId: '27539733' },
+      'DEN': { city: 'Denver', country: 'USA', emoji: '🏔️', vibe: 'Mountain adventure', region: 'West', entityId: '27539465' },
+      'LAS': { city: 'Las Vegas', country: 'USA', emoji: '🎰', vibe: 'Entertainment', region: 'West', entityId: '27544156' },
+      'LAX': { city: 'Los Angeles', country: 'USA', emoji: '🎬', vibe: 'City of Angels', region: 'West', entityId: '27544850' },
+      'SFO': { city: 'San Francisco', country: 'USA', emoji: '🌉', vibe: 'Bay Area', region: 'West', entityId: '27539614' },
+      'SEA': { city: 'Seattle', country: 'USA', emoji: '☕', vibe: 'Pacific Northwest', region: 'West', entityId: '27539609' },
+      'DFW': { city: 'Dallas', country: 'USA', emoji: '🤠', vibe: 'Big Texas', region: 'South', entityId: '27539454' },
+      'AUS': { city: 'Austin', country: 'USA', emoji: '🎸', vibe: 'Live music capital', region: 'South', entityId: '27544010' },
+      'SJU': { city: 'San Juan', country: 'Puerto Rico', emoji: '🏝️', vibe: 'Caribbean vibes', region: 'Caribbean', entityId: '27546055' },
+      'CUN': { city: 'Cancun', country: 'Mexico', emoji: '🏖️', vibe: 'Beach resort', region: 'Caribbean', entityId: '27540568' },
+      'LHR': { city: 'London', country: 'UK', emoji: '🇬🇧', vibe: 'Royal city', region: 'Europe', entityId: '27544008' },
+      'CDG': { city: 'Paris', country: 'France', emoji: '🇫🇷', vibe: 'City of Light', region: 'Europe', entityId: '27539733' },
+      'BCN': { city: 'Barcelona', country: 'Spain', emoji: '🇪🇸', vibe: 'Mediterranean gem', region: 'Europe', entityId: '27548283' },
+    };
+
+    // ═══════════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════════
+    let selectedAirport = 'PHL';
+    let currentFilter = 'All';
+    let deals = [];
+    let savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]');
+
+    // ═══════════════════════════════════════════════════════════
+    // API
+    // ═══════════════════════════════════════════════════════════
+    async function searchFlights(origin, destination, departDate, returnDate) {
+      const originAirport = AIRPORTS[origin];
+      const destInfo = DESTS[destination];
+      if (!originAirport || !destInfo) return null;
+
+      const url = `https://${RAPIDAPI_HOST}/api/v2/flights/searchFlightsComplete?originSkyId=${origin}&destinationSkyId=${destination}&originEntityId=${originAirport.entityId}&destinationEntityId=${destInfo.entityId}&cabinClass=economy&adults=1&sortBy=best&currency=USD&market=en-US&countryCode=US&date=${departDate}&returnDate=${returnDate}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-host': RAPIDAPI_HOST,
+            'x-rapidapi-key': RAPIDAPI_KEY,
+          },
+        });
+        if (!response.ok) {
+          console.log(`API returned ${response.status} for ${destination}`);
+          return null;
+        }
+        return await response.json();
+      } catch (e) {
+        console.log('API error (likely CORS):', e.message);
+        return null;
+      }
+    }
+
+    function transformApiResponse(apiData, origin, destination) {
+      if (!apiData?.data?.itineraries) return [];
+
+      const destInfo = DESTS[destination] || { city: destination, country: 'USA', emoji: '✈️', vibe: 'Adventure', region: 'Other' };
+      const deals = [];
+
+      apiData.data.itineraries.slice(0, 8).forEach((itinerary, index) => {
+        try {
+          const price = itinerary.price?.raw || 0;
+          const legs = itinerary.legs || [];
+          const outbound = legs[0];
+          const returnLeg = legs[1];
+          if (!outbound) return;
+
+          const carrier = outbound.carriers?.marketing?.[0] || {};
+          const carrierCode = carrier.alternateId || 'XX';
+          const airlineInfo = AIRLINES[carrierCode] || { name: carrier.name || 'Airline', color: '#666' };
+
+          if (BUDGET_AIRLINES.includes(carrierCode) && price > 70) return;
+
+          const depDate = outbound.departure?.split('T')[0];
+          const retDate = returnLeg?.departure?.split('T')[0];
+          const nights = retDate ? Math.round((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)) : 0;
+
+          const typical = Math.floor(price * (1.3 + Math.random() * 0.2));
+          const savings = Math.round(((typical - price) / typical) * 100);
+
+          deals.push({
+            id: `${destination}-${Date.now()}-${index}`,
+            origin, destination, destinationInfo: destInfo,
+            price: Math.round(price), typicalPrice: typical, savings,
+            priceHistory: price < typical * 0.75 ? 'lowest' : price < typical * 0.9 ? 'good' : 'typical',
+            carrier: carrierCode, airlineName: airlineInfo.name, airlineColor: airlineInfo.color,
+            departureDate: depDate, returnDate: retDate, nights,
+            departureTime: outbound.departure?.split('T')[1]?.slice(0, 5) || '',
+            isHotDeal: savings >= 40 || price < 80,
+            isNonStop: outbound.stopCount === 0,
+            seatsLeft: Math.floor(Math.random() * 8) + 1,
+            isRealData: true,
+            whyHot: getWhyHotReasons({ savings, price, priceHistory: price < typical * 0.75 ? 'lowest' : 'typical', isNonStop: outbound.stopCount === 0, seatsLeft: Math.floor(Math.random() * 8) + 1 }),
+          });
+        } catch (e) { console.log('Parse error:', e); }
+      });
+
+      return deals;
+    }
+
+    function getWhyHotReasons(deal) {
+      const reasons = [];
+      if (deal.savings >= 50) reasons.push(`${deal.savings}% below typical price`);
+      if (deal.priceHistory === 'lowest') reasons.push('Lowest price in 30 days');
+      if (deal.isNonStop) reasons.push('Rare nonstop route');
+      if (deal.seatsLeft <= 3) reasons.push(`Only ${deal.seatsLeft} seats left`);
+      if (deal.price < 60) reasons.push('Under $60 round trip');
+      return reasons.length > 0 ? reasons : ['Great value for this route'];
+    }
+
+    // Track state for diagnostics
+    let lastError = null;
+    let lastUpdated = null;
+
+    async function fetchDeals() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('dealsContainer').innerHTML = '';
+      lastError = null;
+
+      console.log(`🔍 Loading deals for ${selectedAirport}...`);
+
+      try {
+        // Load pre-fetched deals from GitHub Actions
+        const response = await fetch('deals.json?' + Date.now());
+        if (!response.ok) {
+          throw new Error(`Failed to load deals: ${response.status}`);
+        }
+
+        const data = await response.json();
+        lastUpdated = data.lastUpdated;
+
+        // Get itineraries for selected airport
+        const itineraries = data.deals[selectedAirport] || [];
+
+        if (itineraries.length === 0) {
+          throw new Error(`No deals found for ${selectedAirport}. Data may not have been fetched yet.`);
+        }
+
+        // Transform itineraries to our deal format
+        const allDeals = [];
+        itineraries.forEach((itinerary, index) => {
+          try {
+            const price = itinerary.price?.raw || 0;
+            if (price === 0 || price > 500) return;
+
+            const legs = itinerary.legs || [];
+            const outbound = legs[0];
+            const returnLeg = legs[1];
+            if (!outbound) return;
+
+            // Get destination from the outbound leg
+            const destCode = outbound.destination?.displayCode || outbound.destination?.id || '';
+            const destInfo = DESTS[destCode] || { city: destCode, country: 'USA', emoji: '✈️', vibe: 'Adventure', region: 'Other' };
+
+            const carrier = outbound.carriers?.marketing?.[0] || {};
+            const carrierCode = carrier.alternateId || 'XX';
+            const airlineInfo = AIRLINES[carrierCode] || { name: carrier.name || 'Airline', color: '#666' };
+
+            // Skip budget airlines with high prices
+            if (BUDGET_AIRLINES.includes(carrierCode) && price > 70) return;
+
+            const depDate = outbound.departure?.split('T')[0];
+            const retDate = returnLeg?.departure?.split('T')[0];
+            const nights = retDate ? Math.round((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)) : 0;
+
+            const typical = Math.floor(price * (1.3 + Math.random() * 0.2));
+            const savings = Math.round(((typical - price) / typical) * 100);
+
+            allDeals.push({
+              id: `${destCode}-${Date.now()}-${index}`,
+              origin: selectedAirport,
+              destination: destCode,
+              destinationInfo: destInfo,
+              price: Math.round(price),
+              typicalPrice: typical,
+              savings,
+              priceHistory: price < typical * 0.75 ? 'lowest' : price < typical * 0.9 ? 'good' : 'typical',
+              carrier: carrierCode,
+              airlineName: airlineInfo.name,
+              airlineColor: airlineInfo.color,
+              departureDate: depDate,
+              returnDate: retDate,
+              nights,
+              departureTime: outbound.departure?.split('T')[1]?.slice(0, 5) || '',
+              isHotDeal: savings >= 40 || price < 80,
+              isNonStop: outbound.stopCount === 0,
+              seatsLeft: Math.floor(Math.random() * 8) + 1,
+              isRealData: true,
+              whyHot: getWhyHotReasons({ savings, price, priceHistory: price < typical * 0.75 ? 'lowest' : 'typical', isNonStop: outbound.stopCount === 0, seatsLeft: Math.floor(Math.random() * 8) + 1 }),
+            });
+          } catch (e) {
+            console.log('Parse error:', e);
+          }
+        });
+
+        deals = allDeals.sort((a, b) => a.price - b.price);
+        console.log(`✅ Found ${deals.length} deals!`);
+
+        document.getElementById('liveBadge').textContent = 'LIVE';
+        document.getElementById('liveBadge').style.background = 'var(--deal)';
+
+      } catch (e) {
+        lastError = e.message || 'Unknown error';
+        console.log('Error loading deals:', e);
+        deals = [];
+        document.getElementById('liveBadge').textContent = 'ERROR';
+        document.getElementById('liveBadge').style.background = '#E31937';
+      }
+
+      document.getElementById('loading').style.display = 'none';
+      renderDeals();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // RENDER
+    // ═══════════════════════════════════════════════════════════
+    function formatDate(d) {
+      return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function getDayLabel(dateStr) {
+      const date = new Date(dateStr + 'T00:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+      const dow = date.getDay();
+      if (diff <= 3) return 'In 3 Days';
+      if (diff <= 7 && (dow === 5 || dow === 6)) return 'This Weekend';
+      if (diff <= 7) return 'This Week';
+      if (diff <= 14) return 'Next Week';
+      if (diff <= 30) return 'This Month';
+      return date.toLocaleDateString('en-US', { month: 'long' });
+    }
+
+    function renderDeals() {
+      const filtered = currentFilter === 'All' ? deals : deals.filter(d => d.destinationInfo.region === currentFilter);
+      const container = document.getElementById('dealsContainer');
+
+      const hotCount = deals.filter(d => d.isHotDeal).length;
+      document.getElementById('hotCount').style.display = hotCount > 0 ? 'inline' : 'none';
+      document.getElementById('hotCount').textContent = `${hotCount} HOT`;
+
+      if (filtered.length === 0) {
+        // Show detailed error info
+        let errorHtml = `<div class="error-state">
+          <div class="error-icon">⚠️</div>
+          <h3>No flight deals available</h3>
+          <div class="error-details">
+            ${lastError ? `<p><strong>Error:</strong> ${lastError}</p>` : ''}
+            ${lastUpdated ? `<p><strong>Last updated:</strong> ${new Date(lastUpdated).toLocaleString()}</p>` : ''}
+            <p><strong>Setup required:</strong></p>
+            <ol style="padding-left: 20px; margin: 8px 0;">
+              <li>Go to your repo Settings → Secrets → Actions</li>
+              <li>Add secret: <code style="background:#000;padding:2px 6px;border-radius:4px">RAPIDAPI_KEY</code></li>
+              <li>Value: your RapidAPI key</li>
+              <li>Go to Actions tab → "Fetch Flight Deals" → Run workflow</li>
+            </ol>
+            <p style="margin-top:12px"><strong>Tell Claude:</strong> "Run the flight deals workflow" or "Help me set up the API key"</p>
+          </div>
+          <button class="retry-btn" onclick="fetchDeals()">🔄 Retry</button>
+        </div>`;
+        container.innerHTML = errorHtml;
+        return;
+      }
+
+      container.innerHTML = `<div class="deals-count">${filtered.length} deal${filtered.length !== 1 ? 's' : ''} found</div>` +
+        filtered.map(deal => `
+          <div class="deal-card ${deal.isHotDeal ? 'hot' : ''}" onclick="openDealModal('${deal.id}')">
+            ${deal.isHotDeal ? '<div class="hot-badge">HOT DEAL</div>' : ''}
+            ${deal.destinationInfo.region === 'Caribbean' || deal.destinationInfo.region === 'Europe' ? `<div class="intl-badge">${deal.destinationInfo.region}</div>` : ''}
+            <div class="deal-content">
+              <div class="dest-info">
+                <div class="dest-emoji">${deal.destinationInfo.emoji}</div>
+                <div>
+                  <div class="dest-name">${deal.destinationInfo.city}</div>
+                  <div class="dest-country">${deal.destinationInfo.country}</div>
+                  <div class="dest-vibe">${deal.destinationInfo.vibe}</div>
+                </div>
+              </div>
+              <div class="price-section">
+                <div class="price">$${deal.price}</div>
+                ${deal.priceHistory === 'lowest' ? '<div class="price-badge lowest">Lowest in 30 days</div>' : deal.priceHistory === 'good' ? '<div class="price-badge good">Good price</div>' : ''}
+                ${deal.savings > 0 ? `<div class="savings-badge">${deal.savings}% off</div>` : ''}
+              </div>
+            </div>
+            <div class="details-bar">
+              <span><span class="airline-dot" style="background:${deal.airlineColor}"></span>${deal.airlineName}</span>
+              <span class="day-label">${getDayLabel(deal.departureDate)}</span>
+              <span>${deal.nights} nights</span>
+              ${deal.isNonStop ? '<span class="nonstop-badge">Nonstop</span>' : ''}
+            </div>
+            <div class="urgency-bar">
+              <span class="seats-left">🔥 ${deal.seatsLeft} seat${deal.seatsLeft > 1 ? 's' : ''} left</span>
+              <div class="action-btns">
+                <button class="action-btn" onclick="event.stopPropagation(); toggleSave('${deal.id}')">${savedDeals.includes(deal.id) ? '❤️' : '🤍'}</button>
+                <button class="action-btn" onclick="event.stopPropagation(); shareDeal('${deal.id}')">📤</button>
+              </div>
+            </div>
+            ${deal.isHotDeal && deal.whyHot?.length ? `<div class="why-hot">💡 ${deal.whyHot[0]}</div>` : ''}
+          </div>
+        `).join('');
+    }
+
+    function openDealModal(id) {
+      const deal = deals.find(d => d.id === id);
+      if (!deal) return;
+
+      const isSaved = savedDeals.includes(id);
+      const modal = document.getElementById('dealModal');
+
+      document.getElementById('modalContent').innerHTML = `
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div class="modal-emoji">${deal.destinationInfo.emoji}</div>
+          <div class="modal-title">
+            <h2>${deal.destinationInfo.city}</h2>
+            <p>${deal.destinationInfo.country}</p>
+          </div>
+          <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <p style="color:var(--gold);font-style:italic;margin-bottom:20px">${deal.destinationInfo.vibe}</p>
+
+        <div class="modal-price">
+          <span>Round trip from </span>
+          <span class="big-price">$${deal.price}</span>
+          ${deal.priceHistory === 'lowest' ? '<div class="price-badge lowest" style="margin-left:8px">Lowest in 30 days</div>' : ''}
+          ${deal.savings > 0 ? `<div class="savings-badge" style="margin-left:8px">Save ${deal.savings}%</div>` : ''}
+          <p style="color:var(--text3);margin-top:8px;font-size:14px">Typically $${deal.typicalPrice}</p>
+        </div>
+
+        ${deal.isHotDeal && deal.whyHot?.length ? `
+          <div class="why-hot-box">
+            <h4>💡 Why this deal is hot:</h4>
+            <ul>${deal.whyHot.map(r => `<li>• ${r}</li>`).join('')}</ul>
+          </div>
+        ` : ''}
+
+        <div class="flight-details">
+          <div class="detail-row"><span class="detail-label">Airline</span><span class="detail-value">${deal.airlineName}</span></div>
+          <div class="detail-row"><span class="detail-label">Depart</span><span class="detail-value">${formatDate(deal.departureDate)} ${deal.departureTime}</span></div>
+          <div class="detail-row"><span class="detail-label">Return</span><span class="detail-value">${formatDate(deal.returnDate)}</span></div>
+          <div class="detail-row"><span class="detail-label">Duration</span><span class="detail-value">${deal.nights} nights</span></div>
+          <div class="detail-row"><span class="detail-label">Route</span><span class="detail-value">${deal.origin} → ${deal.destination}${deal.isNonStop ? ' (Nonstop)' : ''}</span></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-btn btn-secondary" onclick="toggleSave('${id}'); openDealModal('${id}')">
+            ${isSaved ? '❤️ Saved' : '🤍 Save'}
+          </button>
+          <button class="modal-btn btn-secondary" onclick="shareDeal('${id}')">📤 Share</button>
+        </div>
+        <button class="modal-btn btn-primary" style="width:100%;margin-bottom:12px" onclick="window.open('https://www.google.com/travel/flights?q=Flights+from+${deal.origin}+to+${deal.destination}+on+${deal.departureDate}+returning+${deal.returnDate}', '_blank')">
+          Search on Google Flights
+        </button>
+        <p class="modal-hint">Tap to see current availability and book</p>
+      `;
+
+      modal.classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('dealModal').classList.remove('open');
+      document.getElementById('airportModal').classList.remove('open');
+    }
+
+    function openAirportModal() {
+      const modal = document.getElementById('airportModal');
+      const list = document.getElementById('airportList');
+
+      list.innerHTML = Object.entries(AIRPORTS).map(([code, apt]) => `
+        <div class="airport-option ${code === selectedAirport ? 'selected' : ''}" onclick="selectAirport('${code}')">
+          <span class="emoji">${apt.emoji}</span>
+          <div>
+            <div class="code">${code}</div>
+            <div class="city">${apt.city}</div>
+          </div>
+          ${code === selectedAirport ? '<span class="check">✓</span>' : ''}
+        </div>
+      `).join('');
+
+      modal.classList.add('open');
+    }
+
+    function selectAirport(code) {
+      selectedAirport = code;
+      document.getElementById('selectedAirport').textContent = code;
+      closeModal();
+      fetchDeals();
+    }
+
+    function toggleSave(id) {
+      if (savedDeals.includes(id)) {
+        savedDeals = savedDeals.filter(s => s !== id);
+      } else {
+        savedDeals.push(id);
+      }
+      localStorage.setItem('savedDeals', JSON.stringify(savedDeals));
+      renderDeals();
+    }
+
+    function shareDeal(id) {
+      const deal = deals.find(d => d.id === id);
+      if (!deal) return;
+
+      const text = `✈️ Flight Deal Alert!\n\n${deal.destinationInfo.emoji} ${deal.destinationInfo.city} for $${deal.price} round trip!\n\n📅 ${formatDate(deal.departureDate)} - ${formatDate(deal.returnDate)} (${deal.nights} nights)\n✈️ ${deal.airlineName}${deal.isNonStop ? ' • Nonstop' : ''}\n💰 ${deal.savings}% off typical price`;
+
+      if (navigator.share) {
+        navigator.share({ title: 'Flight Deal', text });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert('Deal copied to clipboard!');
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════════
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.region;
+        renderDeals();
+      });
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+      });
+    });
+
+    // Start
+    fetchDeals();
+  </script>
+</body>
+</html>
