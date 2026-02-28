@@ -2,6 +2,11 @@
 // All Tier 1 & Tier 2 features + International + Multi-Airport + Real API
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator,
+  TouchableOpacity, Modal, Linking, StatusBar, Share, Animated, Dimensions,
+  Switch, Platform,
+} from 'react-native';
 
 // ═══════════════════════════════════════════════════════════
 // RAPIDAPI CONFIGURATION - Sky Scrapper API
@@ -9,11 +14,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 const RAPIDAPI_KEY = 'e10664bc11mshe8a9c611f6b8187p17ed3fjsnd778a7edc71e';
 const RAPIDAPI_HOST = 'sky-scrapper.p.rapidapi.com';
 const USE_REAL_API = true; // Set to false to use mock data
-import {
-  View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator,
-  TouchableOpacity, Modal, Linking, StatusBar, Share, Animated, Dimensions,
-  Switch, Platform,
-} from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
