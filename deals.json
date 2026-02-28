@@ -1,57 +1,13 @@
 {
-  "lastUpdated": "2026-02-28T03:00:00.000Z",
+  "lastUpdated": "2026-02-28T16:19:52.921Z",
   "departDate": "2026-03-14",
   "returnDate": "2026-03-18",
   "deals": {
-    "PHL": [
-      {"price":{"raw":89},"legs":[{"departure":"2026-03-14T06:30:00","destination":{"displayCode":"MIA"},"stopCount":0,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T14:20:00"}]},
-      {"price":{"raw":119},"legs":[{"departure":"2026-03-14T08:15:00","destination":{"displayCode":"MCO"},"stopCount":0,"carriers":{"marketing":[{"name":"Delta","alternateId":"DL"}]}},{"departure":"2026-03-18T16:45:00"}]},
-      {"price":{"raw":79},"legs":[{"departure":"2026-03-14T07:00:00","destination":{"displayCode":"ATL"},"stopCount":0,"carriers":{"marketing":[{"name":"Delta","alternateId":"DL"}]}},{"departure":"2026-03-18T11:30:00"}]},
-      {"price":{"raw":149},"legs":[{"departure":"2026-03-14T09:45:00","destination":{"displayCode":"ORD"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T18:00:00"}]},
-      {"price":{"raw":199},"legs":[{"departure":"2026-03-14T11:00:00","destination":{"displayCode":"DEN"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T15:30:00"}]},
-      {"price":{"raw":179},"legs":[{"departure":"2026-03-14T06:00:00","destination":{"displayCode":"LAS"},"stopCount":1,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T20:15:00"}]},
-      {"price":{"raw":249},"legs":[{"departure":"2026-03-14T08:30:00","destination":{"displayCode":"LAX"},"stopCount":1,"carriers":{"marketing":[{"name":"Delta","alternateId":"DL"}]}},{"departure":"2026-03-18T17:00:00"}]},
-      {"price":{"raw":129},"legs":[{"departure":"2026-03-14T10:15:00","destination":{"displayCode":"BNA"},"stopCount":0,"carriers":{"marketing":[{"name":"Southwest","alternateId":"WN"}]}},{"departure":"2026-03-18T13:45:00"}]},
-      {"price":{"raw":159},"legs":[{"departure":"2026-03-14T07:30:00","destination":{"displayCode":"DFW"},"stopCount":0,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T19:00:00"}]},
-      {"price":{"raw":289},"legs":[{"departure":"2026-03-14T14:00:00","destination":{"displayCode":"SJU"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T10:30:00"}]},
-      {"price":{"raw":349},"legs":[{"departure":"2026-03-14T18:00:00","destination":{"displayCode":"CUN"},"stopCount":1,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T12:00:00"}]}
-    ],
-    "JFK": [
-      {"price":{"raw":99},"legs":[{"departure":"2026-03-14T07:00:00","destination":{"displayCode":"MIA"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T15:00:00"}]},
-      {"price":{"raw":109},"legs":[{"departure":"2026-03-14T08:30:00","destination":{"displayCode":"MCO"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T17:30:00"}]},
-      {"price":{"raw":139},"legs":[{"departure":"2026-03-14T06:15:00","destination":{"displayCode":"ORD"},"stopCount":0,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T19:45:00"}]},
-      {"price":{"raw":219},"legs":[{"departure":"2026-03-14T09:00:00","destination":{"displayCode":"LAX"},"stopCount":0,"carriers":{"marketing":[{"name":"Delta","alternateId":"DL"}]}},{"departure":"2026-03-18T16:00:00"}]},
-      {"price":{"raw":189},"legs":[{"departure":"2026-03-14T10:30:00","destination":{"displayCode":"SFO"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T14:30:00"}]},
-      {"price":{"raw":259},"legs":[{"departure":"2026-03-14T13:00:00","destination":{"displayCode":"SJU"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T09:00:00"}]},
-      {"price":{"raw":319},"legs":[{"departure":"2026-03-14T17:00:00","destination":{"displayCode":"CUN"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T11:00:00"}]}
-    ],
-    "EWR": [
-      {"price":{"raw":95},"legs":[{"departure":"2026-03-14T06:45:00","destination":{"displayCode":"MIA"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T14:15:00"}]},
-      {"price":{"raw":115},"legs":[{"departure":"2026-03-14T08:00:00","destination":{"displayCode":"MCO"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T16:30:00"}]},
-      {"price":{"raw":129},"legs":[{"departure":"2026-03-14T07:15:00","destination":{"displayCode":"ORD"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T18:45:00"}]},
-      {"price":{"raw":199},"legs":[{"departure":"2026-03-14T09:30:00","destination":{"displayCode":"DEN"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T15:00:00"}]},
-      {"price":{"raw":229},"legs":[{"departure":"2026-03-14T11:00:00","destination":{"displayCode":"LAX"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T17:30:00"}]}
-    ],
-    "BWI": [
-      {"price":{"raw":69},"legs":[{"departure":"2026-03-14T06:00:00","destination":{"displayCode":"ATL"},"stopCount":0,"carriers":{"marketing":[{"name":"Southwest","alternateId":"WN"}]}},{"departure":"2026-03-18T12:00:00"}]},
-      {"price":{"raw":89},"legs":[{"departure":"2026-03-14T07:30:00","destination":{"displayCode":"MIA"},"stopCount":1,"carriers":{"marketing":[{"name":"Southwest","alternateId":"WN"}]}},{"departure":"2026-03-18T14:00:00"}]},
-      {"price":{"raw":99},"legs":[{"departure":"2026-03-14T08:15:00","destination":{"displayCode":"MCO"},"stopCount":0,"carriers":{"marketing":[{"name":"Southwest","alternateId":"WN"}]}},{"departure":"2026-03-18T15:30:00"}]},
-      {"price":{"raw":119},"legs":[{"departure":"2026-03-14T09:00:00","destination":{"displayCode":"ORD"},"stopCount":0,"carriers":{"marketing":[{"name":"Southwest","alternateId":"WN"}]}},{"departure":"2026-03-18T17:00:00"}]},
-      {"price":{"raw":149},"legs":[{"departure":"2026-03-14T06:45:00","destination":{"displayCode":"DEN"},"stopCount":0,"carriers":{"marketing":[{"name":"Southwest","alternateId":"WN"}]}},{"departure":"2026-03-18T13:00:00"}]}
-    ],
-    "DCA": [
-      {"price":{"raw":79},"legs":[{"departure":"2026-03-14T07:00:00","destination":{"displayCode":"ATL"},"stopCount":0,"carriers":{"marketing":[{"name":"Delta","alternateId":"DL"}]}},{"departure":"2026-03-18T13:00:00"}]},
-      {"price":{"raw":99},"legs":[{"departure":"2026-03-14T08:30:00","destination":{"displayCode":"MIA"},"stopCount":0,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T15:30:00"}]},
-      {"price":{"raw":109},"legs":[{"departure":"2026-03-14T06:15:00","destination":{"displayCode":"ORD"},"stopCount":0,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T18:00:00"}]},
-      {"price":{"raw":139},"legs":[{"departure":"2026-03-14T09:45:00","destination":{"displayCode":"DFW"},"stopCount":0,"carriers":{"marketing":[{"name":"American Airlines","alternateId":"AA"}]}},{"departure":"2026-03-18T16:45:00"}]},
-      {"price":{"raw":169},"legs":[{"departure":"2026-03-14T10:30:00","destination":{"displayCode":"DEN"},"stopCount":0,"carriers":{"marketing":[{"name":"United","alternateId":"UA"}]}},{"departure":"2026-03-18T14:00:00"}]}
-    ],
-    "BOS": [
-      {"price":{"raw":89},"legs":[{"departure":"2026-03-14T06:30:00","destination":{"displayCode":"MIA"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T14:30:00"}]},
-      {"price":{"raw":99},"legs":[{"departure":"2026-03-14T07:45:00","destination":{"displayCode":"MCO"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T16:00:00"}]},
-      {"price":{"raw":119},"legs":[{"departure":"2026-03-14T08:15:00","destination":{"displayCode":"ATL"},"stopCount":0,"carriers":{"marketing":[{"name":"Delta","alternateId":"DL"}]}},{"departure":"2026-03-18T12:45:00"}]},
-      {"price":{"raw":139},"legs":[{"departure":"2026-03-14T06:00:00","destination":{"displayCode":"ORD"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T19:00:00"}]},
-      {"price":{"raw":279},"legs":[{"departure":"2026-03-14T12:00:00","destination":{"displayCode":"SJU"},"stopCount":0,"carriers":{"marketing":[{"name":"JetBlue","alternateId":"B6"}]}},{"departure":"2026-03-18T08:30:00"}]}
-    ]
+    "PHL": [],
+    "JFK": [],
+    "EWR": [],
+    "BWI": [],
+    "DCA": [],
+    "BOS": []
   }
 }
