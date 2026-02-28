@@ -540,6 +540,21 @@
     .airport-option .code { font-size: 18px; font-weight: 700; color: var(--gold); }
     .airport-option .city { font-size: 14px; color: var(--text); }
     .airport-option .check { margin-left: auto; color: var(--gold); font-size: 20px; }
+
+    .info-banner {
+      background: rgba(201,169,98,0.15);
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--gold-light);
+    }
+
+    .info-banner span:first-child { font-size: 16px; }
   </style>
 </head>
 <body>
@@ -549,7 +564,7 @@
         <div>
           <h1>
             Flight Deals
-            <span class="live-badge" id="liveBadge" style="display:none">LIVE</span>
+            <span class="live-badge" id="liveBadge">DEMO</span>
           </h1>
           <p class="subtitle">Major airlines &bull; No hidden fees</p>
         </div>
@@ -570,6 +585,11 @@
       <button class="filter-btn" data-region="South">South</button>
       <button class="filter-btn" data-region="Caribbean">Caribbean</button>
       <button class="filter-btn" data-region="Europe">Europe</button>
+    </div>
+
+    <div class="info-banner" id="infoBanner" style="display:none">
+      <span>💡</span>
+      <span>Showing sample prices. Tap any deal and "Search on Google Flights" for real-time pricing.</span>
     </div>
 
     <div id="loading" class="loading">
@@ -624,24 +644,24 @@
     };
 
     const DESTS = {
-      'MIA': { city: 'Miami', country: 'USA', emoji: '🌴', vibe: 'Beach paradise', region: 'Southeast' },
-      'MCO': { city: 'Orlando', country: 'USA', emoji: '🏰', vibe: 'Theme parks', region: 'Southeast' },
-      'ATL': { city: 'Atlanta', country: 'USA', emoji: '🍑', vibe: 'Southern hub', region: 'Southeast' },
-      'BNA': { city: 'Nashville', country: 'USA', emoji: '🎶', vibe: 'Music city', region: 'Southeast' },
-      'MSY': { city: 'New Orleans', country: 'USA', emoji: '🎺', vibe: 'Jazz & culture', region: 'Southeast' },
-      'ORD': { city: 'Chicago', country: 'USA', emoji: '🌬️', vibe: 'Windy city', region: 'Midwest' },
-      'DEN': { city: 'Denver', country: 'USA', emoji: '🏔️', vibe: 'Mountain adventure', region: 'West' },
-      'LAS': { city: 'Las Vegas', country: 'USA', emoji: '🎰', vibe: 'Entertainment', region: 'West' },
-      'LAX': { city: 'Los Angeles', country: 'USA', emoji: '🎬', vibe: 'City of Angels', region: 'West' },
-      'SFO': { city: 'San Francisco', country: 'USA', emoji: '🌉', vibe: 'Bay Area', region: 'West' },
-      'SEA': { city: 'Seattle', country: 'USA', emoji: '☕', vibe: 'Pacific Northwest', region: 'West' },
-      'DFW': { city: 'Dallas', country: 'USA', emoji: '🤠', vibe: 'Big Texas', region: 'South' },
-      'AUS': { city: 'Austin', country: 'USA', emoji: '🎸', vibe: 'Live music capital', region: 'South' },
-      'SJU': { city: 'San Juan', country: 'Puerto Rico', emoji: '🏝️', vibe: 'Caribbean vibes', region: 'Caribbean' },
-      'CUN': { city: 'Cancun', country: 'Mexico', emoji: '🏖️', vibe: 'Beach resort', region: 'Caribbean' },
-      'LHR': { city: 'London', country: 'UK', emoji: '🇬🇧', vibe: 'Royal city', region: 'Europe' },
-      'CDG': { city: 'Paris', country: 'France', emoji: '🇫🇷', vibe: 'City of Light', region: 'Europe' },
-      'BCN': { city: 'Barcelona', country: 'Spain', emoji: '🇪🇸', vibe: 'Mediterranean gem', region: 'Europe' },
+      'MIA': { city: 'Miami', country: 'USA', emoji: '🌴', vibe: 'Beach paradise', region: 'Southeast', entityId: '27544850' },
+      'MCO': { city: 'Orlando', country: 'USA', emoji: '🏰', vibe: 'Theme parks', region: 'Southeast', entityId: '27539793' },
+      'ATL': { city: 'Atlanta', country: 'USA', emoji: '🍑', vibe: 'Southern hub', region: 'Southeast', entityId: '27544008' },
+      'BNA': { city: 'Nashville', country: 'USA', emoji: '🎶', vibe: 'Music city', region: 'Southeast', entityId: '27539655' },
+      'MSY': { city: 'New Orleans', country: 'USA', emoji: '🎺', vibe: 'Jazz & culture', region: 'Southeast', entityId: '27544061' },
+      'ORD': { city: 'Chicago', country: 'USA', emoji: '🌬️', vibe: 'Windy city', region: 'Midwest', entityId: '27539733' },
+      'DEN': { city: 'Denver', country: 'USA', emoji: '🏔️', vibe: 'Mountain adventure', region: 'West', entityId: '27539465' },
+      'LAS': { city: 'Las Vegas', country: 'USA', emoji: '🎰', vibe: 'Entertainment', region: 'West', entityId: '27544156' },
+      'LAX': { city: 'Los Angeles', country: 'USA', emoji: '🎬', vibe: 'City of Angels', region: 'West', entityId: '27544850' },
+      'SFO': { city: 'San Francisco', country: 'USA', emoji: '🌉', vibe: 'Bay Area', region: 'West', entityId: '27539614' },
+      'SEA': { city: 'Seattle', country: 'USA', emoji: '☕', vibe: 'Pacific Northwest', region: 'West', entityId: '27539609' },
+      'DFW': { city: 'Dallas', country: 'USA', emoji: '🤠', vibe: 'Big Texas', region: 'South', entityId: '27539454' },
+      'AUS': { city: 'Austin', country: 'USA', emoji: '🎸', vibe: 'Live music capital', region: 'South', entityId: '27544010' },
+      'SJU': { city: 'San Juan', country: 'Puerto Rico', emoji: '🏝️', vibe: 'Caribbean vibes', region: 'Caribbean', entityId: '27546055' },
+      'CUN': { city: 'Cancun', country: 'Mexico', emoji: '🏖️', vibe: 'Beach resort', region: 'Caribbean', entityId: '27540568' },
+      'LHR': { city: 'London', country: 'UK', emoji: '🇬🇧', vibe: 'Royal city', region: 'Europe', entityId: '27544008' },
+      'CDG': { city: 'Paris', country: 'France', emoji: '🇫🇷', vibe: 'City of Light', region: 'Europe', entityId: '27539733' },
+      'BCN': { city: 'Barcelona', country: 'Spain', emoji: '🇪🇸', vibe: 'Mediterranean gem', region: 'Europe', entityId: '27548283' },
     };
 
     // ═══════════════════════════════════════════════════════════
@@ -657,7 +677,10 @@
     // ═══════════════════════════════════════════════════════════
     async function searchFlights(origin, destination, departDate, returnDate) {
       const originAirport = AIRPORTS[origin];
-      const url = `https://${RAPIDAPI_HOST}/api/v2/flights/searchFlightsComplete?originSkyId=${origin}&destinationSkyId=${destination}&originEntityId=${originAirport.entityId}&destinationEntityId=27544008&cabinClass=economy&adults=1&sortBy=best&currency=USD&market=en-US&countryCode=US&date=${departDate}&returnDate=${returnDate}`;
+      const destInfo = DESTS[destination];
+      if (!originAirport || !destInfo) return null;
+
+      const url = `https://${RAPIDAPI_HOST}/api/v2/flights/searchFlightsComplete?originSkyId=${origin}&destinationSkyId=${destination}&originEntityId=${originAirport.entityId}&destinationEntityId=${destInfo.entityId}&cabinClass=economy&adults=1&sortBy=best&currency=USD&market=en-US&countryCode=US&date=${departDate}&returnDate=${returnDate}`;
 
       try {
         const response = await fetch(url, {
@@ -667,10 +690,13 @@
             'x-rapidapi-key': RAPIDAPI_KEY,
           },
         });
-        if (!response.ok) return null;
+        if (!response.ok) {
+          console.log(`API returned ${response.status} for ${destination}`);
+          return null;
+        }
         return await response.json();
       } catch (e) {
-        console.log('API error:', e);
+        console.log('API error (likely CORS):', e.message);
         return null;
       }
     }
@@ -732,6 +758,67 @@
       return reasons.length > 0 ? reasons : ['Great value for this route'];
     }
 
+    // Generate realistic demo deals based on current date and origin
+    function generateDemoDeals(origin) {
+      const today = new Date();
+      const demoDeals = [];
+      const airlineKeys = Object.keys(AIRLINES);
+
+      // Price ranges by region (realistic for 2024-2026)
+      const priceRanges = {
+        'Southeast': { min: 79, max: 189 },
+        'Midwest': { min: 89, max: 199 },
+        'West': { min: 129, max: 299 },
+        'South': { min: 99, max: 229 },
+        'Caribbean': { min: 199, max: 399 },
+        'Europe': { min: 349, max: 699 },
+      };
+
+      Object.entries(DESTS).forEach(([code, dest], index) => {
+        const range = priceRanges[dest.region] || { min: 100, max: 300 };
+        const basePrice = range.min + Math.floor(Math.random() * (range.max - range.min));
+        const isHotDeal = Math.random() > 0.6;
+        const price = isHotDeal ? Math.floor(basePrice * 0.7) : basePrice;
+        const typical = Math.floor(price * (1.25 + Math.random() * 0.25));
+        const savings = Math.round(((typical - price) / typical) * 100);
+
+        const daysOut = 7 + Math.floor(Math.random() * 45);
+        const tripLength = 3 + Math.floor(Math.random() * 5);
+        const departDate = new Date(today.getTime() + daysOut * 24 * 60 * 60 * 1000);
+        const returnDate = new Date(departDate.getTime() + tripLength * 24 * 60 * 60 * 1000);
+
+        const carrierCode = airlineKeys[Math.floor(Math.random() * airlineKeys.length)];
+        const airline = AIRLINES[carrierCode];
+        const hours = 6 + Math.floor(Math.random() * 12);
+        const mins = Math.floor(Math.random() * 60);
+
+        demoDeals.push({
+          id: `${code}-demo-${Date.now()}-${index}`,
+          origin,
+          destination: code,
+          destinationInfo: dest,
+          price,
+          typicalPrice: typical,
+          savings,
+          priceHistory: savings >= 30 ? 'lowest' : savings >= 15 ? 'good' : 'typical',
+          carrier: carrierCode,
+          airlineName: airline.name,
+          airlineColor: airline.color,
+          departureDate: departDate.toISOString().split('T')[0],
+          returnDate: returnDate.toISOString().split('T')[0],
+          nights: tripLength,
+          departureTime: `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`,
+          isHotDeal,
+          isNonStop: Math.random() > 0.4,
+          seatsLeft: Math.floor(Math.random() * 8) + 1,
+          isRealData: false,
+          whyHot: getWhyHotReasons({ savings, price, priceHistory: savings >= 30 ? 'lowest' : 'typical', isNonStop: Math.random() > 0.4, seatsLeft: Math.floor(Math.random() * 8) + 1 }),
+        });
+      });
+
+      return demoDeals.sort((a, b) => a.price - b.price);
+    }
+
     async function fetchDeals() {
       document.getElementById('loading').style.display = 'block';
       document.getElementById('dealsContainer').innerHTML = '';
@@ -744,21 +831,37 @@
       console.log(`🔍 Searching from ${selectedAirport} for ${departDate} - ${returnDate}...`);
 
       const allDeals = [];
-      const results = await Promise.all(destCodes.map(dest => searchFlights(selectedAirport, dest, departDate, returnDate)));
+      let apiWorked = false;
 
-      results.forEach((apiData, i) => {
-        if (apiData) {
-          const d = transformApiResponse(apiData, selectedAirport, destCodes[i]);
-          allDeals.push(...d);
-        }
-      });
+      try {
+        const results = await Promise.all(destCodes.map(dest => searchFlights(selectedAirport, dest, departDate, returnDate)));
 
-      deals = allDeals.filter(d => d.price <= 500).sort((a, b) => a.price - b.price);
+        results.forEach((apiData, i) => {
+          if (apiData && apiData.data) {
+            apiWorked = true;
+            const d = transformApiResponse(apiData, selectedAirport, destCodes[i]);
+            allDeals.push(...d);
+          }
+        });
+      } catch (e) {
+        console.log('API batch error:', e);
+      }
 
-      console.log(`✅ Found ${deals.length} real deals!`);
+      // Use demo data if API didn't return results (CORS blocked or rate limited)
+      if (allDeals.length === 0) {
+        console.log('📊 Using demo prices (API blocked by CORS or rate limited). Click "Search on Google Flights" for live booking.');
+        deals = generateDemoDeals(selectedAirport);
+      } else {
+        deals = allDeals.filter(d => d.price <= 500).sort((a, b) => a.price - b.price);
+        console.log(`✅ Found ${deals.length} real deals!`);
+      }
 
       document.getElementById('loading').style.display = 'none';
-      document.getElementById('liveBadge').style.display = deals.some(d => d.isRealData) ? 'inline' : 'none';
+
+      const hasRealData = deals.some(d => d.isRealData);
+      document.getElementById('liveBadge').textContent = hasRealData ? 'LIVE' : 'DEMO';
+      document.getElementById('liveBadge').style.background = hasRealData ? 'var(--deal)' : 'var(--gold)';
+      document.getElementById('infoBanner').style.display = hasRealData ? 'none' : 'flex';
 
       renderDeals();
     }
