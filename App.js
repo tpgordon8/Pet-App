@@ -73,6 +73,7 @@ export default function App() {
   const handlePee = () => logActivity('Pee', '💧');
   const handleFood = () => logActivity('Food', '🍖');
   const handleSleep = () => logActivity('Sleep', '😴');
+  const handleMeds = () => logActivity('Meds', '💊');
 
   // 🕐 Format timestamp to readable time
   const formatTime = (timestamp) => {
@@ -100,7 +101,7 @@ export default function App() {
       <ScrollView>
         {/* 📋 Header section */}
         <View style={styles.header}>
-          <Text style={styles.title}>PetLog v2</Text>
+          <Text style={styles.title}>PetLog</Text>
           <Text style={styles.subtitle}>Quick activity logging</Text>
         </View>
 
@@ -124,6 +125,11 @@ export default function App() {
           <TouchableOpacity style={[styles.button, styles.sleepButton]} onPress={handleSleep}>
             <Text style={styles.buttonEmoji}>😴</Text>
             <Text style={styles.buttonText}>Sleep</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.button, styles.medsButton]} onPress={handleMeds}>
+            <Text style={styles.buttonEmoji}>💊</Text>
+            <Text style={styles.buttonText}>Meds</Text>
           </TouchableOpacity>
         </View>
 
@@ -199,6 +205,9 @@ const styles = StyleSheet.create({
   },
   sleepButton: {
     backgroundColor: '#4169E1',
+  },
+  medsButton: {
+    backgroundColor: '#32CD32',
   },
   buttonEmoji: {
     fontSize: 24,
