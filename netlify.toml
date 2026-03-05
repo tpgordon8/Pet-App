@@ -1,0 +1,4 @@
+[build]
+  # No build needed - just serving static HTML
+  command = ""
+  publish = "."
