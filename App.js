@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, push, onValue, serverTimestamp } from 'firebase/database';
 
@@ -22,6 +22,8 @@ const database = getDatabase(app);
 export default function App() {
   // 📊 State to store activities from Firebase
   const [activities, setActivities] = useState([]);
+  // 📝 State for optional note input
+  const [note, setNote] = useState('');
 
   // 🎧 Listen for real-time updates from Firebase
   useEffect(() => {
@@ -58,14 +60,26 @@ export default function App() {
   const logActivity = (type, emoji) => {
     const activitiesRef = ref(database, 'activities');
 
-    push(activitiesRef, {
+    const activityData = {
       type: type,
       emoji: emoji,
       timestamp: Date.now(),
       user: 'You' // Later we'll add real user names
-    }).catch((error) => {
-      Alert.alert('Error', 'Failed to log activity: ' + error.message);
-    });
+    };
+
+    // Add note if one was entered
+    if (note.trim()) {
+      activityData.note = note.trim();
+    }
+
+    push(activitiesRef, activityData)
+      .then(() => {
+        // Clear note after successful log
+        setNote('');
+      })
+      .catch((error) => {
+        Alert.alert('Error', 'Failed to log activity: ' + error.message);
+      });
   };
 
   // 🔘 Handler functions for each button
@@ -103,6 +117,23 @@ export default function App() {
         <View style={styles.header}>
           <Text style={styles.title}>PetLog</Text>
           <Text style={styles.subtitle}>Quick activity logging</Text>
+        </View>
+
+        {/* 📝 Optional note input */}
+        <View style={styles.noteContainer}>
+          <TextInput
+            style={styles.noteInput}
+            placeholder="Add a note (optional)..."
+            value={note}
+            onChangeText={setNote}
+            multiline
+            numberOfLines={2}
+          />
+          {note.trim() && (
+            <TouchableOpacity onPress={() => setNote('')} style={styles.clearButton}>
+              <Text style={styles.clearButtonText}>✕</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* 🔘 Button section */}
@@ -146,6 +177,9 @@ export default function App() {
                   <Text style={styles.activityText}>
                     <Text style={styles.activityUser}>{activity.user}</Text> logged {activity.type}
                   </Text>
+                  {activity.note && (
+                    <Text style={styles.activityNote}>"{activity.note}"</Text>
+                  )}
                   <Text style={styles.activityTime}>{formatTime(activity.timestamp)}</Text>
                 </View>
               </View>
@@ -176,6 +210,37 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: '#666',
+  },
+  noteContainer: {
+    position: 'relative',
+    paddingHorizontal: 20,
+    marginBottom: 15,
+  },
+  noteInput: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    minHeight: 60,
+    maxHeight: 100,
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 28,
+    top: 8,
+    backgroundColor: '#ccc',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clearButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   buttonContainer: {
     paddingHorizontal: 20,
@@ -268,6 +333,13 @@ const styles = StyleSheet.create({
   activityUser: {
     fontWeight: 'bold',
     color: '#4169E1',
+  },
+  activityNote: {
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+    marginTop: 4,
+    marginBottom: 4,
   },
   activityTime: {
     fontSize: 14,
