@@ -1115,6 +1115,66 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        /* Export Button */
+        .export-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .export-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .export-btn {
+            padding: 10px 16px;
+            border: 1.5px solid var(--accent-blue);
+            border-radius: 10px;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: var(--bg-primary);
+            color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .export-btn.secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .export-btn.secondary:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
         /* Undo Toast */
         .undo-btn {
             background: rgba(255, 255, 255, 0.2);
@@ -1301,6 +1361,16 @@
             <button class="button weight-button" onclick="openWeightModal()">
                 <svg class="button-icon"><use href="#icon-weight"/></svg> Weight Check
             </button>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <div class="export-title">Export Data</div>
+            <div class="export-buttons">
+                <button class="export-btn secondary" onclick="exportToCSV()">
+                    📊 CSV Export
+                </button>
+            </div>
         </div>
 
         <div class="feed-container">
@@ -2583,6 +2653,63 @@
                 });
             }
         });
+
+        // CSV Export
+        window.exportToCSV = function() {
+            // Get filtered activities based on current filters
+            let activities = currentActivities;
+            activities = filterActivitiesByPet(activities);
+            activities = filterActivitiesByType(activities);
+            activities = filterActivitiesByDateRange(activities);
+
+            if (activities.length === 0) {
+                showToast('⚠️ No activities to export', 'error');
+                return;
+            }
+
+            // CSV headers
+            const headers = ['Date', 'Time', 'Activity Type', 'User', 'Pet', 'Note'];
+
+            // Convert activities to CSV rows
+            const rows = activities.map(activity => {
+                const date = new Date(activity.timestamp);
+                const dateStr = date.toLocaleDateString('en-US');
+                const timeStr = date.toLocaleTimeString('en-US');
+                const pet = pets.find(p => p.id === activity.petId);
+                const petName = pet ? pet.name : 'Unknown';
+                const note = activity.note || '';
+
+                return [
+                    dateStr,
+                    timeStr,
+                    activity.type,
+                    activity.user || 'Unknown',
+                    petName,
+                    `"${note.replace(/"/g, '""')}"` // Escape quotes in notes
+                ];
+            });
+
+            // Create CSV content
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `petlog_export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast(`✅ Exported ${activities.length} activities`, 'success');
+        };
 
         // Listen for real-time updates
         const activitiesRef = ref(database, 'activities');
