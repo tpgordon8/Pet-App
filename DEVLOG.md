@@ -197,6 +197,74 @@
 
 ---
 
+## CHUNK 4: Activity Management (Edit/Delete)
+
+### Started: 2026-03-06
+**Goal:** Allow users to edit activity timestamps/types and delete mistakes with undo.
+
+### Implementation Log
+
+#### ✅ COMPLETED - Activity Management Successful
+
+**Changes Made:**
+1. **Edit Activity Feature**
+   - Edit button appears on hover for each activity
+   - Edit modal with type dropdown (5 activity types)
+   - Datetime-local input for timestamp editing
+   - Firebase `update()` operation
+   - Real-time sync of edits across devices
+   - Form validation
+
+2. **Delete Activity Feature**
+   - Delete button (red) appears on hover
+   - Confirmation dialog before deletion
+   - Firebase `remove()` operation
+   - Real-time sync of deletions
+
+3. **Undo Delete Feature**
+   - 30-second window to undo deletion
+   - Custom toast with "Undo" button
+   - Stores deleted activity in memory
+   - Restores to Firebase on undo
+   - Timeout clears deleted activity after 30s
+
+4. **UI Polish**
+   - Action buttons fade in on hover (opacity 0 → 1)
+   - Edit button: neutral gray
+   - Delete button: red with hover effect
+   - Smooth transitions on all interactions
+   - Datetime-local input with proper formatting
+
+**What Works:**
+- ✅ Edit activity type and timestamp
+- ✅ Changes save instantly to Firebase
+- ✅ Delete with confirmation prompt
+- ✅ Undo delete within 30 seconds
+- ✅ Action buttons visible on hover
+- ✅ Real-time sync across all devices
+- ✅ Works with multi-pet filtering
+
+**Technical Details:**
+- Uses Firebase `update()` for partial updates (efficient)
+- Uses Firebase `remove()` for deletion
+- Stores `currentActivities` array for fast lookups
+- Datetime-local input converts to Unix timestamp
+- Undo stores complete activity object with ID
+
+**Potential Issues:**
+- ⚠️ Native confirm() dialog (not styled) - could be replaced with custom modal later
+- ⚠️ Datetime-local input may look different across browsers
+- ⚠️ If user refreshes during 30-second undo window, undo is lost (in-memory only)
+
+**iOS App Considerations:**
+- SwiftUI: Swipe actions (`.swipeActions()`) for edit/delete
+- Edit: `.sheet()` with DatePicker and Picker for type
+- Delete: `.confirmationDialog()` for native iOS confirmation
+- Undo: Could use iOS's native undo manager
+- Alternative: Context menu (long-press) for edit/delete options
+
+---
+
 ## Running Notes & Learnings
 
 ### What's Working Well:
