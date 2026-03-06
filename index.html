@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4169E1">
+    <link rel="manifest" href="/manifest.json">
     <title>PetLog</title>
     <style>
         * {
@@ -15,10 +17,11 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
         .container {
@@ -32,18 +35,65 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
+            color: white;
         }
 
         .title {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: bold;
-            color: #333;
             margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .subtitle {
             font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Stats Widget */
+        .stats-widget {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stats-title {
+            font-size: 14px;
             color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 12px;
+        }
+
+        .stat-emoji {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .stat-count {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
         }
 
         .button-container {
@@ -57,40 +107,59 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 18px;
             border-radius: 15px;
             border: none;
             font-size: 18px;
             font-weight: 600;
             color: white;
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.1s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             -webkit-user-select: none;
             user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .button:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .button:active {
-            transform: scale(0.98);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transform: scale(0.96);
         }
 
         .button-emoji {
-            font-size: 24px;
-            margin-right: 8px;
+            font-size: 26px;
+            margin-right: 10px;
         }
 
-        .poop-button { background-color: #8B4513; }
-        .pee-button { background-color: #FFD700; }
-        .food-button { background-color: #FF6347; }
-        .sleep-button { background-color: #4169E1; }
-        .meds-button { background-color: #32CD32; }
+        .poop-button { background: linear-gradient(135deg, #8B4513 0%, #654321 100%); }
+        .pee-button { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+        .food-button { background: linear-gradient(135deg, #FF6347 0%, #FF4500 100%); }
+        .sleep-button { background: linear-gradient(135deg, #4169E1 0%, #1E40AF 100%); }
+        .meds-button { background: linear-gradient(135deg, #32CD32 0%, #228B22 100%); }
 
         .feed-container {
             background-color: white;
             border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             min-height: 200px;
         }
 
@@ -99,6 +168,19 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 15px;
+        }
+
+        .date-group {
+            margin-bottom: 20px;
+        }
+
+        .date-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #f0f0f0;
         }
 
         .empty-text {
@@ -115,6 +197,11 @@
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
         }
 
         .activity-emoji {
@@ -147,13 +234,89 @@
             color: #999;
             padding: 20px;
         }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #32CD32;
+        }
+
+        .toast.error {
+            background: #FF4500;
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #FF4500;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .offline-indicator.show {
+            display: block;
+        }
+
+        /* Loading Animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4169E1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
     </style>
 </head>
 <body>
+    <div class="offline-indicator" id="offline">📵 Offline - Will sync when back online</div>
+
     <div class="container">
         <div class="header">
-            <div class="title">PetLog</div>
-            <div class="subtitle">Quick activity logging</div>
+            <div class="title">🐾 PetLog</div>
+            <div class="subtitle">Track your pet's activities</div>
+        </div>
+
+        <!-- Daily Stats Widget -->
+        <div class="stats-widget">
+            <div class="stats-title">📊 Today's Activity</div>
+            <div class="stats-grid" id="stats-grid">
+                <div class="spinner"></div>
+            </div>
         </div>
 
         <div class="button-container">
@@ -175,12 +338,14 @@
         </div>
 
         <div class="feed-container">
-            <div class="feed-title">Recent Activity</div>
+            <div class="feed-title">📝 Activity Log</div>
             <div id="activities">
-                <div class="loading">Loading...</div>
+                <div class="loading"><div class="spinner"></div></div>
             </div>
         </div>
     </div>
+
+    <div class="toast" id="toast"></div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -202,24 +367,119 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
+        // Offline queue
+        let offlineQueue = [];
+        let isOnline = navigator.onLine;
+
+        // Update offline indicator
+        function updateOnlineStatus() {
+            const indicator = document.getElementById('offline');
+            isOnline = navigator.onLine;
+            indicator.classList.toggle('show', !isOnline);
+
+            // Process queue when coming back online
+            if (isOnline && offlineQueue.length > 0) {
+                processOfflineQueue();
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Process offline queue
+        function processOfflineQueue() {
+            const queue = [...offlineQueue];
+            offlineQueue = [];
+            queue.forEach(item => {
+                const activitiesRef = ref(database, 'activities');
+                push(activitiesRef, item);
+            });
+            showToast(`✅ Synced ${queue.length} offline activities`);
+        }
+
         // Function to log activity
         window.logActivity = function(type, emoji) {
-            const activitiesRef = ref(database, 'activities');
-            push(activitiesRef, {
+            const activity = {
                 type: type,
                 emoji: emoji,
                 timestamp: Date.now(),
                 user: 'You'
-            }).catch(error => {
-                alert('Failed to log activity: ' + error.message);
-            });
+            };
+
+            if (!isOnline) {
+                offlineQueue.push(activity);
+                showToast(`📵 ${type} saved offline - will sync later`, 'success');
+                return;
+            }
+
+            const activitiesRef = ref(database, 'activities');
+            push(activitiesRef, activity)
+                .then(() => {
+                    showToast(`✅ ${type} logged!`, 'success');
+                })
+                .catch(error => {
+                    showToast(`❌ ${error.message}`, 'error');
+                });
         };
+
+        // Calculate today's stats
+        function calculateTodayStats(activities) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTimestamp = today.getTime();
+
+            const todayActivities = activities.filter(a => a.timestamp >= todayTimestamp);
+
+            const stats = {
+                Poop: 0,
+                Pee: 0,
+                Food: 0,
+                Sleep: 0,
+                Meds: 0
+            };
+
+            todayActivities.forEach(activity => {
+                if (stats[activity.type] !== undefined) {
+                    stats[activity.type]++;
+                }
+            });
+
+            return stats;
+        }
+
+        // Render stats widget
+        function renderStats(stats) {
+            const statsGrid = document.getElementById('stats-grid');
+            const emojis = {
+                Poop: '💩',
+                Pee: '💧',
+                Food: '🍖',
+                Sleep: '😴',
+                Meds: '💊'
+            };
+
+            statsGrid.innerHTML = Object.entries(stats).map(([type, count]) => `
+                <div class="stat-item">
+                    <div class="stat-emoji">${emojis[type]}</div>
+                    <div class="stat-count">${count}</div>
+                    <div class="stat-label">${type}</div>
+                </div>
+            `).join('');
+        }
 
         // Format timestamp
         function formatTime(timestamp) {
             const date = new Date(timestamp);
-
-            // Format: "Mar 5, 2026 at 3:45:23 PM"
             const options = {
                 month: 'short',
                 day: 'numeric',
@@ -229,8 +489,35 @@
                 second: '2-digit',
                 hour12: true
             };
-
             return date.toLocaleString('en-US', options);
+        }
+
+        // Get date label
+        function getDateLabel(timestamp) {
+            const date = new Date(timestamp);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            date.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            yesterday.setHours(0, 0, 0, 0);
+
+            if (date.getTime() === today.getTime()) return 'Today';
+            if (date.getTime() === yesterday.getTime()) return 'Yesterday';
+
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Group activities by date
+        function groupByDate(activities) {
+            const groups = {};
+            activities.forEach(activity => {
+                const label = getDateLabel(activity.timestamp);
+                if (!groups[label]) groups[label] = [];
+                groups[label].push(activity);
+            });
+            return groups;
         }
 
         // Render activities
@@ -242,15 +529,22 @@
                 return;
             }
 
-            container.innerHTML = activities.map(activity => `
-                <div class="activity-item">
-                    <div class="activity-emoji">${activity.emoji}</div>
-                    <div class="activity-details">
-                        <div class="activity-text">
-                            <span class="activity-user">${activity.user}</span> logged ${activity.type}
+            const grouped = groupByDate(activities);
+
+            container.innerHTML = Object.entries(grouped).map(([date, items]) => `
+                <div class="date-group">
+                    <div class="date-header">${date}</div>
+                    ${items.map(activity => `
+                        <div class="activity-item">
+                            <div class="activity-emoji">${activity.emoji}</div>
+                            <div class="activity-details">
+                                <div class="activity-text">
+                                    <span class="activity-user">${activity.user}</span> logged ${activity.type}
+                                </div>
+                                <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                            </div>
                         </div>
-                        <div class="activity-time">${formatTime(activity.timestamp)}</div>
-                    </div>
+                    `).join('')}
                 </div>
             `).join('');
         }
@@ -263,9 +557,12 @@
                 const activitiesArray = Object.entries(data)
                     .map(([id, activity]) => ({ id, ...activity }))
                     .sort((a, b) => b.timestamp - a.timestamp);
+
                 renderActivities(activitiesArray);
+                renderStats(calculateTodayStats(activitiesArray));
             } else {
                 renderActivities([]);
+                renderStats({ Poop: 0, Pee: 0, Food: 0, Sleep: 0, Meds: 0 });
             }
         }, (error) => {
             console.error('Firebase error:', error);

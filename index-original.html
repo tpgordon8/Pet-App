@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PetLog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 60px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .button:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .button-emoji {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .poop-button { background-color: #8B4513; }
+        .pee-button { background-color: #FFD700; }
+        .food-button { background-color: #FF6347; }
+        .sleep-button { background-color: #4169E1; }
+        .meds-button { background-color: #32CD32; }
+
+        .feed-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 200px;
+        }
+
+        .feed-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .empty-text {
+            text-align: center;
+            color: #999;
+            font-size: 16px;
+            padding: 40px 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .activity-emoji {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .activity-user {
+            font-weight: bold;
+            color: #4169E1;
+        }
+
+        .activity-time {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">PetLog</div>
+            <div class="subtitle">Quick activity logging</div>
+        </div>
+
+        <div class="button-container">
+            <button class="button poop-button" onclick="logActivity('Poop', '💩')">
+                <span class="button-emoji">💩</span> Poop
+            </button>
+            <button class="button pee-button" onclick="logActivity('Pee', '💧')">
+                <span class="button-emoji">💧</span> Pee
+            </button>
+            <button class="button food-button" onclick="logActivity('Food', '🍖')">
+                <span class="button-emoji">🍖</span> Food
+            </button>
+            <button class="button sleep-button" onclick="logActivity('Sleep', '😴')">
+                <span class="button-emoji">😴</span> Sleep
+            </button>
+            <button class="button meds-button" onclick="logActivity('Meds', '💊')">
+                <span class="button-emoji">💊</span> Meds
+            </button>
+        </div>
+
+        <div class="feed-container">
+            <div class="feed-title">Recent Activity</div>
+            <div id="activities">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZeE0mf4ptN0wunDbEFbgMZ29nfWIA4NQ",
+            authDomain: "petlog-c4c1e.firebaseapp.com",
+            databaseURL: "https://petlog-c4c1e-default-rtdb.firebaseio.com",
+            projectId: "petlog-c4c1e",
+            storageBucket: "petlog-c4c1e.firebasestorage.app",
+            messagingSenderId: "417384966953",
+            appId: "1:417384966953:web:8b00d0cac96e2b7ec2a538"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Function to log activity
+        window.logActivity = function(type, emoji) {
+            const activitiesRef = ref(database, 'activities');
+            push(activitiesRef, {
+                type: type,
+                emoji: emoji,
+                timestamp: Date.now(),
+                user: 'You'
+            }).catch(error => {
+                alert('Failed to log activity: ' + error.message);
+            });
+        };
+
+        // Format timestamp
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+
+            // Format: "Mar 5, 2026 at 3:45:23 PM"
+            const options = {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+
+            return date.toLocaleString('en-US', options);
+        }
+
+        // Render activities
+        function renderActivities(activities) {
+            const container = document.getElementById('activities');
+
+            if (activities.length === 0) {
+                container.innerHTML = '<div class="empty-text">No activities yet. Tap a button to start logging! 🐾</div>';
+                return;
+            }
+
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-emoji">${activity.emoji}</div>
+                    <div class="activity-details">
+                        <div class="activity-text">
+                            <span class="activity-user">${activity.user}</span> logged ${activity.type}
+                        </div>
+                        <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Listen for real-time updates
+        const activitiesRef = ref(database, 'activities');
+        onValue(activitiesRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const activitiesArray = Object.entries(data)
+                    .map(([id, activity]) => ({ id, ...activity }))
+                    .sort((a, b) => b.timestamp - a.timestamp);
+                renderActivities(activitiesArray);
+            } else {
+                renderActivities([]);
+            }
+        }, (error) => {
+            console.error('Firebase error:', error);
+            document.getElementById('activities').innerHTML =
+                '<div class="empty-text">⚠️ Connection error. Please refresh the page.</div>';
+        });
+
+        // Update relative times every minute
+        setInterval(() => {
+            const activitiesRef = ref(database, 'activities');
+            onValue(activitiesRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const activitiesArray = Object.entries(data)
+                        .map(([id, activity]) => ({ id, ...activity }))
+                        .sort((a, b) => b.timestamp - a.timestamp);
+                    renderActivities(activitiesArray);
+                }
+            }, { onlyOnce: true });
+        }, 60000);
+    </script>
+</body>
+</html>
