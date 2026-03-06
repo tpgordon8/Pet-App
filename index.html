@@ -384,19 +384,31 @@
         }
 
         .activity-item {
+            position: relative;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .activity-item-container {
             display: flex;
             align-items: center;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             padding: 16px;
             border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.2s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
         }
 
-        .activity-item:hover {
+        .activity-item-container:hover {
             transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
+        }
+
+        .activity-item.swiped .activity-item-container {
+            transform: translateX(-140px);
         }
 
         .activity-icon-wrapper {
@@ -970,19 +982,71 @@
             transition: all 0.2s ease;
         }
 
-        .activity-item:hover .activity-actions {
+        .activity-item-container:hover .activity-actions {
             opacity: 1;
         }
 
-        /* Always show actions on mobile */
+        /* Swipe action buttons */
+        .swipe-actions {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 12px;
+            z-index: 0;
+        }
+
+        .swipe-action-btn {
+            width: 60px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+
+        .swipe-action-btn.edit {
+            background: var(--accent-blue);
+        }
+
+        .swipe-action-btn.delete {
+            background: var(--accent-red);
+        }
+
+        .swipe-action-btn:active {
+            filter: brightness(0.9);
+        }
+
+        /* Hide default actions on mobile when swipe is available */
         @media (max-width: 768px) {
+            .activity-actions {
+                display: none;
+            }
+
+            .swipe-actions {
+                display: flex;
+            }
+        }
+
+        /* Show default actions on desktop */
+        @media (min-width: 769px) {
             .activity-actions {
                 opacity: 0.7;
             }
 
-            .activity-item:hover .activity-actions,
-            .activity-item:active .activity-actions {
+            .activity-item-container:hover .activity-actions,
+            .activity-item-container:active .activity-actions {
                 opacity: 1;
+            }
+
+            .swipe-actions {
+                display: none;
             }
         }
 
@@ -2392,34 +2456,133 @@
                         const activityIcon = `icon-${activity.type.toLowerCase().replace(' ', '-')}`;
 
                         return `
-                            <div class="activity-item">
-                                <div class="activity-icon-wrapper">
-                                    <svg class="activity-icon" width="20" height="20">
-                                        <use href="#${activityIcon}" />
-                                    </svg>
+                            <div class="activity-item" data-activity-id="${activity.id}">
+                                <div class="swipe-actions">
+                                    <button class="swipe-action-btn edit" onclick="editActivity('${activity.id}')" title="Edit">
+                                        <svg style="width: 20px; height: 20px; color: white;"><use href="#icon-edit"/></svg>
+                                    </button>
+                                    <button class="swipe-action-btn delete" onclick="deleteActivity('${activity.id}')" title="Delete">
+                                        <svg style="width: 20px; height: 20px; color: white;"><use href="#icon-delete"/></svg>
+                                    </button>
                                 </div>
-                                <div class="activity-details" style="flex: 1;">
-                                    <div class="activity-text">
-                                        <span class="activity-user">${activity.user}</span> logged ${activity.type}
-                                        ${currentPetId === 'all' ? ` for <span class="activity-user">${petDisplay}</span>` : ''}
+                                <div class="activity-item-container">
+                                    <div class="activity-icon-wrapper">
+                                        <svg class="activity-icon" width="20" height="20">
+                                            <use href="#${activityIcon}" />
+                                        </svg>
                                     </div>
-                                    <div class="activity-time">${formatTime(activity.timestamp)}</div>
-                                    ${medicalInfo}
-                                </div>
-                                <div class="activity-actions">
-                                    <button class="action-btn edit" onclick="editActivity('${activity.id}')" title="Edit">
-                                        <svg style="width: 14px; height: 14px;"><use href="#icon-edit"/></svg>
-                                    </button>
-                                    <button class="action-btn delete" onclick="deleteActivity('${activity.id}')" title="Delete">
-                                        <svg style="width: 14px; height: 14px;"><use href="#icon-delete"/></svg>
-                                    </button>
+                                    <div class="activity-details" style="flex: 1;">
+                                        <div class="activity-text">
+                                            <span class="activity-user">${activity.user}</span> logged ${activity.type}
+                                            ${currentPetId === 'all' ? ` for <span class="activity-user">${petDisplay}</span>` : ''}
+                                        </div>
+                                        <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                                        ${medicalInfo}
+                                    </div>
+                                    <div class="activity-actions">
+                                        <button class="action-btn edit" onclick="editActivity('${activity.id}')" title="Edit">
+                                            <svg style="width: 14px; height: 14px;"><use href="#icon-edit"/></svg>
+                                        </button>
+                                        <button class="action-btn delete" onclick="deleteActivity('${activity.id}')" title="Delete">
+                                            <svg style="width: 14px; height: 14px;"><use href="#icon-delete"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     }).join('')}
                 </div>
             `).join('');
+
+            // Initialize swipe gestures after rendering
+            initializeSwipeGestures();
         }
+
+        // iOS-style swipe gestures
+        function initializeSwipeGestures() {
+            const activityItems = document.querySelectorAll('.activity-item');
+
+            activityItems.forEach(item => {
+                let startX = 0;
+                let currentX = 0;
+                let isDragging = false;
+                const container = item.querySelector('.activity-item-container');
+
+                // Remove old listeners if any
+                container.removeEventListener('touchstart', handleTouchStart);
+                container.removeEventListener('touchmove', handleTouchMove);
+                container.removeEventListener('touchend', handleTouchEnd);
+
+                function handleTouchStart(e) {
+                    startX = e.touches[0].clientX;
+                    currentX = startX;
+                    isDragging = true;
+                    container.style.transition = 'none';
+                }
+
+                function handleTouchMove(e) {
+                    if (!isDragging) return;
+
+                    currentX = e.touches[0].clientX;
+                    const diff = currentX - startX;
+
+                    // Only allow left swipe (diff < 0) or swipe back to right if already swiped
+                    if (diff < 0) {
+                        // Swiping left
+                        const maxSwipe = -140;
+                        const translateX = Math.max(maxSwipe, diff);
+                        container.style.transform = `translateX(${translateX}px)`;
+                    } else if (item.classList.contains('swiped') && diff > 0) {
+                        // Swiping right to close
+                        const translateX = Math.min(0, -140 + diff);
+                        container.style.transform = `translateX(${translateX}px)`;
+                    }
+                }
+
+                function handleTouchEnd() {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    const diff = currentX - startX;
+                    container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
+                    // Close all other swiped items
+                    document.querySelectorAll('.activity-item.swiped').forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('swiped');
+                        }
+                    });
+
+                    // Determine if swipe was significant enough
+                    if (diff < -50) {
+                        // Swipe left - reveal actions
+                        item.classList.add('swiped');
+                    } else if (diff > 50 && item.classList.contains('swiped')) {
+                        // Swipe right - hide actions
+                        item.classList.remove('swiped');
+                    } else if (item.classList.contains('swiped')) {
+                        // Keep swiped if already swiped
+                        container.style.transform = 'translateX(-140px)';
+                    } else {
+                        // Return to original position
+                        container.style.transform = 'translateX(0)';
+                    }
+                }
+
+                container.addEventListener('touchstart', handleTouchStart, { passive: true });
+                container.addEventListener('touchmove', handleTouchMove, { passive: true });
+                container.addEventListener('touchend', handleTouchEnd, { passive: true });
+            });
+        }
+
+        // Close swiped items when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.activity-item')) {
+                document.querySelectorAll('.activity-item.swiped').forEach(item => {
+                    item.classList.remove('swiped');
+                });
+            }
+        });
 
         // Listen for real-time updates
         const activitiesRef = ref(database, 'activities');
