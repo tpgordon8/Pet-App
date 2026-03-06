@@ -108,6 +108,95 @@
 
 ---
 
+## CHUNK 2: Multi-Pet Support
+
+### Started: 2026-03-06
+**Goal:** Enable tracking multiple pets with profiles, color coding, and separate stats.
+
+**Database Schema:**
+```
+/pets
+  /{petId}
+    name: "Luna"
+    species: "Dog"
+    emoji: "🐕"
+    createdAt: timestamp
+
+/activities
+  /{activityId}
+    type: "Poop"
+    emoji: "💩"
+    timestamp: timestamp
+    user: "You"
+    petId: "pet_xyz123"  // NEW FIELD
+```
+
+### Implementation Log
+
+#### ✅ COMPLETED - Multi-Pet Support Successful
+
+**Changes Made:**
+1. **Pet Selector UI**
+   - Glassmorphism card with pet chips
+   - "All Pets" chip shows combined data
+   - Individual pet chips with custom emoji
+   - Active state highlighting (blue border)
+   - "+ Add Pet" button in header
+
+2. **Add Pet Modal**
+   - Pet name input (20 char limit)
+   - Species input (15 char limit)
+   - Emoji picker grid (12 common pet emojis)
+   - Selected emoji highlighting
+   - Cancel/Save actions
+   - Form validation
+
+3. **Firebase Integration**
+   - New `/pets` node for pet profiles
+   - Activities now include `petId` field
+   - Real-time sync of pet list
+   - LocalStorage persistence of selected pet
+
+4. **Activity Logging Updates**
+   - Validates pet selection before logging
+   - Prompts to add pet if none exist
+   - Prevents logging to "All Pets" view
+   - Shows pet name in toast notification
+   - Automatic selection when only 1 pet
+
+5. **Stats & Activity Filtering**
+   - Stats widget filters by selected pet
+   - Activity log shows pet emoji/name when viewing "All Pets"
+   - Empty states customized per pet
+   - Real-time updates when switching pets
+
+**What Works:**
+- ✅ Add multiple pets with names/emojis
+- ✅ Switch between pets seamlessly
+- ✅ Stats update correctly per pet
+- ✅ Activities tagged with petId
+- ✅ "All Pets" view shows combined data
+- ✅ Selected pet persists across sessions
+- ✅ Real-time sync across devices
+
+**Backwards Compatibility:**
+- ✅ Existing activities without `petId` still display
+- ✅ If no pets exist, prompts user to add one
+- ✅ Single-pet households work automatically
+
+**Potential Issues:**
+- ⚠️ Old activities (before multi-pet) don't have petId - they won't show when filtering by specific pet (this is expected behavior)
+- ⚠️ No edit/delete pet functionality yet (coming in later chunk)
+
+**iOS App Considerations:**
+- SwiftUI: Use `@State` for currentPetId, `@Published` ObservableObject for pets array
+- Pet selector: SwiftUI ScrollView with HStack of chips
+- Modal: `.sheet()` presentation with Form
+- Emoji picker: Native iOS emoji keyboard or custom grid
+- Firebase: Identical structure works with Swift Firebase SDK
+
+---
+
 ## Running Notes & Learnings
 
 ### What's Working Well:

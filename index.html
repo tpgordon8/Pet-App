@@ -403,6 +403,229 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
+
+        /* Pet Selector */
+        .pet-selector {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .pet-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .pet-selector-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .add-pet-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-pet-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .add-pet-btn:active {
+            transform: scale(0.95);
+        }
+
+        .pet-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pet-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .pet-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pet-chip.active {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .pet-chip-emoji {
+            font-size: 18px;
+        }
+
+        .pet-chip-name {
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .emoji-option {
+            font-size: 28px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: var(--bg-primary);
+            border: 2px solid transparent;
+        }
+
+        .emoji-option:hover {
+            transform: scale(1.1);
+        }
+
+        .emoji-option.selected {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .modal-btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-btn-secondary:hover {
+            background: var(--bg-glass);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
 <body>
@@ -423,6 +646,17 @@
             <div class="stats-title">📊 Today's Activity</div>
             <div class="stats-grid" id="stats-grid">
                 <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Pet Selector -->
+        <div class="pet-selector">
+            <div class="pet-selector-header">
+                <div class="pet-selector-title">Select Pet</div>
+                <button class="add-pet-btn" onclick="openAddPetModal()">+ Add Pet</button>
+            </div>
+            <div class="pet-chips" id="pet-chips">
+                <div class="spinner" style="width: 24px; height: 24px; border-width: 2px;"></div>
             </div>
         </div>
 
@@ -454,10 +688,50 @@
 
     <div class="toast" id="toast"></div>
 
+    <!-- Add Pet Modal -->
+    <div class="modal" id="pet-modal">
+        <div class="modal-content">
+            <div class="modal-header">Add a Pet</div>
+
+            <div class="form-group">
+                <label class="form-label">Pet Name</label>
+                <input type="text" class="form-input" id="pet-name" placeholder="Enter pet name" maxlength="20">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Species</label>
+                <input type="text" class="form-input" id="pet-species" placeholder="Dog, Cat, etc." maxlength="15">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Choose an Icon</label>
+                <div class="emoji-picker" id="emoji-picker">
+                    <div class="emoji-option" onclick="selectEmoji('🐕')">🐕</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐈')">🐈</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐩')">🐩</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐈‍⬛')">🐈‍⬛</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐾')">🐾</div>
+                    <div class="emoji-option" onclick="selectEmoji('🦴')">🦴</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐶')">🐶</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐱')">🐱</div>
+                    <div class="emoji-option" onclick="selectEmoji('🦮')">🦮</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐕‍🦺')">🐕‍🦺</div>
+                    <div class="emoji-option" onclick="selectEmoji('🐅')">🐅</div>
+                    <div class="emoji-option" onclick="selectEmoji('🦁')">🦁</div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="savePet()">Save Pet</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, push, onValue, set, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         // Theme toggle functionality
         function initTheme() {
@@ -503,6 +777,128 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
+        // Pet management state
+        let pets = [];
+        let currentPetId = localStorage.getItem('currentPetId') || 'all';
+        let selectedEmoji = '🐕';
+
+        // Pet Management Functions
+        window.openAddPetModal = function() {
+            document.getElementById('pet-modal').classList.add('show');
+            document.getElementById('pet-name').value = '';
+            document.getElementById('pet-species').value = '';
+            selectedEmoji = '🐕';
+            updateEmojiSelection();
+        };
+
+        window.closeModal = function() {
+            document.getElementById('pet-modal').classList.remove('show');
+        };
+
+        window.selectEmoji = function(emoji) {
+            selectedEmoji = emoji;
+            updateEmojiSelection();
+        };
+
+        function updateEmojiSelection() {
+            document.querySelectorAll('.emoji-option').forEach(el => {
+                if (el.textContent.trim() === selectedEmoji) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+        }
+
+        window.savePet = function() {
+            const name = document.getElementById('pet-name').value.trim();
+            const species = document.getElementById('pet-species').value.trim();
+
+            if (!name) {
+                showToast('❌ Please enter a pet name', 'error');
+                return;
+            }
+
+            const petId = 'pet_' + Date.now();
+            const petsRef = ref(database, `pets/${petId}`);
+
+            set(petsRef, {
+                name: name,
+                species: species || 'Pet',
+                emoji: selectedEmoji,
+                createdAt: Date.now()
+            }).then(() => {
+                showToast(`✅ ${name} added!`, 'success');
+                closeModal();
+                currentPetId = petId;
+                localStorage.setItem('currentPetId', petId);
+            }).catch(error => {
+                showToast(`❌ ${error.message}`, 'error');
+            });
+        };
+
+        window.selectPet = function(petId) {
+            currentPetId = petId;
+            localStorage.setItem('currentPetId', petId);
+            renderPetChips();
+            // Refresh stats and activities for selected pet
+            const activitiesRef = ref(database, 'activities');
+            onValue(activitiesRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const activitiesArray = Object.entries(data)
+                        .map(([id, activity]) => ({ id, ...activity }))
+                        .sort((a, b) => b.timestamp - a.timestamp);
+                    renderActivities(filterActivitiesByPet(activitiesArray));
+                    renderStats(calculateTodayStats(filterActivitiesByPet(activitiesArray)));
+                }
+            }, { onlyOnce: true });
+        };
+
+        function renderPetChips() {
+            const container = document.getElementById('pet-chips');
+
+            if (pets.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-tertiary); font-size: 13px;">No pets yet. Add your first pet!</div>';
+                return;
+            }
+
+            const allChip = `
+                <div class="pet-chip ${currentPetId === 'all' ? 'active' : ''}" onclick="selectPet('all')">
+                    <span class="pet-chip-emoji">🐾</span>
+                    <span class="pet-chip-name">All Pets</span>
+                </div>
+            `;
+
+            const petChips = pets.map(pet => `
+                <div class="pet-chip ${currentPetId === pet.id ? 'active' : ''}" onclick="selectPet('${pet.id}')">
+                    <span class="pet-chip-emoji">${pet.emoji}</span>
+                    <span class="pet-chip-name">${pet.name}</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = allChip + petChips;
+        }
+
+        function filterActivitiesByPet(activities) {
+            if (currentPetId === 'all') {
+                return activities;
+            }
+            return activities.filter(activity => activity.petId === currentPetId);
+        }
+
+        // Load pets from Firebase
+        const petsRef = ref(database, 'pets');
+        onValue(petsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                pets = Object.entries(data).map(([id, pet]) => ({ id, ...pet }));
+            } else {
+                pets = [];
+            }
+            renderPetChips();
+        });
+
         // Offline queue
         let offlineQueue = [];
         let isOnline = navigator.onLine;
@@ -545,11 +941,28 @@
 
         // Function to log activity
         window.logActivity = function(type, emoji) {
+            // Check if user needs to select a specific pet
+            if (currentPetId === 'all' && pets.length > 1) {
+                showToast('❌ Please select a specific pet first', 'error');
+                return;
+            }
+
+            // If no pets exist, prompt to add one
+            if (pets.length === 0) {
+                showToast('❌ Please add a pet first!', 'error');
+                openAddPetModal();
+                return;
+            }
+
+            // Use the current pet or the only pet available
+            const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
+
             const activity = {
                 type: type,
                 emoji: emoji,
                 timestamp: Date.now(),
-                user: 'You'
+                user: 'You',
+                petId: petId
             };
 
             if (!isOnline) {
@@ -561,7 +974,8 @@
             const activitiesRef = ref(database, 'activities');
             push(activitiesRef, activity)
                 .then(() => {
-                    showToast(`✅ ${type} logged!`, 'success');
+                    const petName = pets.find(p => p.id === petId)?.name || 'Pet';
+                    showToast(`✅ ${type} logged for ${petName}!`, 'success');
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -661,7 +1075,10 @@
             const container = document.getElementById('activities');
 
             if (activities.length === 0) {
-                container.innerHTML = '<div class="empty-text">No activities yet. Tap a button to start logging! 🐾</div>';
+                const message = currentPetId === 'all'
+                    ? 'No activities yet. Tap a button to start logging! 🐾'
+                    : 'No activities for this pet yet. Start logging! 🐾';
+                container.innerHTML = `<div class="empty-text">${message}</div>`;
                 return;
             }
 
@@ -670,17 +1087,22 @@
             container.innerHTML = Object.entries(grouped).map(([date, items]) => `
                 <div class="date-group">
                     <div class="date-header">${date}</div>
-                    ${items.map(activity => `
-                        <div class="activity-item">
-                            <div class="activity-emoji">${activity.emoji}</div>
-                            <div class="activity-details">
-                                <div class="activity-text">
-                                    <span class="activity-user">${activity.user}</span> logged ${activity.type}
+                    ${items.map(activity => {
+                        const pet = pets.find(p => p.id === activity.petId);
+                        const petDisplay = pet ? `${pet.emoji} ${pet.name}` : '🐾';
+                        return `
+                            <div class="activity-item">
+                                <div class="activity-emoji">${activity.emoji}</div>
+                                <div class="activity-details">
+                                    <div class="activity-text">
+                                        <span class="activity-user">${activity.user}</span> logged ${activity.type}
+                                        ${currentPetId === 'all' ? ` for <span class="activity-user">${petDisplay}</span>` : ''}
+                                    </div>
+                                    <div class="activity-time">${formatTime(activity.timestamp)}</div>
                                 </div>
-                                <div class="activity-time">${formatTime(activity.timestamp)}</div>
                             </div>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             `).join('');
         }
@@ -694,8 +1116,9 @@
                     .map(([id, activity]) => ({ id, ...activity }))
                     .sort((a, b) => b.timestamp - a.timestamp);
 
-                renderActivities(activitiesArray);
-                renderStats(calculateTodayStats(activitiesArray));
+                const filteredActivities = filterActivitiesByPet(activitiesArray);
+                renderActivities(filteredActivities);
+                renderStats(calculateTodayStats(filteredActivities));
             } else {
                 renderActivities([]);
                 renderStats({ Poop: 0, Pee: 0, Food: 0, Sleep: 0, Meds: 0 });
