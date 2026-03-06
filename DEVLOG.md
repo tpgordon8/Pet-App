@@ -197,10 +197,10 @@
 
 ---
 
-## CHUNK 3: User Authentication (Tom vs Meag)
+## CHUNK 3: User Authentication (Tara vs Meag)
 
 ### Started: 2026-03-06 (Session 2)
-**Goal:** Allow Tom and Meag to track who logged each activity without complex authentication.
+**Goal:** Allow Tara and Meag to track who logged each activity without complex authentication.
 
 **Approach Taken:** Simple username selection (no password)
 - Lowest friction - just click your name
@@ -214,12 +214,12 @@
 **Changes Made:**
 1. **User Selector UI**
    - Added "Who's logging?" section above pet selector
-   - Two chips: Tom (👨) and Meag (👩)
+   - Two chips: Tara (👨) and Meag (👩)
    - Active state styling (blue border, blue tint background)
    - Matches pet selector design pattern
 
 2. **State Management**
-   - `currentUser` variable initialized from localStorage (default: 'Tom')
+   - `currentUser` variable initialized from localStorage (default: 'Tara')
    - `selectUser(username)` function to switch active user
    - `renderUserChips()` function to update UI active states
    - Persists selection across sessions
@@ -230,10 +230,10 @@
      - `saveVetVisit()` - vet visit tracking
      - `saveVaccination()` - vaccine tracking
      - `saveWeight()` - weight check tracking
-   - All activities now show who logged them (Tom or Meag)
+   - All activities now show who logged them (Tara or Meag)
 
 4. **User Experience**
-   - Toast notification confirms user switch: "Switched to Tom"
+   - Toast notification confirms user switch: "Switched to Tara"
    - Visual feedback: active chip has blue border + tinted background
    - Persists across page reloads
 
@@ -243,7 +243,7 @@ activity: {
   type: "Poop",
   emoji: "💩",
   timestamp: 1234567890,
-  user: "Tom",        // Changed from "You" to actual username
+  user: "Tara",        // Changed from "You" to actual username
   petId: "pet_xxx"
 }
 ```
@@ -256,7 +256,7 @@ activity: {
 - ✅ No authentication complexity (appropriate for household use)
 
 **Potential Issues:**
-- ⚠️ No password protection - anyone can log as Tom or Meag
+- ⚠️ No password protection - anyone can log as Tara or Meag
 - ⚠️ No filtering by user (shows all activities regardless of who logged them)
   - Note: This is intentional - both users should see all pet activities
   - If filtering needed in future, add user filter dropdown similar to pet filter
@@ -270,13 +270,13 @@ activity: {
 
 **Future Enhancements (If Needed):**
 1. **Passcode Protection** - Add 4-digit PIN for each user
-2. **Google OAuth** - Let Tom and Meag sign in with Google accounts
+2. **Google OAuth** - Let Tara and Meag sign in with Google accounts
 3. **User Filtering** - Add toggle to show "My Activities Only" vs "All Activities"
 4. **User Profiles** - Add profile pictures, colors, notification preferences
 5. **Activity Permissions** - Allow certain users to only log specific types of activities
 
 **Why Simple Approach Works:**
-- Tom and Meag are a household - they trust each other
+- Tara and Meag are a household - they trust each other
 - The goal is attribution, not security
 - Easy to upgrade later if needed
 - Matches the app's simple, frictionless UX philosophy
@@ -594,7 +594,7 @@ Each chunk gets its own clear commit message:
 - Commit: `9e05315`
 
 **CHUNK 3: User Authentication** ✅
-- Simple username selection (Tom vs Meag)
+- Simple username selection (Tara vs Meag)
 - No password (household use case)
 - User persistence to localStorage
 - All activities tagged with username
@@ -629,7 +629,7 @@ Each chunk gets its own clear commit message:
 **New Features:**
 1. **Modern UI** - Glassmorphism, dark mode, clean aesthetics
 2. **Multi-Pet Tracking** - Profiles, selection, filtering
-3. **User Authentication** - Tom vs Meag username selection, no password
+3. **User Authentication** - Tara vs Meag username selection, no password
 4. **Activity Management** - Edit, delete, undo
 5. **Medical Records** - Vet visits, vaccinations, weight tracking
 
@@ -668,7 +668,7 @@ Each chunk gets its own clear commit message:
 ### 🚀 Next Steps (User Decision Required)
 
 **Option 1: Implement CHUNK 3 (User Auth)**
-- Simple approach: Username selection (Tom/Meag) without password
+- Simple approach: Username selection (Tara/Meag) without password
 - Medium approach: 4-digit passcode protection
 - Advanced approach: Google OAuth
 - **Recommendation:** Simple approach first, can upgrade later
@@ -713,7 +713,7 @@ Each chunk gets its own clear commit message:
 6. Old activities (before multi-pet) don't have petId
 
 **Easy Wins for Next Session:**
-1. Add user selection (Tom/Meag) - 1 hour
+1. Add user selection (Tara/Meag) - 1 hour
 2. Add pet edit/delete buttons - 30 minutes
 3. Add notes field to regular activities - 1 hour
 4. Add activity search/filter - 1 hour
