@@ -234,6 +234,27 @@
         .sleep-button { background: #3B82F6; }
         .meds-button { background: #10B981; }
 
+        /* Medical section */
+        .section-divider {
+            margin: 24px 0 16px 0;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .medical-button { background: #8B5CF6; }
+        .vet-button { background: #EC4899; }
+        .weight-button { background: #06B6D4; }
+
         .feed-container {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
@@ -770,6 +791,20 @@
             <button class="button meds-button" onclick="logActivity('Meds', '💊')">
                 <span class="button-emoji">💊</span> Meds
             </button>
+
+            <div class="section-divider">
+                <div class="section-title">Medical</div>
+            </div>
+
+            <button class="button vet-button" onclick="openVetModal()">
+                <span class="button-emoji">🏥</span> Vet Visit
+            </button>
+            <button class="button medical-button" onclick="openVaccineModal()">
+                <span class="button-emoji">💉</span> Vaccination
+            </button>
+            <button class="button weight-button" onclick="openWeightModal()">
+                <span class="button-emoji">⚖️</span> Weight Check
+            </button>
         </div>
 
         <div class="feed-container">
@@ -781,6 +816,93 @@
     </div>
 
     <div class="toast" id="toast"></div>
+
+    <!-- Vet Visit Modal -->
+    <div class="modal" id="vet-modal">
+        <div class="modal-content">
+            <div class="modal-header">🏥 Vet Visit</div>
+
+            <div class="form-group">
+                <label class="form-label">Visit Date & Time</label>
+                <input type="datetime-local" class="datetime-input" id="vet-datetime">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-input" id="vet-notes" placeholder="Checkup details, diagnosis, treatment..." rows="4" style="resize: vertical; font-family: inherit;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Cost (optional)</label>
+                <input type="number" class="form-input" id="vet-cost" placeholder="0.00" step="0.01">
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeVetModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveVetVisit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vaccination Modal -->
+    <div class="modal" id="vaccine-modal">
+        <div class="modal-content">
+            <div class="modal-header">💉 Vaccination</div>
+
+            <div class="form-group">
+                <label class="form-label">Vaccine Name</label>
+                <input type="text" class="form-input" id="vaccine-name" placeholder="e.g., Rabies, DHPP" maxlength="30">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Date Given</label>
+                <input type="datetime-local" class="datetime-input" id="vaccine-datetime">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notes (optional)</label>
+                <textarea class="form-input" id="vaccine-notes" placeholder="Batch number, reactions, etc..." rows="3" style="resize: vertical; font-family: inherit;"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeVaccineModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveVaccination()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weight Check Modal -->
+    <div class="modal" id="weight-modal">
+        <div class="modal-content">
+            <div class="modal-header">⚖️ Weight Check</div>
+
+            <div class="form-group">
+                <label class="form-label">Weight</label>
+                <div style="display: flex; gap: 12px;">
+                    <input type="number" class="form-input" id="weight-value" placeholder="0.0" step="0.1" style="flex: 2;">
+                    <select class="select-input" id="weight-unit" style="flex: 1;">
+                        <option value="lbs">lbs</option>
+                        <option value="kg">kg</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Date & Time</label>
+                <input type="datetime-local" class="datetime-input" id="weight-datetime">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notes (optional)</label>
+                <textarea class="form-input" id="weight-notes" placeholder="Context, body condition, etc..." rows="2" style="resize: vertical; font-family: inherit;"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeWeightModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveWeight()">Save</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Edit Activity Modal -->
     <div class="modal" id="edit-modal">
@@ -1151,6 +1273,215 @@
             }, 30000);
         }
 
+        // Medical Activity Management
+        window.openVetModal = function() {
+            if (pets.length === 0) {
+                showToast('❌ Please add a pet first!', 'error');
+                openAddPetModal();
+                return;
+            }
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('vet-datetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('vet-notes').value = '';
+            document.getElementById('vet-cost').value = '';
+            document.getElementById('vet-modal').classList.add('show');
+        };
+
+        window.closeVetModal = function() {
+            document.getElementById('vet-modal').classList.remove('show');
+        };
+
+        window.saveVetVisit = function() {
+            const datetime = document.getElementById('vet-datetime').value;
+            const notes = document.getElementById('vet-notes').value.trim();
+            const cost = document.getElementById('vet-cost').value;
+
+            if (!datetime) {
+                showToast('❌ Please select a date and time', 'error');
+                return;
+            }
+
+            if (currentPetId === 'all' && pets.length > 1) {
+                showToast('❌ Please select a specific pet first', 'error');
+                return;
+            }
+
+            const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
+            const timestamp = new Date(datetime).getTime();
+
+            const activity = {
+                type: 'Vet Visit',
+                emoji: '🏥',
+                timestamp: timestamp,
+                user: 'You',
+                petId: petId,
+                medicalData: {
+                    notes: notes,
+                    cost: cost ? parseFloat(cost) : null
+                }
+            };
+
+            const activitiesRef = ref(database, 'activities');
+            push(activitiesRef, activity)
+                .then(() => {
+                    const petName = pets.find(p => p.id === petId)?.name || 'Pet';
+                    showToast(`✅ Vet visit logged for ${petName}!`, 'success');
+                    closeVetModal();
+                })
+                .catch(error => {
+                    showToast(`❌ ${error.message}`, 'error');
+                });
+        };
+
+        window.openVaccineModal = function() {
+            if (pets.length === 0) {
+                showToast('❌ Please add a pet first!', 'error');
+                openAddPetModal();
+                return;
+            }
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('vaccine-datetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('vaccine-name').value = '';
+            document.getElementById('vaccine-notes').value = '';
+            document.getElementById('vaccine-modal').classList.add('show');
+        };
+
+        window.closeVaccineModal = function() {
+            document.getElementById('vaccine-modal').classList.remove('show');
+        };
+
+        window.saveVaccination = function() {
+            const vaccineName = document.getElementById('vaccine-name').value.trim();
+            const datetime = document.getElementById('vaccine-datetime').value;
+            const notes = document.getElementById('vaccine-notes').value.trim();
+
+            if (!vaccineName) {
+                showToast('❌ Please enter vaccine name', 'error');
+                return;
+            }
+
+            if (!datetime) {
+                showToast('❌ Please select a date and time', 'error');
+                return;
+            }
+
+            if (currentPetId === 'all' && pets.length > 1) {
+                showToast('❌ Please select a specific pet first', 'error');
+                return;
+            }
+
+            const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
+            const timestamp = new Date(datetime).getTime();
+
+            const activity = {
+                type: 'Vaccination',
+                emoji: '💉',
+                timestamp: timestamp,
+                user: 'You',
+                petId: petId,
+                medicalData: {
+                    vaccineName: vaccineName,
+                    notes: notes
+                }
+            };
+
+            const activitiesRef = ref(database, 'activities');
+            push(activitiesRef, activity)
+                .then(() => {
+                    const petName = pets.find(p => p.id === petId)?.name || 'Pet';
+                    showToast(`✅ ${vaccineName} vaccination logged for ${petName}!`, 'success');
+                    closeVaccineModal();
+                })
+                .catch(error => {
+                    showToast(`❌ ${error.message}`, 'error');
+                });
+        };
+
+        window.openWeightModal = function() {
+            if (pets.length === 0) {
+                showToast('❌ Please add a pet first!', 'error');
+                openAddPetModal();
+                return;
+            }
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('weight-datetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('weight-value').value = '';
+            document.getElementById('weight-unit').value = 'lbs';
+            document.getElementById('weight-notes').value = '';
+            document.getElementById('weight-modal').classList.add('show');
+        };
+
+        window.closeWeightModal = function() {
+            document.getElementById('weight-modal').classList.remove('show');
+        };
+
+        window.saveWeight = function() {
+            const weightValue = document.getElementById('weight-value').value;
+            const weightUnit = document.getElementById('weight-unit').value;
+            const datetime = document.getElementById('weight-datetime').value;
+            const notes = document.getElementById('weight-notes').value.trim();
+
+            if (!weightValue || parseFloat(weightValue) <= 0) {
+                showToast('❌ Please enter a valid weight', 'error');
+                return;
+            }
+
+            if (!datetime) {
+                showToast('❌ Please select a date and time', 'error');
+                return;
+            }
+
+            if (currentPetId === 'all' && pets.length > 1) {
+                showToast('❌ Please select a specific pet first', 'error');
+                return;
+            }
+
+            const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
+            const timestamp = new Date(datetime).getTime();
+
+            const activity = {
+                type: 'Weight Check',
+                emoji: '⚖️',
+                timestamp: timestamp,
+                user: 'You',
+                petId: petId,
+                medicalData: {
+                    weight: parseFloat(weightValue),
+                    unit: weightUnit,
+                    notes: notes
+                }
+            };
+
+            const activitiesRef = ref(database, 'activities');
+            push(activitiesRef, activity)
+                .then(() => {
+                    const petName = pets.find(p => p.id === petId)?.name || 'Pet';
+                    showToast(`✅ Weight logged for ${petName}: ${weightValue} ${weightUnit}`, 'success');
+                    closeWeightModal();
+                })
+                .catch(error => {
+                    showToast(`❌ ${error.message}`, 'error');
+                });
+        };
+
         // Offline queue
         let offlineQueue = [];
         let isOnline = navigator.onLine;
@@ -1342,18 +1673,41 @@
                     ${items.map(activity => {
                         const pet = pets.find(p => p.id === activity.petId);
                         const petDisplay = pet ? `${pet.emoji} ${pet.name}` : '🐾';
+
+                        // Medical data rendering
+                        let medicalInfo = '';
+                        if (activity.medicalData) {
+                            const data = activity.medicalData;
+                            if (activity.type === 'Vet Visit') {
+                                medicalInfo = `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                    ${data.notes ? `📝 ${data.notes}` : ''}
+                                    ${data.cost ? `<br>💰 $${data.cost.toFixed(2)}` : ''}
+                                </div>`;
+                            } else if (activity.type === 'Vaccination') {
+                                medicalInfo = `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                    💉 ${data.vaccineName}
+                                    ${data.notes ? `<br>📝 ${data.notes}` : ''}
+                                </div>`;
+                            } else if (activity.type === 'Weight Check') {
+                                medicalInfo = `<div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                    ⚖️ ${data.weight} ${data.unit}
+                                    ${data.notes ? `<br>📝 ${data.notes}` : ''}
+                                </div>`;
+                            }
+                        }
+
                         return `
                             <div class="activity-item">
                                 <div class="activity-emoji">${activity.emoji}</div>
-                                <div class="activity-details">
+                                <div class="activity-details" style="flex: 1;">
                                     <div class="activity-text">
                                         <span class="activity-user">${activity.user}</span> logged ${activity.type}
                                         ${currentPetId === 'all' ? ` for <span class="activity-user">${petDisplay}</span>` : ''}
                                     </div>
                                     <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                                    ${medicalInfo}
                                 </div>
                                 <div class="activity-actions">
-                                    <button class="action-btn" onclick="editActivity('${activity.id}')">Edit</button>
                                     <button class="action-btn delete" onclick="deleteActivity('${activity.id}')">Delete</button>
                                 </div>
                             </div>

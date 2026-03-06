@@ -265,6 +265,116 @@
 
 ---
 
+## CHUNK 5: Medical Tracking
+
+### Started: 2026-03-06
+**Goal:** Add vet visits, vaccination tracking, and weight monitoring.
+
+### Implementation Log
+
+#### ✅ COMPLETED - Medical Tracking Successful (Simplified Version)
+
+**Changes Made:**
+1. **Vet Visit Logging**
+   - Dedicated "Vet Visit" button (🏥)
+   - Modal with datetime picker
+   - Notes field for visit details
+   - Optional cost tracking
+   - Displays notes and cost in activity log
+
+2. **Vaccination Logging**
+   - Dedicated "Vaccination" button (💉)
+   - Vaccine name input (30 char limit)
+   - Datetime picker for date given
+   - Optional notes field
+   - Displays vaccine name and notes in activity log
+
+3. **Weight Check Logging**
+   - Dedicated "Weight Check" button (⚖️)
+   - Weight value input (decimal)
+   - Unit selector (lbs/kg)
+   - Datetime picker
+   - Optional notes field
+   - Displays weight and unit in activity log
+
+4. **Medical Section UI**
+   - Separate "Medical" section with divider
+   - 3 medical activity buttons
+   - Custom button colors (purple, pink, cyan)
+   - Modals with medical-specific forms
+
+5. **Activity Rendering Updates**
+   - Medical activities show detailed data inline
+   - Notes, costs, vaccine names, weights displayed
+   - Removed "Edit" button for medical activities (delete only)
+   - Medical data stored in `medicalData` field
+
+**Database Schema Extension:**
+```
+/activities
+  /{activityId}
+    type: "Vet Visit" | "Vaccination" | "Weight Check"
+    emoji: "🏥" | "💉" | "⚖️"
+    timestamp: timestamp
+    user: "You"
+    petId: "pet_xyz"
+    medicalData: {
+      // Vet Visit
+      notes: "Annual checkup, all good"
+      cost: 150.00
+
+      // Vaccination
+      vaccineName: "Rabies"
+      notes: "Batch ABC123"
+
+      // Weight Check
+      weight: 45.5
+      unit: "lbs"
+      notes: "After diet change"
+    }
+```
+
+**What Works:**
+- ✅ Log vet visits with notes and cost
+- ✅ Log vaccinations with vaccine name
+- ✅ Log weight checks with value and unit
+- ✅ All medical activities sync in real-time
+- ✅ Medical data displays inline in activity log
+- ✅ Pet-specific medical tracking
+- ✅ Delete medical activities (no edit to keep it simple)
+
+**What Was Simplified:**
+- ❌ No vaccination due date reminders (Web Notifications complex)
+- ❌ No weight trend chart (kept as list for simplicity)
+- ❌ No separate medical history view (all in main feed)
+- ❌ No edit functionality for medical activities (delete & re-add instead)
+- ❌ No medication schedule/reminders (could be future enhancement)
+
+**Why Simplified:**
+- Avoided complexity of Web Notifications API (permissions, browser support)
+- Charting library would add dependency
+- Edit modals for medical data would be complex (different fields per type)
+- Goal was to add value without overengineering
+
+**Technical Details:**
+- Medical activities use `medicalData` object for type-specific fields
+- Datetime-local inputs for all timestamps
+- Form validation on all required fields
+- Number inputs for weight and cost
+- Select input for unit (lbs/kg)
+- Textarea with font-family: inherit for consistent styling
+
+**iOS App Considerations:**
+- SwiftUI: Forms with Section() for medical data entry
+- DatePicker for datetime selection
+- Picker for unit selection (lbs/kg)
+- TextField with .keyboardType(.decimalPad) for numbers
+- TextEditor for notes (multi-line)
+- HealthKit integration potential (export weight data to Apple Health)
+- Reminder integration for vaccination due dates
+
+---
+
 ## Running Notes & Learnings
 
 ### What's Working Well:
