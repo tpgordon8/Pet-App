@@ -227,12 +227,12 @@
             margin-right: 10px;
         }
 
-        /* Clean solid colors instead of gradients */
-        .poop-button { background: #8B7355; }
-        .pee-button { background: #F59E0B; color: #1a1a1a; }
-        .food-button { background: #EF4444; }
-        .sleep-button { background: #3B82F6; }
-        .meds-button { background: #10B981; }
+        /* Soft, modern color palette */
+        .poop-button { background: #D4A574; color: #1a1a1a; }
+        .pee-button { background: #7FC8E8; color: #1a1a1a; }
+        .food-button { background: #F4A259; color: #1a1a1a; }
+        .sleep-button { background: #9D84B7; }
+        .meds-button { background: #8ECAE6; color: #1a1a1a; }
 
         /* Medical section */
         .section-divider {
@@ -251,9 +251,9 @@
             text-align: center;
         }
 
-        .medical-button { background: #8B5CF6; }
-        .vet-button { background: #EC4899; }
-        .weight-button { background: #06B6D4; }
+        .medical-button { background: #A78BFA; }
+        .vet-button { background: #F9A8D4; color: #1a1a1a; }
+        .weight-button { background: #67E8F9; color: #1a1a1a; }
 
         .feed-container {
             background: var(--bg-glass);
@@ -863,14 +863,14 @@
             <button class="button sleep-button" onclick="logActivity('Sleep', '😴')">
                 <span class="button-emoji">😴</span> Sleep
             </button>
-            <button class="button meds-button" onclick="logActivity('Meds', '💊')">
-                <span class="button-emoji">💊</span> Meds
-            </button>
 
             <div class="section-divider">
                 <div class="section-title">Medical</div>
             </div>
 
+            <button class="button meds-button" onclick="logActivity('Meds', '💊')">
+                <span class="button-emoji">💊</span> Meds
+            </button>
             <button class="button vet-button" onclick="openVetModal()">
                 <span class="button-emoji">🏥</span> Vet Visit
             </button>
