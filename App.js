@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput, RefreshControl } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, push, onValue, serverTimestamp } from 'firebase/database';
 
@@ -24,6 +24,8 @@ export default function App() {
   const [activities, setActivities] = useState([]);
   // 📝 State for optional note input
   const [note, setNote] = useState('');
+  // 🔄 State for pull-to-refresh
+  const [refreshing, setRefreshing] = useState(false);
 
   // 🎧 Listen for real-time updates from Firebase
   useEffect(() => {
@@ -82,6 +84,16 @@ export default function App() {
       });
   };
 
+  // 🔄 Pull-to-refresh handler
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Firebase real-time listener handles data updates automatically
+    // Just show refresh animation briefly for user feedback
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 500);
+  };
+
   // 🔘 Handler functions for each button
   const handlePoop = () => logActivity('Poop', '💩');
   const handlePee = () => logActivity('Pee', '💧');
@@ -112,7 +124,11 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
 
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* 📋 Header section */}
         <View style={styles.header}>
           <Text style={styles.title}>PetLog</Text>
