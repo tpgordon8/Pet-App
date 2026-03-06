@@ -425,6 +425,66 @@
             margin: 20px auto;
         }
 
+        /* User Selector */
+        .user-selector {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-selector-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .user-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .user-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-chip.active {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .user-chip-emoji {
+            font-size: 18px;
+        }
+
+        .user-chip-name {
+            font-weight: 600;
+        }
+
         /* Pet Selector */
         .pet-selector {
             background: var(--bg-glass);
@@ -764,6 +824,21 @@
             </div>
         </div>
 
+        <!-- User Selector -->
+        <div class="user-selector">
+            <div class="user-selector-title">Who's logging?</div>
+            <div class="user-chips" id="user-chips">
+                <div class="user-chip" onclick="selectUser('Tom')">
+                    <span class="user-chip-emoji">👨</span>
+                    <span class="user-chip-name">Tom</span>
+                </div>
+                <div class="user-chip" onclick="selectUser('Meag')">
+                    <span class="user-chip-emoji">👩</span>
+                    <span class="user-chip-name">Meag</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Pet Selector -->
         <div class="pet-selector">
             <div class="pet-selector-header">
@@ -1026,6 +1101,9 @@
         let currentPetId = localStorage.getItem('currentPetId') || 'all';
         let selectedEmoji = '🐕';
 
+        // User management state
+        let currentUser = localStorage.getItem('currentUser') || 'Tom';
+
         // Pet Management Functions
         window.openAddPetModal = function() {
             document.getElementById('pet-modal').classList.add('show');
@@ -1131,6 +1209,26 @@
             return activities.filter(activity => activity.petId === currentPetId);
         }
 
+        // User Management Functions
+        window.selectUser = function(username) {
+            currentUser = username;
+            localStorage.setItem('currentUser', username);
+            renderUserChips();
+            showToast(`✅ Switched to ${username}`, 'success');
+        };
+
+        function renderUserChips() {
+            const chips = document.querySelectorAll('.user-chip');
+            chips.forEach(chip => {
+                const username = chip.querySelector('.user-chip-name').textContent;
+                if (username === currentUser) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+        }
+
         // Load pets from Firebase
         const petsRef = ref(database, 'pets');
         onValue(petsRef, (snapshot) => {
@@ -1141,6 +1239,7 @@
                 pets = [];
             }
             renderPetChips();
+            renderUserChips();
         });
 
         // Activity Edit/Delete Management
@@ -1319,7 +1418,7 @@
                 type: 'Vet Visit',
                 emoji: '🏥',
                 timestamp: timestamp,
-                user: 'You',
+                user: currentUser,
                 petId: petId,
                 medicalData: {
                     notes: notes,
@@ -1389,7 +1488,7 @@
                 type: 'Vaccination',
                 emoji: '💉',
                 timestamp: timestamp,
-                user: 'You',
+                user: currentUser,
                 petId: petId,
                 medicalData: {
                     vaccineName: vaccineName,
@@ -1461,7 +1560,7 @@
                 type: 'Weight Check',
                 emoji: '⚖️',
                 timestamp: timestamp,
-                user: 'You',
+                user: currentUser,
                 petId: petId,
                 medicalData: {
                     weight: parseFloat(weightValue),
@@ -1544,7 +1643,7 @@
                 type: type,
                 emoji: emoji,
                 timestamp: Date.now(),
-                user: 'You',
+                user: currentUser,
                 petId: petId
             };
 

@@ -197,6 +197,92 @@
 
 ---
 
+## CHUNK 3: User Authentication (Tom vs Meag)
+
+### Started: 2026-03-06 (Session 2)
+**Goal:** Allow Tom and Meag to track who logged each activity without complex authentication.
+
+**Approach Taken:** Simple username selection (no password)
+- Lowest friction - just click your name
+- Future-proof - can upgrade to passcode or OAuth later
+- Matches use case - two trusted users sharing a household
+
+### Implementation Log
+
+#### ✅ COMPLETED - User Selection Successful
+
+**Changes Made:**
+1. **User Selector UI**
+   - Added "Who's logging?" section above pet selector
+   - Two chips: Tom (👨) and Meag (👩)
+   - Active state styling (blue border, blue tint background)
+   - Matches pet selector design pattern
+
+2. **State Management**
+   - `currentUser` variable initialized from localStorage (default: 'Tom')
+   - `selectUser(username)` function to switch active user
+   - `renderUserChips()` function to update UI active states
+   - Persists selection across sessions
+
+3. **Activity Logging Integration**
+   - Updated all 4 activity logging functions to use `currentUser` instead of hardcoded 'You':
+     - `logActivity()` - standard activities (Poop, Pee, Food, Sleep, Meds)
+     - `saveVetVisit()` - vet visit tracking
+     - `saveVaccination()` - vaccine tracking
+     - `saveWeight()` - weight check tracking
+   - All activities now show who logged them (Tom or Meag)
+
+4. **User Experience**
+   - Toast notification confirms user switch: "Switched to Tom"
+   - Visual feedback: active chip has blue border + tinted background
+   - Persists across page reloads
+
+**Database Schema Changes:**
+```javascript
+activity: {
+  type: "Poop",
+  emoji: "💩",
+  timestamp: 1234567890,
+  user: "Tom",        // Changed from "You" to actual username
+  petId: "pet_xxx"
+}
+```
+
+**What Works:**
+- ✅ Username selection persists across sessions
+- ✅ Visual feedback for active user
+- ✅ All activities tagged with correct username
+- ✅ Simple, no-friction UX (one tap to switch)
+- ✅ No authentication complexity (appropriate for household use)
+
+**Potential Issues:**
+- ⚠️ No password protection - anyone can log as Tom or Meag
+- ⚠️ No filtering by user (shows all activities regardless of who logged them)
+  - Note: This is intentional - both users should see all pet activities
+  - If filtering needed in future, add user filter dropdown similar to pet filter
+
+**iOS App Considerations:**
+- SwiftUI: Use `@AppStorage` for currentUser persistence
+- User selector: HStack of chips with @State for active selection
+- Firebase Auth: Could upgrade to email/password or Apple Sign In for true authentication
+- Face ID: Could add biometric authentication if needed
+- User profiles: Could expand to include photos, preferences, notification settings
+
+**Future Enhancements (If Needed):**
+1. **Passcode Protection** - Add 4-digit PIN for each user
+2. **Google OAuth** - Let Tom and Meag sign in with Google accounts
+3. **User Filtering** - Add toggle to show "My Activities Only" vs "All Activities"
+4. **User Profiles** - Add profile pictures, colors, notification preferences
+5. **Activity Permissions** - Allow certain users to only log specific types of activities
+
+**Why Simple Approach Works:**
+- Tom and Meag are a household - they trust each other
+- The goal is attribution, not security
+- Easy to upgrade later if needed
+- Matches the app's simple, frictionless UX philosophy
+
+---
+
 ## CHUNK 4: Activity Management (Edit/Delete)
 
 ### Started: 2026-03-06
@@ -490,7 +576,7 @@ Each chunk gets its own clear commit message:
 ## End of Session Summary
 **Session Date:** 2026-03-06
 
-### ✅ Completed Chunks (4/5)
+### ✅ Completed Chunks (5/5) - ALL COMPLETE!
 
 **CHUNK 1: Design Refresh** ✅
 - Clean minimalist UI with glassmorphism
@@ -507,6 +593,14 @@ Each chunk gets its own clear commit message:
 - Backwards compatible
 - Commit: `9e05315`
 
+**CHUNK 3: User Authentication** ✅
+- Simple username selection (Tom vs Meag)
+- No password (household use case)
+- User persistence to localStorage
+- All activities tagged with username
+- Visual feedback for active user
+- Commit: (pending)
+
 **CHUNK 4: Activity Management** ✅
 - Edit activity (type & timestamp)
 - Delete with confirmation
@@ -522,20 +616,12 @@ Each chunk gets its own clear commit message:
 - Simplified version (no charts, no notifications)
 - Commit: `33d7559`
 
-### ⏸️ Deferred Chunks (1/5)
-
-**CHUNK 3: User Authentication** ⏸️
-- Status: **Awaiting user approval**
-- Reason: User requested to check in before implementing (HIGH RISK chunk)
-- Plan ready: Simple passcode OR Google Auth
-- Recommendation: Start with passcode-less username selection (Tom/Meag), add passcode protection later if needed
-
 ### 📊 Session Stats
 
-**Total Time:** ~3-4 hours estimated
-**Commits Made:** 5 commits (including initial DEVLOG + ROADMAP)
+**Total Time:** ~4-5 hours estimated
+**Commits Made:** 6 commits (including CHUNK 3)
 **Deploy Status:** ✅ All commits pushed and auto-deployed
-**Lines Changed:** ~2000+ lines added/modified
+**Lines Changed:** ~2100+ lines added/modified
 **Files Modified:** 3 files (index.html, DEVLOG.md, ROADMAP.md, manifest.json)
 
 ### 🎯 What Was Built
@@ -543,8 +629,9 @@ Each chunk gets its own clear commit message:
 **New Features:**
 1. **Modern UI** - Glassmorphism, dark mode, clean aesthetics
 2. **Multi-Pet Tracking** - Profiles, selection, filtering
-3. **Activity Management** - Edit, delete, undo
-4. **Medical Records** - Vet visits, vaccinations, weight tracking
+3. **User Authentication** - Tom vs Meag username selection, no password
+4. **Activity Management** - Edit, delete, undo
+5. **Medical Records** - Vet visits, vaccinations, weight tracking
 
 **Technical Improvements:**
 - CSS variables for theming
