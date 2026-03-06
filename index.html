@@ -790,13 +790,25 @@
 
         .activity-actions {
             display: flex;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
+            gap: 6px;
+            opacity: 0.5;
+            transition: all 0.2s ease;
         }
 
         .activity-item:hover .activity-actions {
             opacity: 1;
+        }
+
+        /* Always show actions on mobile */
+        @media (max-width: 768px) {
+            .activity-actions {
+                opacity: 0.7;
+            }
+
+            .activity-item:hover .activity-actions,
+            .activity-item:active .activity-actions {
+                opacity: 1;
+            }
         }
 
         .action-btn {
@@ -804,8 +816,11 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 6px 10px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
             cursor: pointer;
             transition: all 0.2s ease;
             color: var(--text-secondary);
@@ -904,6 +919,12 @@
         </symbol>
         <symbol id="icon-weight" viewBox="0 0 24 24">
             <path fill="currentColor" d="M12 3c-3.31 0-6 2.69-6 6 0 1.66.68 3.16 1.77 4.25L2 19v2h20v-2l-5.77-5.75C17.32 12.16 18 10.66 18 9c0-3.31-2.69-6-6-6zm0 2c2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4 1.79-4 4-4zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+        </symbol>
+        <symbol id="icon-edit" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        </symbol>
+        <symbol id="icon-delete" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
         </symbol>
     </svg>
 
@@ -1423,6 +1444,33 @@
             }).then(() => {
                 showToast('✅ Activity updated!', 'success');
                 closeEditModal();
+            }).catch(error => {
+                showToast(`❌ ${error.message}`, 'error');
+            });
+        };
+
+        window.editActivity = function(activityId) {
+            const activity = currentActivities.find(a => a.id === activityId);
+            if (!activity) return;
+
+            // For now, simple time edit (can be enhanced later)
+            const currentTime = new Date(activity.timestamp);
+            const dateString = currentTime.toISOString().slice(0, 16);
+
+            const newDatetime = prompt(
+                `Edit timestamp for ${activity.type}:`,
+                dateString
+            );
+
+            if (!newDatetime) return;
+
+            const newTimestamp = new Date(newDatetime).getTime();
+
+            const activityRef = ref(database, `activities/${activityId}`);
+            update(activityRef, {
+                timestamp: newTimestamp
+            }).then(() => {
+                showToast('✅ Activity updated!', 'success');
             }).catch(error => {
                 showToast(`❌ ${error.message}`, 'error');
             });
@@ -2007,7 +2055,12 @@
                                     ${medicalInfo}
                                 </div>
                                 <div class="activity-actions">
-                                    <button class="action-btn delete" onclick="deleteActivity('${activity.id}')">Delete</button>
+                                    <button class="action-btn edit" onclick="editActivity('${activity.id}')" title="Edit">
+                                        <svg style="width: 14px; height: 14px;"><use href="#icon-edit"/></svg>
+                                    </button>
+                                    <button class="action-btn delete" onclick="deleteActivity('${activity.id}')" title="Delete">
+                                        <svg style="width: 14px; height: 14px;"><use href="#icon-delete"/></svg>
+                                    </button>
                                 </div>
                             </div>
                         `;
