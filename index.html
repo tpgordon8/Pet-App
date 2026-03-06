@@ -75,14 +75,14 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
-            padding-top: 80px;
+            padding: 16px;
+            padding-top: 64px;
             min-height: 100vh;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             position: relative;
         }
 
@@ -131,16 +131,16 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 24px;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow-md);
         }
 
         .stats-title {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -148,16 +148,16 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+            gap: 10px;
         }
 
         .stat-item {
             text-align: center;
-            padding: 14px 8px;
+            padding: 12px 6px;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
+            border-radius: 12px;
             transition: all 0.2s ease;
         }
 
@@ -190,18 +190,18 @@
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .button {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px 24px;
-            border-radius: 14px;
+            padding: 14px 20px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: white;
             cursor: pointer;
@@ -229,27 +229,27 @@
             flex-shrink: 0;
         }
 
-        /* Clean solid colors instead of gradients */
-        .poop-button { background: #8B7355; }
-        .pee-button { background: #F59E0B; color: #1a1a1a; }
-        .food-button { background: #EF4444; }
-        .sleep-button { background: #3B82F6; }
-        .meds-button { background: #10B981; }
+        /* Soft, modern color palette */
+        .poop-button { background: #D4A574; color: #1a1a1a; }
+        .pee-button { background: #7FC8E8; color: #1a1a1a; }
+        .food-button { background: #F4A259; color: #1a1a1a; }
+        .sleep-button { background: #9D84B7; }
+        .meds-button { background: #8ECAE6; color: #1a1a1a; }
 
         /* Medical section */
         .section-divider {
-            margin: 24px 0 16px 0;
-            padding-top: 16px;
+            margin: 16px 0 12px 0;
+            padding-top: 12px;
             border-top: 1px solid var(--border-color);
         }
 
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-tertiary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -326,17 +326,17 @@
             font-style: italic;
         }
 
-        .medical-button { background: #8B5CF6; }
-        .vet-button { background: #EC4899; }
-        .weight-button { background: #06B6D4; }
+        .medical-button { background: #A78BFA; }
+        .vet-button { background: #F9A8D4; color: #1a1a1a; }
+        .weight-button { background: #67E8F9; color: #1a1a1a; }
 
         .feed-container {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 16px;
+            padding: 16px;
             box-shadow: var(--shadow-md);
             min-height: 200px;
         }
@@ -566,9 +566,9 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
             box-shadow: var(--shadow-md);
         }
 
@@ -998,14 +998,14 @@
             <button class="button sleep-button" onclick="logActivity('Sleep', '😴')">
                 <svg class="button-icon"><use href="#icon-sleep"/></svg> Sleep
             </button>
-            <button class="button meds-button" onclick="logActivity('Meds', '💊')">
-                <svg class="button-icon"><use href="#icon-meds"/></svg> Meds
-            </button>
 
             <div class="section-divider">
                 <div class="section-title">Medical</div>
             </div>
 
+            <button class="button meds-button" onclick="logActivity('Meds', '💊')">
+                <svg class="button-icon"><use href="#icon-meds"/></svg> Meds
+            </button>
             <button class="button vet-button" onclick="openVetModal()">
                 <svg class="button-icon"><use href="#icon-vet"/></svg> Vet Visit
             </button>
