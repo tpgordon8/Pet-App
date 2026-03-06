@@ -730,6 +730,98 @@
             opacity: 1;
         }
 
+        /* Date Range Picker */
+        .date-range-picker {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .date-range-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .date-range-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .date-range-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .date-range-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: var(--bg-secondary);
+        }
+
+        .date-range-reset {
+            padding: 10px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .date-range-reset:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: var(--bg-glass);
+        }
+
+        .date-range-presets {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .preset-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -1095,6 +1187,23 @@
                     <svg><use href="#icon-meds"/></svg>
                     Meds
                 </div>
+            </div>
+        </div>
+
+        <!-- Date Range Picker -->
+        <div class="date-range-picker">
+            <div class="date-range-title">Date Range</div>
+            <div class="date-range-controls">
+                <input type="date" class="date-range-input" id="date-from" onchange="applyDateRange()">
+                <span style="color: var(--text-tertiary); font-weight: 600;">to</span>
+                <input type="date" class="date-range-input" id="date-to" onchange="applyDateRange()">
+                <button class="date-range-reset" onclick="resetDateRange()">Reset</button>
+            </div>
+            <div class="date-range-presets">
+                <button class="preset-btn" onclick="setDatePreset('today')">Today</button>
+                <button class="preset-btn" onclick="setDatePreset('yesterday')">Yesterday</button>
+                <button class="preset-btn" onclick="setDatePreset('week')">Last 7 Days</button>
+                <button class="preset-btn" onclick="setDatePreset('month')">Last 30 Days</button>
             </div>
         </div>
 
@@ -1486,6 +1595,110 @@
                 return activities;
             }
             return activities.filter(activity => activity.type === currentActivityFilter);
+        }
+
+        // Date Range Filter
+        let dateRangeFrom = null;
+        let dateRangeTo = null;
+
+        window.applyDateRange = function() {
+            const fromInput = document.getElementById('date-from').value;
+            const toInput = document.getElementById('date-to').value;
+
+            dateRangeFrom = fromInput ? new Date(fromInput).setHours(0, 0, 0, 0) : null;
+            dateRangeTo = toInput ? new Date(toInput).setHours(23, 59, 59, 999) : null;
+
+            // Clear preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Re-render activities with filter
+            const filteredByPet = filterActivitiesByPet(currentActivities);
+            renderActivities(filteredByPet);
+        };
+
+        window.resetDateRange = function() {
+            dateRangeFrom = null;
+            dateRangeTo = null;
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+
+            // Clear preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Re-render activities
+            const filteredByPet = filterActivitiesByPet(currentActivities);
+            renderActivities(filteredByPet);
+        };
+
+        window.setDatePreset = function(preset) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let fromDate, toDate;
+
+            switch(preset) {
+                case 'today':
+                    fromDate = new Date(today);
+                    toDate = new Date(today);
+                    toDate.setHours(23, 59, 59, 999);
+                    break;
+                case 'yesterday':
+                    fromDate = new Date(today);
+                    fromDate.setDate(fromDate.getDate() - 1);
+                    toDate = new Date(fromDate);
+                    toDate.setHours(23, 59, 59, 999);
+                    break;
+                case 'week':
+                    fromDate = new Date(today);
+                    fromDate.setDate(fromDate.getDate() - 7);
+                    toDate = new Date(today);
+                    toDate.setHours(23, 59, 59, 999);
+                    break;
+                case 'month':
+                    fromDate = new Date(today);
+                    fromDate.setDate(fromDate.getDate() - 30);
+                    toDate = new Date(today);
+                    toDate.setHours(23, 59, 59, 999);
+                    break;
+            }
+
+            dateRangeFrom = fromDate.getTime();
+            dateRangeTo = toDate.getTime();
+
+            // Update inputs
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            document.getElementById('date-from').value = formatDate(fromDate);
+            document.getElementById('date-to').value = formatDate(new Date(dateRangeTo));
+
+            // Update preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Re-render activities
+            const filteredByPet = filterActivitiesByPet(currentActivities);
+            renderActivities(filteredByPet);
+        };
+
+        function filterActivitiesByDateRange(activities) {
+            if (!dateRangeFrom && !dateRangeTo) {
+                return activities;
+            }
+
+            return activities.filter(activity => {
+                if (dateRangeFrom && activity.timestamp < dateRangeFrom) {
+                    return false;
+                }
+                if (dateRangeTo && activity.timestamp > dateRangeTo) {
+                    return false;
+                }
+                return true;
+            });
         }
 
         // User Management Functions
@@ -2129,12 +2342,15 @@
         function renderActivities(activities) {
             const container = document.getElementById('activities');
 
-            // Apply activity type filter
-            const filteredActivities = filterActivitiesByType(activities);
+            // Apply filters: activity type and date range
+            let filteredActivities = filterActivitiesByType(activities);
+            filteredActivities = filterActivitiesByDateRange(filteredActivities);
 
             if (filteredActivities.length === 0) {
                 const message = currentActivityFilter !== 'All'
                     ? `No ${currentActivityFilter} activities found.`
+                    : (dateRangeFrom || dateRangeTo)
+                    ? 'No activities found in this date range.'
                     : currentPetId === 'all'
                     ? 'No activities yet. Tap a button to start logging! 🐾'
                     : 'No activities for this pet yet. Start logging! 🐾';
