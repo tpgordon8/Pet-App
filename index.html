@@ -667,6 +667,69 @@
             font-weight: 600;
         }
 
+        /* Activity Filter */
+        .activity-filter {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .activity-filter-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .activity-filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .activity-filter-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-primary);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .activity-filter-chip:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-glass);
+        }
+
+        .activity-filter-chip.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .activity-filter-chip svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+
+        .activity-filter-chip.active svg {
+            opacity: 1;
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -1002,6 +1065,36 @@
             </div>
             <div class="medical-summary-grid" id="medical-summary-grid">
                 <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Activity Filter -->
+        <div class="activity-filter">
+            <div class="activity-filter-title">Filter Activities</div>
+            <div class="activity-filter-chips">
+                <div class="activity-filter-chip active" onclick="filterByActivity('All')">
+                    All
+                </div>
+                <div class="activity-filter-chip" onclick="filterByActivity('Poop')">
+                    <svg><use href="#icon-poop"/></svg>
+                    Poop
+                </div>
+                <div class="activity-filter-chip" onclick="filterByActivity('Pee')">
+                    <svg><use href="#icon-pee"/></svg>
+                    Pee
+                </div>
+                <div class="activity-filter-chip" onclick="filterByActivity('Food')">
+                    <svg><use href="#icon-food"/></svg>
+                    Food
+                </div>
+                <div class="activity-filter-chip" onclick="filterByActivity('Sleep')">
+                    <svg><use href="#icon-sleep"/></svg>
+                    Sleep
+                </div>
+                <div class="activity-filter-chip" onclick="filterByActivity('Meds')">
+                    <svg><use href="#icon-meds"/></svg>
+                    Meds
+                </div>
             </div>
         </div>
 
@@ -1369,6 +1462,30 @@
                 return activities;
             }
             return activities.filter(activity => activity.petId === currentPetId);
+        }
+
+        // Activity Filter
+        let currentActivityFilter = 'All';
+
+        window.filterByActivity = function(activityType) {
+            currentActivityFilter = activityType;
+
+            // Update active chip
+            document.querySelectorAll('.activity-filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.closest('.activity-filter-chip').classList.add('active');
+
+            // Re-render activities with filter
+            const filteredByPet = filterActivitiesByPet(currentActivities);
+            renderActivities(filteredByPet);
+        };
+
+        function filterActivitiesByType(activities) {
+            if (currentActivityFilter === 'All') {
+                return activities;
+            }
+            return activities.filter(activity => activity.type === currentActivityFilter);
         }
 
         // User Management Functions
@@ -2012,15 +2129,20 @@
         function renderActivities(activities) {
             const container = document.getElementById('activities');
 
-            if (activities.length === 0) {
-                const message = currentPetId === 'all'
+            // Apply activity type filter
+            const filteredActivities = filterActivitiesByType(activities);
+
+            if (filteredActivities.length === 0) {
+                const message = currentActivityFilter !== 'All'
+                    ? `No ${currentActivityFilter} activities found.`
+                    : currentPetId === 'all'
                     ? 'No activities yet. Tap a button to start logging! 🐾'
                     : 'No activities for this pet yet. Start logging! 🐾';
                 container.innerHTML = `<div class="empty-text">${message}</div>`;
                 return;
             }
 
-            const grouped = groupByDate(activities);
+            const grouped = groupByDate(filteredActivities);
 
             container.innerHTML = Object.entries(grouped).map(([date, items]) => `
                 <div class="date-group">
