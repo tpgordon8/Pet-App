@@ -132,6 +132,27 @@ function AppContent() {
     });
   };
 
+  // 🎨 Get icon component for activity type
+  const getActivityIcon = (type) => {
+    const iconProps = { size: 20, strokeWidth: 2 };
+    const iconColor = colors.activity[type.toLowerCase()]?.icon || colors.primary;
+
+    switch(type.toLowerCase()) {
+      case 'poop':
+        return <Droplet {...iconProps} color={iconColor} />;
+      case 'pee':
+        return <Droplets {...iconProps} color={iconColor} />;
+      case 'food':
+        return <UtensilsCrossed {...iconProps} color={iconColor} />;
+      case 'sleep':
+        return <MoonIcon {...iconProps} color={iconColor} />;
+      case 'meds':
+        return <Pill {...iconProps} color={iconColor} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar style="auto" />
@@ -239,7 +260,11 @@ function AppContent() {
                 key={activity.id}
                 style={[styles.activityItem, { backgroundColor: colors.background }]}
               >
-                <Text style={styles.activityEmoji}>{activity.emoji}</Text>
+                <View style={[styles.activityIconCircle, {
+                  backgroundColor: colors.activity[activity.type.toLowerCase()]?.bg || colors.card
+                }]}>
+                  {getActivityIcon(activity.type)}
+                </View>
                 <View style={styles.activityDetails}>
                   <Text style={[styles.activityText, { color: colors.text }]}>
                     <Text style={[styles.activityUser, { color: colors.primary }]}>
@@ -371,8 +396,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 8,
   },
-  activityEmoji: {
-    fontSize: 28,
+  activityIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 12,
   },
   activityDetails: {

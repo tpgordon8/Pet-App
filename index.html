@@ -166,10 +166,20 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .stat-emoji {
-            font-size: 28px;
+        .stat-icon {
             margin-bottom: 8px;
-            filter: grayscale(0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon .icon {
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .stat-item:hover .stat-icon .icon {
+            opacity: 1;
         }
 
         .stat-count {
@@ -389,10 +399,20 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .activity-emoji {
-            font-size: 28px;
+        .activity-icon-wrapper {
             margin-right: 16px;
-            filter: grayscale(0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--bg-glass);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .activity-icon {
+            opacity: 0.8;
         }
 
         .activity-details {
@@ -1122,17 +1142,22 @@
             <div class="form-group">
                 <label class="form-label">Activity Type</label>
                 <select class="select-input" id="edit-type">
-                    <option value="Poop">💩 Poop</option>
-                    <option value="Pee">💧 Pee</option>
-                    <option value="Food">🍖 Food</option>
-                    <option value="Sleep">😴 Sleep</option>
-                    <option value="Meds">💊 Meds</option>
+                    <option value="Poop">Poop</option>
+                    <option value="Pee">Pee</option>
+                    <option value="Food">Food</option>
+                    <option value="Sleep">Sleep</option>
+                    <option value="Meds">Meds</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Date & Time</label>
                 <input type="datetime-local" class="datetime-input" id="edit-datetime">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Note (Optional)</label>
+                <textarea class="form-input" id="edit-note" placeholder="Add a note..." rows="3" maxlength="200"></textarea>
             </div>
 
             <div class="modal-actions">
@@ -1413,6 +1438,9 @@
 
             document.getElementById('edit-datetime').value = datetimeLocal;
 
+            // Set note field
+            document.getElementById('edit-note').value = activity.note || '';
+
             // Show modal
             document.getElementById('edit-modal').classList.add('show');
         };
@@ -1427,6 +1455,7 @@
 
             const type = document.getElementById('edit-type').value;
             const datetime = document.getElementById('edit-datetime').value;
+            const note = document.getElementById('edit-note').value.trim();
 
             if (!datetime) {
                 showToast('❌ Please select a date and time', 'error');
@@ -1436,41 +1465,23 @@
             const timestamp = new Date(datetime).getTime();
             const emoji = activityEmojiMap[type];
 
-            const activityRef = ref(database, `activities/${currentEditActivityId}`);
-            update(activityRef, {
+            const updateData = {
                 type: type,
                 emoji: emoji,
                 timestamp: timestamp
-            }).then(() => {
+            };
+
+            // Add note to update if it exists, otherwise remove it
+            if (note) {
+                updateData.note = note;
+            } else {
+                updateData.note = null;
+            }
+
+            const activityRef = ref(database, `activities/${currentEditActivityId}`);
+            update(activityRef, updateData).then(() => {
                 showToast('✅ Activity updated!', 'success');
                 closeEditModal();
-            }).catch(error => {
-                showToast(`❌ ${error.message}`, 'error');
-            });
-        };
-
-        window.editActivity = function(activityId) {
-            const activity = currentActivities.find(a => a.id === activityId);
-            if (!activity) return;
-
-            // For now, simple time edit (can be enhanced later)
-            const currentTime = new Date(activity.timestamp);
-            const dateString = currentTime.toISOString().slice(0, 16);
-
-            const newDatetime = prompt(
-                `Edit timestamp for ${activity.type}:`,
-                dateString
-            );
-
-            if (!newDatetime) return;
-
-            const newTimestamp = new Date(newDatetime).getTime();
-
-            const activityRef = ref(database, `activities/${activityId}`);
-            update(activityRef, {
-                timestamp: newTimestamp
-            }).then(() => {
-                showToast('✅ Activity updated!', 'success');
             }).catch(error => {
                 showToast(`❌ ${error.message}`, 'error');
             });
@@ -1856,17 +1867,14 @@
         // Render stats widget
         function renderStats(stats) {
             const statsGrid = document.getElementById('stats-grid');
-            const emojis = {
-                Poop: '💩',
-                Pee: '💧',
-                Food: '🍖',
-                Sleep: '😴',
-                Meds: '💊'
-            };
 
             statsGrid.innerHTML = Object.entries(stats).map(([type, count]) => `
                 <div class="stat-item">
-                    <div class="stat-emoji">${emojis[type]}</div>
+                    <div class="stat-icon">
+                        <svg class="icon" width="24" height="24">
+                            <use href="#icon-${type.toLowerCase()}" />
+                        </svg>
+                    </div>
                     <div class="stat-count">${count}</div>
                     <div class="stat-label">${type}</div>
                 </div>
@@ -2043,9 +2051,15 @@
                             }
                         }
 
+                        const activityIcon = `icon-${activity.type.toLowerCase().replace(' ', '-')}`;
+
                         return `
                             <div class="activity-item">
-                                <div class="activity-emoji">${activity.emoji}</div>
+                                <div class="activity-icon-wrapper">
+                                    <svg class="activity-icon" width="20" height="20">
+                                        <use href="#${activityIcon}" />
+                                    </svg>
+                                </div>
                                 <div class="activity-details" style="flex: 1;">
                                     <div class="activity-text">
                                         <span class="activity-user">${activity.user}</span> logged ${activity.type}
