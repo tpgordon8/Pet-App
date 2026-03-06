@@ -2,7 +2,16 @@ import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput, RefreshControl } from 'react-native';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, push, onValue, serverTimestamp } from 'firebase/database';
+import { getDatabase, ref, push, onValue } from 'firebase/database';
+
+// Contexts
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { PetProvider, usePets } from './contexts/PetContext';
+
+// Components
+import { Header } from './components/layout/Header';
+import { PetSelector } from './components/pet/PetSelector';
+import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill } from 'lucide-react-native';
 
 // 🔥 Firebase configuration
 const firebaseConfig = {
@@ -19,7 +28,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-export default function App() {
+// Main App Component (wrapped in contexts)
+function AppContent() {
+  const { colors } = useTheme();
+  const { selectedPetId, getSelectedPets } = usePets();
   // 📊 State to store activities from Firebase
   const [activities, setActivities] = useState([]);
   // 📝 State for optional note input
@@ -121,32 +133,41 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar style="auto" />
+
+      {/* Header with dark mode toggle */}
+      <Header />
+
+      {/* Pet Selector */}
+      <PetSelector />
 
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* 📋 Header section */}
-        <View style={styles.header}>
-          <Text style={styles.title}>PetLog</Text>
-          <Text style={styles.subtitle}>Quick activity logging</Text>
-        </View>
 
         {/* 📝 Optional note input */}
         <View style={styles.noteContainer}>
           <TextInput
-            style={styles.noteInput}
+            style={[styles.noteInput, {
+              backgroundColor: colors.card,
+              borderColor: colors.border,
+              color: colors.text
+            }]}
             placeholder="Add a note (optional)..."
+            placeholderTextColor={colors.textSecondary}
             value={note}
             onChangeText={setNote}
             multiline
             numberOfLines={2}
           />
           {note.trim() && (
-            <TouchableOpacity onPress={() => setNote('')} style={styles.clearButton}>
+            <TouchableOpacity
+              onPress={() => setNote('')}
+              style={[styles.clearButton, { backgroundColor: colors.textSecondary }]}
+            >
               <Text style={styles.clearButtonText}>✕</Text>
             </TouchableOpacity>
           )}
@@ -154,49 +175,85 @@ export default function App() {
 
         {/* 🔘 Button section */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.poopButton]} onPress={handlePoop}>
-            <Text style={styles.buttonEmoji}>💩</Text>
-            <Text style={styles.buttonText}>Poop</Text>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.activity.poop.bg }]}
+            onPress={handlePoop}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: colors.activity.poop.icon + '20' }]}>
+              <Droplet size={24} color={colors.activity.poop.icon} strokeWidth={2} />
+            </View>
+            <Text style={[styles.buttonText, { color: colors.activity.poop.text }]}>Poop</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.peeButton]} onPress={handlePee}>
-            <Text style={styles.buttonEmoji}>💧</Text>
-            <Text style={styles.buttonText}>Pee</Text>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.activity.pee.bg }]}
+            onPress={handlePee}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: colors.activity.pee.icon + '20' }]}>
+              <Droplets size={24} color={colors.activity.pee.icon} strokeWidth={2} />
+            </View>
+            <Text style={[styles.buttonText, { color: colors.activity.pee.text }]}>Pee</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.foodButton]} onPress={handleFood}>
-            <Text style={styles.buttonEmoji}>🍖</Text>
-            <Text style={styles.buttonText}>Food</Text>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.activity.food.bg }]}
+            onPress={handleFood}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: colors.activity.food.icon + '20' }]}>
+              <UtensilsCrossed size={24} color={colors.activity.food.icon} strokeWidth={2} />
+            </View>
+            <Text style={[styles.buttonText, { color: colors.activity.food.text }]}>Food</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.sleepButton]} onPress={handleSleep}>
-            <Text style={styles.buttonEmoji}>😴</Text>
-            <Text style={styles.buttonText}>Sleep</Text>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.activity.sleep.bg }]}
+            onPress={handleSleep}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: colors.activity.sleep.icon + '20' }]}>
+              <MoonIcon size={24} color={colors.activity.sleep.icon} strokeWidth={2} />
+            </View>
+            <Text style={[styles.buttonText, { color: colors.activity.sleep.text }]}>Sleep</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.medsButton]} onPress={handleMeds}>
-            <Text style={styles.buttonEmoji}>💊</Text>
-            <Text style={styles.buttonText}>Meds</Text>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.activity.meds.bg }]}
+            onPress={handleMeds}
+          >
+            <View style={[styles.iconCircle, { backgroundColor: colors.activity.meds.icon + '20' }]}>
+              <Pill size={24} color={colors.activity.meds.icon} strokeWidth={2} />
+            </View>
+            <Text style={[styles.buttonText, { color: colors.activity.meds.text }]}>Meds</Text>
           </TouchableOpacity>
         </View>
 
-        {/* 📱 Activity Feed (iMessage style) */}
-        <View style={styles.feedContainer}>
-          <Text style={styles.feedTitle}>Recent Activity</Text>
+        {/* 📱 Activity Feed */}
+        <View style={[styles.feedContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.feedTitle, { color: colors.text }]}>Recent Activity</Text>
           {activities.length === 0 ? (
-            <Text style={styles.emptyText}>No activities yet. Tap a button to start logging! 🐾</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              No activities yet. Tap a button to start logging! 🐾
+            </Text>
           ) : (
             activities.map((activity) => (
-              <View key={activity.id} style={styles.activityItem}>
+              <View
+                key={activity.id}
+                style={[styles.activityItem, { backgroundColor: colors.background }]}
+              >
                 <Text style={styles.activityEmoji}>{activity.emoji}</Text>
                 <View style={styles.activityDetails}>
-                  <Text style={styles.activityText}>
-                    <Text style={styles.activityUser}>{activity.user}</Text> logged {activity.type}
+                  <Text style={[styles.activityText, { color: colors.text }]}>
+                    <Text style={[styles.activityUser, { color: colors.primary }]}>
+                      {activity.user}
+                    </Text> logged {activity.type}
                   </Text>
                   {activity.note && (
-                    <Text style={styles.activityNote}>"{activity.note}"</Text>
+                    <Text style={[styles.activityNote, { color: colors.textSecondary }]}>
+                      "{activity.note}"
+                    </Text>
                   )}
-                  <Text style={styles.activityTime}>{formatTime(activity.timestamp)}</Text>
+                  <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
+                    {formatTime(activity.timestamp)}
+                  </Text>
                 </View>
               </View>
             ))
@@ -207,38 +264,33 @@ export default function App() {
   );
 }
 
+// Wrap with providers
+export default function App() {
+  return (
+    <ThemeProvider>
+      <PetProvider database={database}>
+        <AppContent />
+      </PetProvider>
+    </ThemeProvider>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     paddingTop: 60,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
   },
   noteContainer: {
     position: 'relative',
     paddingHorizontal: 20,
-    marginBottom: 15,
+    marginTop: 16,
+    marginBottom: 12,
   },
   noteInput: {
-    backgroundColor: 'white',
     borderRadius: 12,
     padding: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
     minHeight: 60,
     maxHeight: 100,
   },
@@ -246,7 +298,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 28,
     top: 8,
-    backgroundColor: '#ccc',
     borderRadius: 12,
     width: 24,
     height: 24,
@@ -260,105 +311,87 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 20,
-    gap: 10,
-    marginBottom: 15,
+    gap: 8,
+    marginBottom: 12,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    borderRadius: 15,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  poopButton: {
-    backgroundColor: '#8B4513',
-  },
-  peeButton: {
-    backgroundColor: '#FFD700',
-  },
-  foodButton: {
-    backgroundColor: '#FF6347',
-  },
-  sleepButton: {
-    backgroundColor: '#4169E1',
-  },
-  medsButton: {
-    backgroundColor: '#32CD32',
-  },
-  buttonEmoji: {
-    fontSize: 24,
-    marginRight: 8,
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    color: 'white',
   },
 
   // 📱 Activity Feed Styles
   feedContainer: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
     marginHorizontal: 20,
+    marginTop: 12,
     marginBottom: 20,
     minHeight: 300,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   feedTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
   },
   emptyText: {
     textAlign: 'center',
-    color: '#999',
-    fontSize: 16,
+    fontSize: 15,
     marginTop: 40,
   },
   activityItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 8,
   },
   activityEmoji: {
-    fontSize: 32,
-    marginRight: 15,
+    fontSize: 28,
+    marginRight: 12,
   },
   activityDetails: {
     flex: 1,
   },
   activityText: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 4,
+    fontSize: 15,
+    marginBottom: 2,
   },
   activityUser: {
-    fontWeight: 'bold',
-    color: '#4169E1',
+    fontWeight: '600',
   },
   activityNote: {
     fontSize: 14,
-    color: '#666',
     fontStyle: 'italic',
-    marginTop: 4,
-    marginBottom: 4,
+    marginTop: 2,
+    marginBottom: 2,
   },
   activityTime: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 13,
   },
 });
