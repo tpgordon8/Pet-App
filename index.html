@@ -253,6 +253,79 @@
             text-align: center;
         }
 
+        /* Medical Summary Card */
+        .medical-summary {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .medical-summary-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .medical-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .medical-stat {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .medical-stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .medical-stat-icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .medical-stat-value {
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .medical-stat-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .medical-stat-none {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
         .medical-button { background: #8B5CF6; }
         .vet-button { background: #EC4899; }
         .weight-button { background: #06B6D4; }
@@ -880,6 +953,17 @@
             </div>
         </div>
 
+        <!-- Medical Summary Card -->
+        <div class="medical-summary" id="medical-summary" style="display: none;">
+            <div class="medical-summary-title">
+                <svg style="width: 14px; height: 14px;"><use href="#icon-vet"/></svg>
+                Medical Summary
+            </div>
+            <div class="medical-summary-grid" id="medical-summary-grid">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
         <div class="button-container">
             <button class="button poop-button" onclick="logActivity('Poop', '💩')">
                 <svg class="button-icon"><use href="#icon-poop"/></svg> Poop
@@ -1201,8 +1285,10 @@
                     const activitiesArray = Object.entries(data)
                         .map(([id, activity]) => ({ id, ...activity }))
                         .sort((a, b) => b.timestamp - a.timestamp);
-                    renderActivities(filterActivitiesByPet(activitiesArray));
-                    renderStats(calculateTodayStats(filterActivitiesByPet(activitiesArray)));
+                    const filteredActivities = filterActivitiesByPet(activitiesArray);
+                    renderActivities(filteredActivities);
+                    renderStats(calculateTodayStats(filteredActivities));
+                    renderMedicalSummary(filteredActivities);
                 }
             }, { onlyOnce: true });
         };
@@ -1782,6 +1868,90 @@
             return groups;
         }
 
+        // Calculate and render medical summary
+        function renderMedicalSummary(activities) {
+            const medicalSummary = document.getElementById('medical-summary');
+            const medicalSummaryGrid = document.getElementById('medical-summary-grid');
+
+            // Find the most recent medical activities
+            const latestVet = activities.find(a => a.type === 'Vet Visit');
+            const latestVaccine = activities.find(a => a.type === 'Vaccination');
+            const latestWeight = activities.find(a => a.type === 'Weight Check');
+            const latestMeds = activities.find(a => a.type === 'Meds');
+
+            // Only show if we have at least one medical activity
+            if (!latestVet && !latestVaccine && !latestWeight && !latestMeds) {
+                medicalSummary.style.display = 'none';
+                return;
+            }
+
+            medicalSummary.style.display = 'block';
+
+            function formatRelativeTime(timestamp) {
+                const now = Date.now();
+                const diff = now - timestamp;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+                if (days === 0) return 'Today';
+                if (days === 1) return 'Yesterday';
+                if (days < 7) return `${days} days ago`;
+                if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+                return `${Math.floor(days / 30)} months ago`;
+            }
+
+            const medicalStats = [
+                {
+                    label: 'Last Vet',
+                    icon: 'vet',
+                    data: latestVet,
+                    format: (a) => a.medicalData?.notes || 'Visit logged'
+                },
+                {
+                    label: 'Last Vaccine',
+                    icon: 'vaccine',
+                    data: latestVaccine,
+                    format: (a) => a.medicalData?.vaccineName || 'Vaccine given'
+                },
+                {
+                    label: 'Last Weight',
+                    icon: 'weight',
+                    data: latestWeight,
+                    format: (a) => a.medicalData ? `${a.medicalData.weight} ${a.medicalData.unit}` : 'Weighed'
+                },
+                {
+                    label: 'Last Meds',
+                    icon: 'meds',
+                    data: latestMeds,
+                    format: (a) => formatRelativeTime(a.timestamp)
+                }
+            ];
+
+            medicalSummaryGrid.innerHTML = medicalStats.map(stat => {
+                if (!stat.data) {
+                    return `
+                        <div class="medical-stat">
+                            <div class="medical-stat-label">
+                                <svg class="medical-stat-icon"><use href="#icon-${stat.icon}"/></svg>
+                                ${stat.label}
+                            </div>
+                            <div class="medical-stat-none">Not yet</div>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="medical-stat">
+                        <div class="medical-stat-label">
+                            <svg class="medical-stat-icon"><use href="#icon-${stat.icon}"/></svg>
+                            ${stat.label}
+                        </div>
+                        <div class="medical-stat-value">${stat.format(stat.data)}</div>
+                        <div class="medical-stat-time">${formatRelativeTime(stat.data.timestamp)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Render activities
         function renderActivities(activities) {
             const container = document.getElementById('activities');
@@ -1858,10 +2028,12 @@
                 const filteredActivities = filterActivitiesByPet(currentActivities);
                 renderActivities(filteredActivities);
                 renderStats(calculateTodayStats(filteredActivities));
+                renderMedicalSummary(filteredActivities);
             } else {
                 currentActivities = [];
                 renderActivities([]);
                 renderStats({ Poop: 0, Pee: 0, Food: 0, Sleep: 0, Meds: 0 });
+                renderMedicalSummary([]);
             }
         }, (error) => {
             console.error('Firebase error:', error);
