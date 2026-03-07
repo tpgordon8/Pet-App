@@ -4,8 +4,8 @@
   "description": "Track your pet's daily activities with ease",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#4169E1",
+  "background_color": "#FDFAF6",
+  "theme_color": "#8B9D83",
   "orientation": "portrait",
   "icons": [
     {
