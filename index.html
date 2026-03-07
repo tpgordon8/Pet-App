@@ -1543,6 +1543,7 @@
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <!-- SVG Icon Sprite -->
@@ -1729,6 +1730,9 @@
                 </button>
                 <button class="export-btn secondary" onclick="exportToCSV()">
                     📊 CSV Export
+                </button>
+                <button class="export-btn" onclick="exportToPDF()">
+                    📄 PDF Export
                 </button>
             </div>
         </div>
@@ -3184,6 +3188,172 @@
 
             exportActivitiesToCSV(activities);
             showToast(`✅ Exported ${activities.length} activities`, 'success');
+        };
+
+        // PDF Export
+        window.exportToPDF = function() {
+            // Get filtered activities
+            let activities = currentActivities;
+            activities = filterActivitiesByPet(activities);
+            activities = filterActivitiesByType(activities);
+            activities = filterActivitiesByDateRange(activities);
+
+            if (activities.length === 0) {
+                showToast('⚠️ No activities to export', 'error');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get pet info
+            const pet = currentPetId === 'all' ? null : pets.find(p => p.id === currentPetId);
+            const petName = pet ? pet.name : 'All Pets';
+
+            // Title
+            doc.setFontSize(20);
+            doc.setTextColor(65, 105, 225);
+            doc.text('PetLog Report', 105, 20, { align: 'center' });
+
+            // Pet name
+            doc.setFontSize(14);
+            doc.setTextColor(100, 100, 100);
+            doc.text(petName, 105, 30, { align: 'center' });
+
+            // Date range
+            doc.setFontSize(10);
+            const today = new Date().toLocaleDateString('en-US');
+            doc.text(`Generated: ${today}`, 105, 38, { align: 'center' });
+
+            let yPos = 50;
+
+            // Medical Summary Section
+            const medicalActivities = activities.filter(a =>
+                a.type === 'Vet Visit' || a.type === 'Vaccination' ||
+                a.type === 'Weight Check' || a.type === 'Meds'
+            );
+
+            if (medicalActivities.length > 0) {
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text('Medical Summary', 20, yPos);
+                yPos += 10;
+
+                doc.setFontSize(10);
+                doc.setTextColor(80, 80, 80);
+
+                medicalActivities.forEach(activity => {
+                    if (yPos > 270) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+
+                    const date = new Date(activity.timestamp).toLocaleDateString('en-US');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`${activity.type} - ${date}`, 20, yPos);
+                    yPos += 6;
+
+                    if (activity.medicalData) {
+                        const data = activity.medicalData;
+                        doc.setTextColor(80, 80, 80);
+
+                        if (data.notes) {
+                            const lines = doc.splitTextToSize(`Notes: ${data.notes}`, 170);
+                            doc.text(lines, 25, yPos);
+                            yPos += lines.length * 5;
+                        }
+
+                        if (data.cost) {
+                            doc.text(`Cost: $${data.cost.toFixed(2)}`, 25, yPos);
+                            yPos += 5;
+                        }
+
+                        if (data.vaccineName) {
+                            doc.text(`Vaccine: ${data.vaccineName}`, 25, yPos);
+                            yPos += 5;
+                        }
+
+                        if (data.weight) {
+                            doc.text(`Weight: ${data.weight} ${data.unit}`, 25, yPos);
+                            yPos += 5;
+                        }
+                    }
+
+                    yPos += 5;
+                });
+
+                yPos += 5;
+            }
+
+            // Activity Log Section
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Activity Log', 20, yPos);
+            yPos += 10;
+
+            doc.setFontSize(9);
+            doc.setTextColor(80, 80, 80);
+
+            // Group by date
+            const grouped = {};
+            activities.forEach(activity => {
+                const date = new Date(activity.timestamp).toLocaleDateString('en-US');
+                if (!grouped[date]) grouped[date] = [];
+                grouped[date].push(activity);
+            });
+
+            Object.entries(grouped).forEach(([date, items]) => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+
+                doc.setFontSize(11);
+                doc.setTextColor(0, 0, 0);
+                doc.text(date, 20, yPos);
+                yPos += 7;
+
+                doc.setFontSize(9);
+                items.forEach(activity => {
+                    if (yPos > 275) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+
+                    const time = new Date(activity.timestamp).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`${time} - ${activity.type}`, 25, yPos);
+
+                    if (activity.note) {
+                        yPos += 5;
+                        doc.setTextColor(120, 120, 120);
+                        const lines = doc.splitTextToSize(`"${activity.note}"`, 165);
+                        doc.text(lines, 30, yPos);
+                        yPos += lines.length * 4;
+                    }
+
+                    yPos += 6;
+                });
+
+                yPos += 3;
+            });
+
+            // Footer on last page
+            const pageCount = doc.internal.getNumberOfPages();
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Page ${pageCount}`, 105, 290, { align: 'center' });
+            doc.text('Generated by PetLog - https://petlog.app', 105, 295, { align: 'center' });
+
+            // Save PDF
+            const filename = `petlog_${petName.replace(/\s+/g, '_')}_${today.replace(/\//g, '-')}.pdf`;
+            doc.save(filename);
+
+            showToast(`✅ PDF exported`, 'success');
         };
 
         // Pull to Refresh
