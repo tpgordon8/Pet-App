@@ -2036,8 +2036,33 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Date & Time</label>
-                <input type="datetime-local" class="datetime-input" id="edit-datetime">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-input" id="edit-date">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Time</label>
+                <div class="time-picker" id="edit-time-picker">
+                    <div class="time-picker-column">
+                        <div class="time-picker-scroll" id="hour-scroll">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="time-picker-overlay"></div>
+                    </div>
+                    <span class="time-picker-separator">:</span>
+                    <div class="time-picker-column">
+                        <div class="time-picker-scroll" id="minute-scroll">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="time-picker-overlay"></div>
+                    </div>
+                    <div class="time-picker-column">
+                        <div class="time-picker-scroll" id="period-scroll">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="time-picker-overlay"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -2402,6 +2427,101 @@
             'Meds': '💊'
         };
 
+        // Initialize time picker
+        function initTimePicker() {
+            const hourScroll = document.getElementById('hour-scroll');
+            const minuteScroll = document.getElementById('minute-scroll');
+            const periodScroll = document.getElementById('period-scroll');
+
+            // Populate hours (1-12)
+            for (let i = 1; i <= 12; i++) {
+                const item = document.createElement('div');
+                item.className = 'time-picker-item';
+                item.textContent = i;
+                item.dataset.value = i;
+                hourScroll.appendChild(item);
+            }
+
+            // Populate minutes (00-59 in 5-minute intervals)
+            for (let i = 0; i < 60; i += 5) {
+                const item = document.createElement('div');
+                item.className = 'time-picker-item';
+                item.textContent = String(i).padStart(2, '0');
+                item.dataset.value = i;
+                minuteScroll.appendChild(item);
+            }
+
+            // Populate period (AM/PM)
+            ['AM', 'PM'].forEach(period => {
+                const item = document.createElement('div');
+                item.className = 'time-picker-item';
+                item.textContent = period;
+                item.dataset.value = period;
+                periodScroll.appendChild(item);
+            });
+
+            // Add scroll listeners to update selected state
+            [hourScroll, minuteScroll, periodScroll].forEach(scroll => {
+                scroll.addEventListener('scroll', () => updateTimePickerSelection(scroll));
+            });
+        }
+
+        function updateTimePickerSelection(scrollElement) {
+            const items = scrollElement.querySelectorAll('.time-picker-item');
+            const scrollTop = scrollElement.scrollTop;
+            const itemHeight = 40;
+            const centerIndex = Math.round(scrollTop / itemHeight);
+
+            items.forEach((item, index) => {
+                if (index === centerIndex) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        function setTimePickerValue(hour, minute, period) {
+            const hourScroll = document.getElementById('hour-scroll');
+            const minuteScroll = document.getElementById('minute-scroll');
+            const periodScroll = document.getElementById('period-scroll');
+
+            // Scroll to values
+            const hourIndex = hour - 1; // 1-12 becomes 0-11
+            const minuteIndex = Math.round(minute / 5); // Round to nearest 5 minutes
+            const periodIndex = period === 'AM' ? 0 : 1;
+
+            hourScroll.scrollTop = hourIndex * 40;
+            minuteScroll.scrollTop = minuteIndex * 40;
+            periodScroll.scrollTop = periodIndex * 40;
+
+            // Update selections
+            setTimeout(() => {
+                updateTimePickerSelection(hourScroll);
+                updateTimePickerSelection(minuteScroll);
+                updateTimePickerSelection(periodScroll);
+            }, 100);
+        }
+
+        function getTimePickerValue() {
+            const hourScroll = document.getElementById('hour-scroll');
+            const minuteScroll = document.getElementById('minute-scroll');
+            const periodScroll = document.getElementById('period-scroll');
+
+            const hourItem = hourScroll.querySelector('.time-picker-item.selected');
+            const minuteItem = minuteScroll.querySelector('.time-picker-item.selected');
+            const periodItem = periodScroll.querySelector('.time-picker-item.selected');
+
+            return {
+                hour: hourItem ? parseInt(hourItem.dataset.value) : 12,
+                minute: minuteItem ? parseInt(minuteItem.dataset.value) : 0,
+                period: periodItem ? periodItem.dataset.value : 'AM'
+            };
+        }
+
+        // Initialize time picker on page load
+        initTimePicker();
+
         window.editActivity = function(activityId) {
             const activity = currentActivities.find(a => a.id === activityId);
             if (!activity) return;
@@ -2411,16 +2531,20 @@
             // Set form values
             document.getElementById('edit-type').value = activity.type;
 
-            // Convert timestamp to datetime-local format
+            // Convert timestamp to date and time (12-hour format)
             const date = new Date(activity.timestamp);
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById('edit-date').value = `${year}-${month}-${day}`;
 
-            document.getElementById('edit-datetime').value = datetimeLocal;
+            // Set time picker (convert 24h to 12h)
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const period = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12; // Convert to 12-hour format (0 becomes 12)
+
+            setTimePickerValue(hours, minutes, period);
 
             // Set note field
             document.getElementById('edit-note').value = activity.note || '';
@@ -2438,15 +2562,27 @@
             if (!currentEditActivityId) return;
 
             const type = document.getElementById('edit-type').value;
-            const datetime = document.getElementById('edit-datetime').value;
+            const dateValue = document.getElementById('edit-date').value;
+            const timeValue = getTimePickerValue();
             const note = document.getElementById('edit-note').value.trim();
 
-            if (!datetime) {
-                showToast('❌ Please select a date and time', 'error');
+            if (!dateValue) {
+                showToast('❌ Please select a date', 'error');
                 return;
             }
 
-            const timestamp = new Date(datetime).getTime();
+            // Convert 12-hour time to 24-hour for timestamp
+            let hours = timeValue.hour;
+            if (timeValue.period === 'PM' && hours !== 12) {
+                hours += 12;
+            } else if (timeValue.period === 'AM' && hours === 12) {
+                hours = 0;
+            }
+
+            // Create timestamp from date and time
+            const [year, month, day] = dateValue.split('-');
+            const dateObj = new Date(year, month - 1, day, hours, timeValue.minute);
+            const timestamp = dateObj.getTime();
             const emoji = activityEmojiMap[type];
 
             const updateData = {
@@ -2868,16 +3004,19 @@
         // Format timestamp
         function formatTime(timestamp) {
             const date = new Date(timestamp);
-            const options = {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
+            const timeOptions = {
                 hour: 'numeric',
                 minute: '2-digit',
-                second: '2-digit',
                 hour12: true
             };
-            return date.toLocaleString('en-US', options);
+            const dateOptions = {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            };
+            const timeStr = date.toLocaleTimeString('en-US', timeOptions);
+            const dateStr = date.toLocaleDateString('en-US', dateOptions);
+            return `${dateStr} at ${timeStr}`;
         }
 
         // Get date label
@@ -3345,7 +3484,11 @@
             const rows = activities.map(activity => {
                 const date = new Date(activity.timestamp);
                 const dateStr = date.toLocaleDateString('en-US');
-                const timeStr = date.toLocaleTimeString('en-US');
+                const timeStr = date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
                 const pet = pets.find(p => p.id === activity.petId);
                 const petName = pet ? pet.name : 'Unknown';
                 const note = activity.note || '';
@@ -3528,7 +3671,8 @@
 
                     const time = new Date(activity.timestamp).toLocaleTimeString('en-US', {
                         hour: 'numeric',
-                        minute: '2-digit'
+                        minute: '2-digit',
+                        hour12: true
                     });
 
                     doc.setTextColor(80, 80, 80);
