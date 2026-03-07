@@ -98,6 +98,87 @@
             text-transform: uppercase;
         }
 
+        /* Recent Activity Summary */
+        .recent-activity {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 18px 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .recent-activity-title {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .recent-activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recent-activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .recent-activity-item:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+
+        .recent-activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .recent-activity-icon svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+        }
+
+        .recent-activity-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .recent-activity-type {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .recent-activity-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .recent-activity-time {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         /* Stats Widget - Clean & Elegant */
         .stats-widget {
             background: var(--bg-secondary);
@@ -1586,6 +1667,14 @@
             <div class="subtitle">Track your pet's activities</div>
         </div>
 
+        <!-- Recent Activity Summary -->
+        <div class="recent-activity" id="recent-activity-widget">
+            <div class="recent-activity-title">Recent Activity</div>
+            <div class="recent-activity-list" id="recent-activity-list">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
         <!-- Daily Stats Widget -->
         <div class="stats-widget">
             <div class="stats-title">📊 Today's Activity</div>
@@ -2808,6 +2897,68 @@
             }).join('');
         }
 
+        // Render recent activity summary
+        function renderRecentActivity(activities) {
+            const container = document.getElementById('recent-activity-list');
+
+            // Get the 5 most recent activities
+            const recentActivities = activities.slice(0, 5);
+
+            if (recentActivities.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); font-size: 13px; padding: 12px;">No recent activities</div>';
+                return;
+            }
+
+            container.innerHTML = recentActivities.map(activity => {
+                const pet = pets.find(p => p.id === activity.petId);
+                const petDisplay = pet ? `${pet.emoji} ${pet.name}` : '🐾';
+
+                // Format relative time
+                const now = Date.now();
+                const diff = now - activity.timestamp;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+
+                let timeAgo;
+                if (minutes < 1) timeAgo = 'Just now';
+                else if (minutes < 60) timeAgo = `${minutes}m ago`;
+                else if (hours < 24) timeAgo = `${hours}h ago`;
+                else if (days === 1) timeAgo = 'Yesterday';
+                else timeAgo = `${days}d ago`;
+
+                // Activity icon background color
+                let iconBg = 'var(--bg-tertiary)';
+                let iconColor = 'var(--text-secondary)';
+                if (activity.type === 'Poop') { iconBg = 'rgba(166, 124, 82, 0.12)'; iconColor = 'var(--color-poop)'; }
+                else if (activity.type === 'Pee') { iconBg = 'rgba(184, 164, 114, 0.12)'; iconColor = 'var(--color-pee)'; }
+                else if (activity.type === 'Food') { iconBg = 'rgba(139, 157, 131, 0.12)'; iconColor = 'var(--color-food)'; }
+                else if (activity.type === 'Sleep') { iconBg = 'rgba(122, 138, 153, 0.12)'; iconColor = 'var(--color-sleep)'; }
+                else if (activity.type === 'Meds') { iconBg = 'rgba(155, 143, 165, 0.12)'; iconColor = 'var(--color-meds)'; }
+
+                // Get SVG icon
+                let svgIcon = '';
+                if (activity.type === 'Poop') svgIcon = '<use href="#icon-poop"/>';
+                else if (activity.type === 'Pee') svgIcon = '<use href="#icon-pee"/>';
+                else if (activity.type === 'Food') svgIcon = '<use href="#icon-food"/>';
+                else if (activity.type === 'Sleep') svgIcon = '<use href="#icon-sleep"/>';
+                else if (activity.type === 'Meds') svgIcon = '<use href="#icon-meds"/>';
+
+                return `
+                    <div class="recent-activity-item">
+                        <div class="recent-activity-icon" style="background: ${iconBg};">
+                            <svg style="color: ${iconColor};">${svgIcon}</svg>
+                        </div>
+                        <div class="recent-activity-details">
+                            <div class="recent-activity-type">${activity.type}</div>
+                            <div class="recent-activity-meta">${petDisplay}${activity.note ? ` · ${activity.note}` : ''}</div>
+                        </div>
+                        <div class="recent-activity-time">${timeAgo}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Render activities
         function renderActivities(activities) {
             const container = document.getElementById('activities');
@@ -3393,11 +3544,13 @@
                     .sort((a, b) => b.timestamp - a.timestamp);
 
                 const filteredActivities = filterActivitiesByPet(currentActivities);
+                renderRecentActivity(currentActivities); // Show all recent activities (not filtered by pet)
                 renderActivities(filteredActivities);
                 renderStats(calculateTodayStats(filteredActivities));
                 renderMedicalSummary(filteredActivities);
             } else {
                 currentActivities = [];
+                renderRecentActivity([]);
                 renderActivities([]);
                 renderStats({ Poop: 0, Pee: 0, Food: 0, Sleep: 0, Meds: 0 });
                 renderMedicalSummary([]);
