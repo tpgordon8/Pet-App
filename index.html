@@ -728,20 +728,20 @@
         /* Activity Filter */
         .activity-filter {
             background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            margin: 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-sm);
         }
 
         .activity-filter-title {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .activity-filter-chips {
@@ -754,34 +754,34 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 14px;
+            padding: 9px 15px;
             border-radius: 20px;
-            border: 1.5px solid var(--border-color);
-            background: var(--bg-primary);
-            font-size: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
         }
 
         .activity-filter-chip:hover {
-            border-color: var(--accent-blue);
-            background: var(--bg-glass);
+            border-color: var(--accent-sage);
+            background: var(--bg-secondary);
         }
 
         .activity-filter-chip.active {
-            background: var(--accent-blue);
-            border-color: var(--accent-blue);
+            background: var(--accent-sage);
+            border-color: var(--accent-sage);
             color: white;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .activity-filter-chip svg {
-            width: 16px;
-            height: 16px;
-            opacity: 0.8;
+            width: 15px;
+            height: 15px;
+            opacity: 0.7;
         }
 
         .activity-filter-chip.active svg {
@@ -791,82 +791,82 @@
         /* Date Range Picker */
         .date-range-picker {
             background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            margin: 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-sm);
         }
 
         .date-range-title {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .date-range-controls {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
         }
 
         .date-range-input {
             flex: 1;
-            padding: 10px 12px;
-            border: 1.5px solid var(--border-color);
+            padding: 11px 14px;
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            background: var(--bg-primary);
+            background: var(--bg-tertiary);
             color: var(--text-primary);
             font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 400;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .date-range-input:focus {
             outline: none;
-            border-color: var(--accent-blue);
+            border-color: var(--accent-sage);
             background: var(--bg-secondary);
         }
 
         .date-range-reset {
-            padding: 10px 16px;
-            border: 1.5px solid var(--border-color);
+            padding: 11px 16px;
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            background: var(--bg-primary);
+            background: var(--bg-tertiary);
             color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
         }
 
         .date-range-reset:hover {
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
-            background: var(--bg-glass);
+            border-color: var(--accent-sage);
+            color: var(--accent-sage);
+            background: var(--bg-secondary);
         }
 
         .date-range-presets {
             display: flex;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
 
         .preset-btn {
-            padding: 6px 12px;
+            padding: 7px 13px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: var(--bg-primary);
+            background: var(--bg-tertiary);
             color: var(--text-secondary);
             font-size: 12px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .preset-btn:hover {
