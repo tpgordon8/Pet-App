@@ -1115,6 +1115,112 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        /* Bulk Select Mode */
+        .bulk-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            padding: 16px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .bulk-action-bar.show {
+            display: flex;
+        }
+
+        .bulk-action-info {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .bulk-action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .bulk-action-btn {
+            padding: 10px 16px;
+            border: 1.5px solid;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bulk-action-btn.cancel {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .bulk-action-btn.cancel:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .bulk-action-btn.delete {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
+        }
+
+        .bulk-action-btn.delete:hover {
+            background: #dc2626;
+        }
+
+        .bulk-action-btn.export {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .bulk-action-btn.export:hover {
+            background: #059669;
+        }
+
+        .activity-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        .activity-checkbox.show {
+            display: block;
+        }
+
+        .activity-checkbox.checked {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            position: relative;
+        }
+
+        .activity-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
         /* Export Button */
         .export-section {
             background: var(--bg-secondary);
@@ -1365,8 +1471,11 @@
 
         <!-- Export Section -->
         <div class="export-section">
-            <div class="export-title">Export Data</div>
+            <div class="export-title">Bulk Actions</div>
             <div class="export-buttons">
+                <button class="export-btn secondary" onclick="toggleBulkSelectMode()" id="bulk-select-toggle">
+                    ☑️ Select
+                </button>
                 <button class="export-btn secondary" onclick="exportToCSV()">
                     📊 CSV Export
                 </button>
@@ -1378,6 +1487,18 @@
             <div id="activities">
                 <div class="loading"><div class="spinner"></div></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Bulk Action Bar -->
+    <div class="bulk-action-bar" id="bulk-action-bar">
+        <div class="bulk-action-info">
+            <span id="selected-count">0</span> selected
+        </div>
+        <div class="bulk-action-buttons">
+            <button class="bulk-action-btn cancel" onclick="cancelBulkSelect()">Cancel</button>
+            <button class="bulk-action-btn export" onclick="exportSelectedToCSV()">Export</button>
+            <button class="bulk-action-btn delete" onclick="deleteSelected()">Delete</button>
         </div>
     </div>
 
@@ -2536,6 +2657,7 @@
                                     </button>
                                 </div>
                                 <div class="activity-item-container">
+                                    <div class="activity-checkbox" onclick="toggleActivitySelection('${activity.id}')"></div>
                                     <div class="activity-icon-wrapper">
                                         <svg class="activity-icon" width="20" height="20">
                                             <use href="#${activityIcon}" />
@@ -2654,19 +2776,107 @@
             }
         });
 
-        // CSV Export
-        window.exportToCSV = function() {
-            // Get filtered activities based on current filters
-            let activities = currentActivities;
-            activities = filterActivitiesByPet(activities);
-            activities = filterActivitiesByType(activities);
-            activities = filterActivitiesByDateRange(activities);
+        // Bulk Select Mode
+        let bulkSelectMode = false;
+        let selectedActivities = new Set();
 
-            if (activities.length === 0) {
-                showToast('⚠️ No activities to export', 'error');
+        window.toggleBulkSelectMode = function() {
+            bulkSelectMode = !bulkSelectMode;
+            selectedActivities.clear();
+
+            const checkboxes = document.querySelectorAll('.activity-checkbox');
+            const toggleBtn = document.getElementById('bulk-select-toggle');
+
+            if (bulkSelectMode) {
+                checkboxes.forEach(cb => cb.classList.add('show'));
+                toggleBtn.textContent = '✖️ Cancel';
+                toggleBtn.style.borderColor = 'var(--accent-red)';
+                toggleBtn.style.color = 'var(--accent-red)';
+            } else {
+                checkboxes.forEach(cb => {
+                    cb.classList.remove('show', 'checked');
+                });
+                toggleBtn.textContent = '☑️ Select';
+                toggleBtn.style.borderColor = '';
+                toggleBtn.style.color = '';
+                document.getElementById('bulk-action-bar').classList.remove('show');
+            }
+
+            updateBulkActionBar();
+        };
+
+        window.toggleActivitySelection = function(activityId) {
+            if (!bulkSelectMode) return;
+
+            const item = document.querySelector(`.activity-item[data-activity-id="${activityId}"]`);
+            const checkbox = item.querySelector('.activity-checkbox');
+
+            if (selectedActivities.has(activityId)) {
+                selectedActivities.delete(activityId);
+                checkbox.classList.remove('checked');
+            } else {
+                selectedActivities.add(activityId);
+                checkbox.classList.add('checked');
+            }
+
+            updateBulkActionBar();
+        };
+
+        function updateBulkActionBar() {
+            const bar = document.getElementById('bulk-action-bar');
+            const countElement = document.getElementById('selected-count');
+
+            countElement.textContent = selectedActivities.size;
+
+            if (bulkSelectMode && selectedActivities.size > 0) {
+                bar.classList.add('show');
+            } else {
+                bar.classList.remove('show');
+            }
+        }
+
+        window.cancelBulkSelect = function() {
+            toggleBulkSelectMode();
+        };
+
+        window.deleteSelected = function() {
+            if (selectedActivities.size === 0) return;
+
+            if (!confirm(`Delete ${selectedActivities.size} selected activities?`)) {
                 return;
             }
 
+            const deletePromises = Array.from(selectedActivities).map(activityId => {
+                const activityRef = ref(database, `activities/${activityId}`);
+                return remove(activityRef);
+            });
+
+            Promise.all(deletePromises).then(() => {
+                showToast(`✅ Deleted ${selectedActivities.size} activities`, 'success');
+                selectedActivities.clear();
+                toggleBulkSelectMode();
+            }).catch(error => {
+                showToast(`❌ ${error.message}`, 'error');
+            });
+        };
+
+        window.exportSelectedToCSV = function() {
+            if (selectedActivities.size === 0) {
+                showToast('⚠️ No activities selected', 'error');
+                return;
+            }
+
+            // Get selected activities
+            const activities = currentActivities.filter(a => selectedActivities.has(a.id));
+
+            // Export using the same function
+            exportActivitiesToCSV(activities);
+
+            showToast(`✅ Exported ${activities.length} activities`, 'success');
+        };
+
+        // CSV Export
+        function exportActivitiesToCSV(activities) {
             // CSV headers
             const headers = ['Date', 'Time', 'Activity Type', 'User', 'Pet', 'Note'];
 
@@ -2707,7 +2917,21 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
 
+        window.exportToCSV = function() {
+            // Get filtered activities based on current filters
+            let activities = currentActivities;
+            activities = filterActivitiesByPet(activities);
+            activities = filterActivitiesByType(activities);
+            activities = filterActivitiesByDateRange(activities);
+
+            if (activities.length === 0) {
+                showToast('⚠️ No activities to export', 'error');
+                return;
+            }
+
+            exportActivitiesToCSV(activities);
             showToast(`✅ Exported ${activities.length} activities`, 'success');
         };
 
