@@ -494,6 +494,40 @@
             border-color: rgba(239, 68, 68, 0.3);
         }
 
+        /* Pull to Refresh */
+        .pull-to-refresh {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            z-index: 1001;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pull-to-refresh.show {
+            transform: translateX(-50%) translateY(80px);
+        }
+
+        .pull-to-refresh .spinner {
+            width: 18px;
+            height: 18px;
+            border-width: 2px;
+            margin: 0;
+        }
+
         /* Offline Indicator - Glassmorphism */
         .offline-indicator {
             position: fixed;
@@ -1338,6 +1372,11 @@
     </button>
 
     <div class="offline-indicator" id="offline">📵 Offline</div>
+
+    <div class="pull-to-refresh" id="pull-to-refresh">
+        <div class="spinner"></div>
+        <span>Refreshing...</span>
+    </div>
 
     <div class="container">
         <div class="header">
@@ -2934,6 +2973,73 @@
             exportActivitiesToCSV(activities);
             showToast(`✅ Exported ${activities.length} activities`, 'success');
         };
+
+        // Pull to Refresh
+        let pullStartY = 0;
+        let pulling = false;
+        const pullThreshold = 80;
+        const container = document.querySelector('.container');
+        const pullIndicator = document.getElementById('pull-to-refresh');
+
+        container.addEventListener('touchstart', (e) => {
+            // Only trigger if scrolled to top
+            if (container.scrollTop === 0) {
+                pullStartY = e.touches[0].clientY;
+                pulling = true;
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!pulling) return;
+
+            const currentY = e.touches[0].clientY;
+            const pullDistance = currentY - pullStartY;
+
+            if (pullDistance > 0 && container.scrollTop === 0) {
+                // Show indicator based on pull distance
+                if (pullDistance > pullThreshold) {
+                    pullIndicator.classList.add('show');
+                }
+            } else {
+                pulling = false;
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchend', () => {
+            if (!pulling) return;
+
+            const pullDistance = event.changedTouches[0].clientY - pullStartY;
+
+            if (pullDistance > pullThreshold) {
+                // Trigger refresh
+                refreshData();
+            }
+
+            pulling = false;
+        }, { passive: true });
+
+        function refreshData() {
+            // Show loading indicator
+            pullIndicator.classList.add('show');
+
+            // Reload data from Firebase
+            const activitiesRef = ref(database, 'activities');
+            const petsRef = ref(database, 'pets');
+
+            Promise.all([
+                new Promise((resolve) => onValue(activitiesRef, resolve, { once: true })),
+                new Promise((resolve) => onValue(petsRef, resolve, { once: true }))
+            ]).then(() => {
+                // Hide indicator after delay
+                setTimeout(() => {
+                    pullIndicator.classList.remove('show');
+                    showToast('✅ Data refreshed', 'success');
+                }, 500);
+            }).catch((error) => {
+                pullIndicator.classList.remove('show');
+                showToast(`❌ ${error.message}`, 'error');
+            });
+        }
 
         // Listen for real-time updates
         const activitiesRef = ref(database, 'activities');
