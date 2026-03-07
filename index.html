@@ -85,40 +85,40 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding: 24px 20px;
-            padding-top: 72px;
+            padding: 16px 16px;
+            padding-top: 60px;
             min-height: 100vh;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
             position: relative;
         }
 
         .title {
             font-family: Georgia, 'Times New Roman', serif;
-            font-size: 36px;
-            font-weight: 400;
-            margin-bottom: 6px;
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 4px;
             color: var(--text-primary);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         .subtitle {
-            font-size: 13px;
+            font-size: 11px;
             color: var(--text-secondary);
-            font-weight: 400;
-            letter-spacing: 0.8px;
+            font-weight: 500;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
         /* Quick Log Buttons - Baby App Style */
         .quick-log {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .quick-log-btn {
@@ -195,13 +195,123 @@
             color: var(--color-sleep);
         }
 
+        .quick-log-btn.meds-button {
+            border-color: var(--color-meds);
+        }
+
+        .quick-log-btn.meds-button:active {
+            background: rgba(139, 115, 165, 0.1);
+        }
+
+        .quick-log-btn.meds-button .button-icon {
+            color: var(--color-meds);
+        }
+
+        /* Compact User/Pet Selector Bar - Apple Style */
+        .compact-selector-bar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .compact-selector-bar:active {
+            transform: scale(0.98);
+            background: var(--bg-tertiary);
+        }
+
+        .compact-selector-content {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .compact-selector-icon {
+            font-size: 16px;
+        }
+
+        .compact-selector-separator {
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .compact-selector-chevron {
+            color: var(--text-tertiary);
+            transition: transform 0.3s ease;
+        }
+
+        .compact-selector-bar.expanded .compact-selector-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Expandable Selector */
+        .selector-expanded {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .selector-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .selector-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .user-selector-compact {
+            margin-bottom: 12px;
+        }
+
+        .pet-selector-compact {
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .add-pet-btn-small {
+            background: var(--green-medium);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-pet-btn-small:active {
+            transform: scale(0.95);
+        }
+
         /* Recent Activity Summary - Horizontal & Condensed */
         .recent-activity {
             background: var(--bg-secondary);
             border: 1px solid var(--border-light);
             border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 16px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
             box-shadow: var(--shadow-sm);
         }
 
@@ -230,26 +340,24 @@
         .recent-activity-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
+            gap: 5px;
+            padding: 5px 8px;
             background: var(--bg-tertiary);
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px solid var(--border-light);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
             white-space: nowrap;
         }
 
-        .recent-activity-item:hover {
-            background: var(--bg-secondary);
-            border-color: var(--green-pale);
-            transform: translateY(-1px);
+        .recent-activity-item:active {
+            transform: scale(0.95);
         }
 
         .recent-activity-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -257,19 +365,19 @@
         }
 
         .recent-activity-icon svg {
-            width: 12px;
-            height: 12px;
+            width: 11px;
+            height: 11px;
             opacity: 0.85;
         }
 
         .recent-activity-details {
             display: flex;
-            flex-direction: column;
-            gap: 1px;
+            align-items: center;
+            gap: 4px;
         }
 
         .recent-activity-type {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-primary);
         }
@@ -285,23 +393,62 @@
             flex-shrink: 0;
         }
 
-        /* Stats Widget - Clean & Elegant */
+        /* Feed Header with Filter Toggle */
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .feed-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .filter-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-toggle:active {
+            transform: scale(0.95);
+            background: var(--bg-tertiary);
+        }
+
+        .filter-toggle svg {
+            color: var(--text-tertiary);
+        }
+
+        /* Stats Widget - Compact */
         .stats-widget {
             background: var(--bg-secondary);
             border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px 18px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow-sm);
         }
 
         .stats-title {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
-            margin-bottom: 16px;
-            font-weight: 500;
+            margin-bottom: 10px;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .stats-grid {
@@ -312,48 +459,43 @@
 
         .stat-item {
             text-align: center;
-            padding: 14px 8px;
+            padding: 10px 6px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-light);
-            border-radius: 10px;
+            border-radius: 8px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .stat-item:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-            border-color: var(--border-color);
+        .stat-item:active {
+            transform: scale(0.95);
         }
 
         .stat-icon {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .stat-icon .icon {
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
-        }
-
-        .stat-item:hover .stat-icon .icon {
-            opacity: 0.9;
+            opacity: 0.75;
+            width: 20px;
+            height: 20px;
         }
 
         .stat-count {
-            font-size: 26px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .stat-label {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-tertiary);
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 500;
+            letter-spacing: 0.6px;
+            font-weight: 600;
         }
 
         .button-container {
@@ -456,22 +598,62 @@
         .medical-summary {
             background: var(--bg-secondary);
             border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px 18px;
+            border-radius: 10px;
+            padding: 14px 16px;
             margin-bottom: 20px;
+            margin-top: 20px;
             box-shadow: var(--shadow-sm);
         }
 
+        .medical-summary-header {
+            margin-bottom: 12px;
+        }
+
         .medical-summary-title {
-            font-size: 11px;
-            font-weight: 500;
+            font-size: 10px;
+            font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 14px;
+            letter-spacing: 0.8px;
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .medical-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .medical-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 6px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .medical-action-btn:active {
+            transform: scale(0.95);
+            background: var(--bg-secondary);
+        }
+
+        .medical-action-btn .button-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--green-dark);
         }
 
         .medical-summary-grid {
@@ -1892,6 +2074,10 @@
                 <svg class="button-icon"><use href="#icon-sleep"/></svg>
                 Sleep
             </button>
+            <button class="quick-log-btn meds-button" onclick="logActivity('Meds', '💊')">
+                <svg class="button-icon"><use href="#icon-meds"/></svg>
+                Meds
+            </button>
         </div>
 
         <!-- Recent Activity Summary -->
@@ -1902,29 +2088,43 @@
             </div>
         </div>
 
-        <!-- User Selector -->
-        <div class="user-selector">
-            <div class="user-selector-title">Who's logging?</div>
-            <div class="user-chips" id="user-chips">
-                <div class="user-chip" onclick="selectUser('Tara')">
-                    <span class="user-chip-emoji">👩</span>
-                    <span class="user-chip-name">Tara</span>
-                </div>
-                <div class="user-chip" onclick="selectUser('Meag')">
-                    <span class="user-chip-emoji">👩</span>
-                    <span class="user-chip-name">Meag</span>
-                </div>
+        <!-- Compact User/Pet Selector Bar -->
+        <div class="compact-selector-bar" onclick="toggleSelectorExpanded()">
+            <div class="compact-selector-content">
+                <span class="compact-selector-icon">👩</span>
+                <span class="compact-selector-name" id="compact-user-name">Tara</span>
+                <span class="compact-selector-separator">•</span>
+                <span class="compact-selector-icon" id="compact-pet-emoji">🐶</span>
+                <span class="compact-selector-name" id="compact-pet-name">Jeffie</span>
             </div>
+            <svg class="compact-selector-chevron" width="16" height="16" viewBox="0 0 16 16">
+                <path fill="currentColor" d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
         </div>
 
-        <!-- Pet Selector -->
-        <div class="pet-selector">
-            <div class="pet-selector-header">
-                <div class="pet-selector-title">Select Pet</div>
-                <button class="add-pet-btn" onclick="openAddPetModal()">+ Add Pet</button>
+        <!-- Expandable User/Pet Selectors (hidden by default) -->
+        <div class="selector-expanded" id="selector-expanded" style="display: none;">
+            <div class="user-selector-compact">
+                <div class="selector-label">Who's logging?</div>
+                <div class="user-chips" id="user-chips">
+                    <div class="user-chip" onclick="selectUser('Tara')">
+                        <span class="user-chip-emoji">👩</span>
+                        <span class="user-chip-name">Tara</span>
+                    </div>
+                    <div class="user-chip" onclick="selectUser('Meag')">
+                        <span class="user-chip-emoji">👩</span>
+                        <span class="user-chip-name">Meag</span>
+                    </div>
+                </div>
             </div>
-            <div class="pet-chips" id="pet-chips">
-                <div class="spinner" style="width: 24px; height: 24px; border-width: 2px;"></div>
+            <div class="pet-selector-compact">
+                <div class="selector-label-row">
+                    <div class="selector-label">Select Pet</div>
+                    <button class="add-pet-btn-small" onclick="openAddPetModal()">+ Add</button>
+                </div>
+                <div class="pet-chips" id="pet-chips">
+                    <div class="spinner" style="width: 24px; height: 24px; border-width: 2px;"></div>
+                </div>
             </div>
         </div>
 
@@ -1936,19 +2136,19 @@
             </div>
         </div>
 
-        <!-- Medical Summary Card -->
-        <div class="medical-summary" id="medical-summary" style="display: none;">
-            <div class="medical-summary-title">
-                <svg style="width: 14px; height: 14px;"><use href="#icon-vet"/></svg>
-                Medical Summary
-            </div>
-            <div class="medical-summary-grid" id="medical-summary-grid">
-                <!-- Populated by JavaScript -->
-            </div>
+        <!-- Activity Feed Title & Collapsible Filter -->
+        <div class="feed-header">
+            <div class="feed-title">📝 Activity Log</div>
+            <button class="filter-toggle" onclick="toggleFilters()" id="filter-toggle-btn">
+                <svg width="16" height="16" viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Filters
+            </button>
         </div>
 
-        <!-- Activity Filter -->
-        <div class="activity-filter">
+        <!-- Collapsible Activity Filter -->
+        <div class="activity-filter" id="activity-filter" style="display: none;">
             <div class="activity-filter-title">Filter Activities</div>
             <div class="activity-filter-chips">
                 <div class="activity-filter-chip active" onclick="filterByActivity('All')">
@@ -1977,8 +2177,8 @@
             </div>
         </div>
 
-        <!-- Date Range Picker -->
-        <div class="date-range-picker">
+        <!-- Date Range Picker (inside filter) -->
+        <div class="date-range-picker-compact">
             <div class="date-range-title">Date Range</div>
             <div class="date-range-controls">
                 <input type="date" class="date-range-input" id="date-from" onchange="applyDateRange()">
@@ -1993,37 +2193,11 @@
                 <button class="preset-btn" onclick="setDatePreset('month')">Last 30 Days</button>
             </div>
         </div>
+        </div>
 
-        <div class="button-container">
-            <button class="button poop-button" onclick="logActivity('Poop', '💩')">
-                <svg class="button-icon"><use href="#icon-poop"/></svg> Poop
-            </button>
-            <button class="button pee-button" onclick="logActivity('Pee', '💧')">
-                <svg class="button-icon"><use href="#icon-pee"/></svg> Pee
-            </button>
-            <button class="button food-button" onclick="logActivity('Food', '🍖')">
-                <svg class="button-icon"><use href="#icon-food"/></svg> Food
-            </button>
-            <button class="button sleep-button" onclick="logActivity('Sleep', '😴')">
-                <svg class="button-icon"><use href="#icon-sleep"/></svg> Sleep
-            </button>
-
-            <div class="section-divider">
-                <div class="section-title">Medical</div>
-            </div>
-
-            <button class="button meds-button" onclick="logActivity('Meds', '💊')">
-                <svg class="button-icon"><use href="#icon-meds"/></svg> Meds
-            </button>
-            <button class="button vet-button" onclick="openVetModal()">
-                <svg class="button-icon"><use href="#icon-vet"/></svg> Vet Visit
-            </button>
-            <button class="button medical-button" onclick="openVaccineModal()">
-                <svg class="button-icon"><use href="#icon-vaccine"/></svg> Vaccination
-            </button>
-            <button class="button weight-button" onclick="openWeightModal()">
-                <svg class="button-icon"><use href="#icon-weight"/></svg> Weight Check
-            </button>
+        <!-- Activity Feed -->
+        <div id="activities">
+            <div class="loading"><div class="spinner"></div></div>
         </div>
 
         <!-- Export Section -->
@@ -2042,10 +2216,30 @@
             </div>
         </div>
 
-        <div class="feed-container">
-            <div class="feed-title">📝 Activity Log</div>
-            <div id="activities">
-                <div class="loading"><div class="spinner"></div></div>
+        <!-- Medical Summary Card - Moved to Bottom -->
+        <div class="medical-summary" id="medical-summary" style="display: none;">
+            <div class="medical-summary-header">
+                <div class="medical-summary-title">
+                    <svg style="width: 14px; height: 14px;"><use href="#icon-vet"/></svg>
+                    Medical Summary
+                </div>
+            </div>
+            <div class="medical-summary-grid" id="medical-summary-grid">
+                <!-- Populated by JavaScript -->
+            </div>
+            <div class="medical-actions">
+                <button class="medical-action-btn" onclick="openVetModal()">
+                    <svg class="button-icon"><use href="#icon-vet"/></svg>
+                    Vet Visit
+                </button>
+                <button class="medical-action-btn" onclick="openVaccineModal()">
+                    <svg class="button-icon"><use href="#icon-vaccine"/></svg>
+                    Vaccination
+                </button>
+                <button class="medical-action-btn" onclick="openWeightModal()">
+                    <svg class="button-icon"><use href="#icon-weight"/></svg>
+                    Weight
+                </button>
             </div>
         </div>
     </div>
@@ -2272,6 +2466,7 @@
         // Pet management state
         let pets = [];
         let currentPetId = localStorage.getItem('currentPetId') || 'all';
+        let selectedPet = currentPetId;
         let selectedEmoji = '🐕';
 
         // User management state
@@ -2350,8 +2545,10 @@
 
         window.selectPet = function(petId) {
             currentPetId = petId;
+            selectedPet = petId;
             localStorage.setItem('currentPetId', petId);
             renderPetChips();
+            updateCompactBar();
             // Refresh stats and activities for selected pet
             const activitiesRef = ref(database, 'activities');
             onValue(activitiesRef, (snapshot) => {
@@ -2529,10 +2726,63 @@
         }
 
         // User Management Functions
+        // Toggle compact selector expansion
+        window.toggleSelectorExpanded = function() {
+            const expanded = document.getElementById('selector-expanded');
+            const bar = document.querySelector('.compact-selector-bar');
+
+            if (expanded.style.display === 'none' || !expanded.style.display) {
+                expanded.style.display = 'block';
+                bar.classList.add('expanded');
+            } else {
+                expanded.style.display = 'none';
+                bar.classList.remove('expanded');
+            }
+        };
+
+        // Toggle filters visibility
+        window.toggleFilters = function() {
+            const filter = document.getElementById('activity-filter');
+            const btn = document.getElementById('filter-toggle-btn');
+
+            if (filter.style.display === 'none' || !filter.style.display) {
+                filter.style.display = 'block';
+                btn.style.background = 'var(--green-pale)';
+                btn.style.borderColor = 'var(--green-medium)';
+                btn.style.color = 'var(--green-dark)';
+            } else {
+                filter.style.display = 'none';
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }
+        };
+
+        // Update compact bar when user changes
+        function updateCompactBar() {
+            const userName = document.getElementById('compact-user-name');
+            const petName = document.getElementById('compact-pet-name');
+            const petEmoji = document.getElementById('compact-pet-emoji');
+
+            if (userName) userName.textContent = currentUser;
+
+            if (selectedPet && selectedPet !== 'all') {
+                const pet = pets.find(p => p.id === selectedPet);
+                if (pet) {
+                    petEmoji.textContent = pet.emoji;
+                    petName.textContent = pet.name;
+                }
+            } else {
+                petEmoji.textContent = '🐾';
+                petName.textContent = 'All Pets';
+            }
+        }
+
         window.selectUser = function(username) {
             currentUser = username;
             localStorage.setItem('currentUser', username);
             renderUserChips();
+            updateCompactBar();
             showToast(`✅ Switched to ${username}`, 'success');
         };
 
@@ -2559,6 +2809,7 @@
             }
             renderPetChips();
             renderUserChips();
+            updateCompactBar();
         });
 
         // Activity Edit/Delete Management
