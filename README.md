@@ -12,9 +12,10 @@ Track your pet's daily activities with a modern, feature-rich web app. Real-time
 ### 📊 Activity Tracking
 - **5 Activity Types:** Poop, Pee, Food, Sleep, Meds
 - **Real-time Sync:** Firebase backend syncs across all devices
-- **Modern UI:** SVG icons, dark mode, glassmorphic design
+- **Elegant UI:** SVG icons, muted colors, sophisticated design
 - **Notes:** Add optional notes to any activity
 - **Pull-to-Refresh:** Swipe down to refresh data
+- **Recent Activity:** Quick view of last 5 activities at top
 
 ### 🏥 Medical Records
 - **Vet Visits:** Track appointments with notes and costs
@@ -40,17 +41,21 @@ Track your pet's daily activities with a modern, feature-rich web app. Real-time
 - **Filtered Exports:** Exports respect current filters
 
 ### ✏️ Editing & Management
-- **Enhanced Edit Modal:** Edit activity type, timestamp, and notes
+- **Enhanced Edit Modal:** Edit activity type, date, time, and notes
+- **iOS-Style Time Picker:** Scrollable hour/minute/AM-PM picker
+- **12-Hour Format:** All times display in 12-hour format with AM/PM
 - **iOS-Style Swipe Gestures:** Swipe left to reveal edit/delete
 - **Bulk Delete:** Select and delete multiple activities
 - **Undo Delete:** 5-second undo window for accidental deletions
 
 ### 🎨 Design & UX
-- **Dark Mode:** Automatic or manual toggle
+- **Elegant Light Theme:** Sophisticated design for discerning users
+- **Sage Green Accents:** Calming, natural color palette
+- **Serif Typography:** Georgia font for headers, refined spacing
 - **Responsive Design:** Optimized for iOS & Android (last 4 years)
 - **Touch-Optimized:** 44px minimum tap targets (Apple HIG)
 - **Safe Area Support:** Proper spacing on notched devices
-- **PWA Icon:** Custom paw print design with gradient
+- **Custom PWA Icon:** Paw print with sage green gradient
 
 ### 📱 Mobile Optimizations
 - **Small Phones:** iPhone SE 3rd gen, compact Android
@@ -58,7 +63,6 @@ Track your pet's daily activities with a modern, feature-rich web app. Real-time
 - **Large Phones:** iPhone Pro Max, Galaxy S24+
 - **Tablets:** Responsive grid layouts
 - **Landscape Mode:** Optimized for horizontal viewing
-- **OLED Dark Mode:** True black for Pro models
 
 ## 🏗️ Tech Stack
 
@@ -102,24 +106,23 @@ Pet-App/
 
 ## 🚀 Recent Updates
 
-**Phase 1: Polish Pass**
-- SVG icons replacing emojis throughout
-- Enhanced edit modal with all fields
+**Design Overhaul (March 2026)**
+- Elegant light theme with sage green accents
+- Removed dark mode for sophisticated, timeless design
+- Serif typography (Georgia) for refined look
+- iOS-style time picker with 12-hour format
+- Recent activity summary widget
+- Muted, sophisticated color palette
 
-**Phase 2: Core UX**
+**Previous Updates**
+- SVG icons throughout (replaced emojis)
 - Activity filtering with chips UI
 - Date range picker with presets
 - iOS-style swipe gestures
-
-**Phase 3: Data Management**
-- CSV export functionality
+- CSV & PDF export functionality
 - Bulk select mode with action bar
 - Pull-to-refresh
-
-**Phase 4: Professional Features**
-- PDF export with medical records
-- Responsive design optimization
-- Custom PWA icon
+- Custom PWA icon with gradient
 
 ## 📝 Development
 
