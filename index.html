@@ -98,45 +98,44 @@
             text-transform: uppercase;
         }
 
-        /* Stats Widget - Glassmorphism */
+        /* Stats Widget - Clean & Elegant */
         .stats-widget {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
         }
 
         .stats-title {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            margin-bottom: 12px;
-            font-weight: 600;
+            margin-bottom: 16px;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
-            gap: 10px;
+            gap: 12px;
         }
 
         .stat-item {
             text-align: center;
-            padding: 12px 6px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            transition: all 0.2s ease;
+            padding: 14px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .stat-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
+            border-color: var(--border-color);
         }
 
         .stat-icon {
@@ -147,17 +146,17 @@
         }
 
         .stat-icon .icon {
-            opacity: 0.8;
+            opacity: 0.7;
             transition: opacity 0.2s ease;
         }
 
         .stat-item:hover .stat-icon .icon {
-            opacity: 1;
+            opacity: 0.9;
         }
 
         .stat-count {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 4px;
         }
@@ -166,29 +165,29 @@
             font-size: 10px;
             color: var(--text-tertiary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
+            letter-spacing: 0.8px;
+            font-weight: 500;
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .button {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 14px 20px;
-            border-radius: 12px;
+            padding: 16px 20px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
             font-size: 15px;
-            font-weight: 600;
-            color: white;
+            font-weight: 500;
+            color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--shadow-sm);
             -webkit-user-select: none;
             user-select: none;
@@ -202,22 +201,52 @@
         }
 
         .button:active {
-            transform: translateY(0) scale(0.98);
+            transform: translateY(0);
         }
 
         .button-icon {
             width: 20px;
             height: 20px;
-            margin-right: 8px;
+            margin-right: 10px;
             flex-shrink: 0;
+            opacity: 0.8;
         }
 
-        /* Soft, modern color palette */
-        .poop-button { background: #D4A574; color: #1a1a1a; }
-        .pee-button { background: #7FC8E8; color: #1a1a1a; }
-        .food-button { background: #F4A259; color: #1a1a1a; }
-        .sleep-button { background: #9D84B7; }
-        .meds-button { background: #8ECAE6; color: #1a1a1a; }
+        /* Elegant, muted color palette */
+        .poop-button {
+            background: rgba(166, 124, 82, 0.12);
+            border-color: rgba(166, 124, 82, 0.2);
+            color: var(--color-poop);
+        }
+        .poop-button:hover { background: rgba(166, 124, 82, 0.18); }
+
+        .pee-button {
+            background: rgba(184, 164, 114, 0.12);
+            border-color: rgba(184, 164, 114, 0.2);
+            color: var(--color-pee);
+        }
+        .pee-button:hover { background: rgba(184, 164, 114, 0.18); }
+
+        .food-button {
+            background: rgba(139, 157, 131, 0.12);
+            border-color: rgba(139, 157, 131, 0.2);
+            color: var(--color-food);
+        }
+        .food-button:hover { background: rgba(139, 157, 131, 0.18); }
+
+        .sleep-button {
+            background: rgba(122, 138, 153, 0.12);
+            border-color: rgba(122, 138, 153, 0.2);
+            color: var(--color-sleep);
+        }
+        .sleep-button:hover { background: rgba(122, 138, 153, 0.18); }
+
+        .meds-button {
+            background: rgba(155, 143, 165, 0.12);
+            border-color: rgba(155, 143, 165, 0.2);
+            color: var(--color-meds);
+        }
+        .meds-button:hover { background: rgba(155, 143, 165, 0.18); }
 
         /* Medical section */
         .section-divider {
@@ -238,23 +267,21 @@
 
         /* Medical Summary Card */
         .medical-summary {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 14px;
-            box-shadow: var(--shadow-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
         }
 
         .medical-summary-title {
             font-size: 11px;
-            font-weight: 600;
-            color: var(--text-tertiary);
+            font-weight: 500;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -309,28 +336,43 @@
             font-style: italic;
         }
 
-        .medical-button { background: #A78BFA; }
-        .vet-button { background: #F9A8D4; color: #1a1a1a; }
-        .weight-button { background: #67E8F9; color: #1a1a1a; }
+        .medical-button {
+            background: rgba(155, 143, 165, 0.12);
+            border-color: rgba(155, 143, 165, 0.2);
+            color: var(--color-meds);
+        }
+        .medical-button:hover { background: rgba(155, 143, 165, 0.18); }
+
+        .vet-button {
+            background: rgba(160, 140, 140, 0.12);
+            border-color: rgba(160, 140, 140, 0.2);
+            color: var(--color-vet);
+        }
+        .vet-button:hover { background: rgba(160, 140, 140, 0.18); }
+
+        .weight-button {
+            background: rgba(157, 145, 137, 0.12);
+            border-color: rgba(157, 145, 137, 0.2);
+            color: var(--color-weight);
+        }
+        .weight-button:hover { background: rgba(157, 145, 137, 0.18); }
 
         .feed-container {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: var(--shadow-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
+            box-shadow: var(--shadow-sm);
             min-height: 200px;
         }
 
         .feed-title {
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
             margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .date-group {
@@ -541,28 +583,26 @@
 
         /* User Selector */
         .user-selector {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
             margin-bottom: 20px;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-sm);
         }
 
         .user-selector-title {
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
         }
 
         .user-chips {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -570,25 +610,26 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 14px;
-            border-radius: 12px;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 14px;
             font-weight: 500;
             color: var(--text-primary);
         }
 
         .user-chip:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
+            border-color: var(--border-color);
         }
 
         .user-chip.active {
-            border-color: var(--accent-blue);
-            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-sage);
+            background: rgba(139, 157, 131, 0.08);
         }
 
         .user-chip-emoji {
@@ -596,31 +637,29 @@
         }
 
         .user-chip-name {
-            font-weight: 600;
+            font-weight: 500;
         }
 
         /* Pet Selector */
         .pet-selector {
-            background: var(--bg-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 14px;
-            box-shadow: var(--shadow-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
         }
 
         .pet-selector-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .pet-selector-title {
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
