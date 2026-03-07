@@ -1332,6 +1332,216 @@
         .undo-btn:hover {
             background: rgba(255, 255, 255, 0.3);
         }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        /* Target: iOS & Android devices (last 4 years) */
+
+        /* Small phones: iPhone SE 3rd gen (375x667), Android compact */
+        @media (max-width: 390px) {
+            .container {
+                padding: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                gap: 6px;
+            }
+
+            .stat-item {
+                padding: 8px;
+            }
+
+            .stat-count {
+                font-size: 20px;
+            }
+
+            .button-container button {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .activity-filter-chips,
+            .date-range-presets {
+                gap: 6px;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .export-btn {
+                width: 100%;
+            }
+        }
+
+        /* Standard phones: iPhone 12-16 (390x844), Pixel 5-8 (412x915) */
+        @media (min-width: 391px) and (max-width: 430px) {
+            .container {
+                padding: 14px;
+            }
+
+            body {
+                font-size: 15px;
+            }
+
+            .date-range-controls {
+                flex-wrap: wrap;
+            }
+
+            .date-range-input {
+                flex: 1 1 45%;
+            }
+
+            .date-range-reset {
+                flex: 1 1 100%;
+                margin-top: 8px;
+            }
+        }
+
+        /* Large phones: iPhone Pro Max (428x926), Samsung Galaxy S24+ */
+        @media (min-width: 431px) and (max-width: 600px) {
+            .container {
+                max-width: 550px;
+            }
+
+            .stats-grid {
+                gap: 10px;
+            }
+
+            .button-container {
+                gap: 10px;
+            }
+        }
+
+        /* Tablets & landscape phones */
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .container {
+                max-width: 650px;
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .button-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .activity-filter-chips {
+                justify-content: center;
+            }
+
+            .feed-container {
+                padding: 20px;
+            }
+        }
+
+        /* Safe area handling for notched devices (iPhone 12+) */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+
+            .theme-toggle {
+                top: calc(20px + env(safe-area-inset-top));
+            }
+
+            .bulk-action-bar {
+                padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Touch-optimized tap targets (minimum 44x44px per Apple HIG) */
+        @media (hover: none) and (pointer: coarse) {
+            .button,
+            .export-btn,
+            .action-btn,
+            .preset-btn,
+            .user-chip,
+            .pet-chip,
+            .activity-filter-chip {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .theme-toggle {
+                width: 48px;
+                height: 48px;
+            }
+
+            .swipe-action-btn {
+                min-width: 70px;
+            }
+        }
+
+        /* High DPI displays (Retina) */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            body {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            .border-color {
+                border-width: 0.5px;
+            }
+        }
+
+        /* Dark mode optimizations for OLED (iPhone Pro, Samsung) */
+        @media (prefers-color-scheme: dark) {
+            body.dark-mode {
+                --bg-primary: #000000;
+                --bg-secondary: #1a1a1a;
+            }
+        }
+
+        /* Landscape orientation optimization */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .container {
+                padding-top: 40px;
+            }
+
+            .header {
+                margin-bottom: 12px;
+            }
+
+            .stats-widget,
+            .user-selector,
+            .pet-selector,
+            .medical-summary,
+            .activity-filter,
+            .date-range-picker,
+            .export-section {
+                margin-bottom: 10px;
+                padding: 12px;
+            }
+
+            .button-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 8px;
+            }
+        }
+
+        /* Accessibility: Reduce motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .spinner {
+                animation: none;
+                border-top-color: var(--accent-blue);
+            }
+        }
     </style>
 </head>
 <body>
