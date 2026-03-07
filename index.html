@@ -17,34 +17,42 @@
             --bg-secondary: #FFFFFF;       /* Pure white for cards */
             --bg-tertiary: #F8F6F3;        /* Subtle off-white */
 
+            /* Deep Green Color Palette - Better Contrast */
+            --green-darkest: #0f4d3b;     /* Deep forest green - primary actions */
+            --green-dark: #1a5c47;        /* Dark green - text, borders */
+            --green-medium: #2d6a4f;      /* Medium green - interactive elements */
+            --green-sage: #52796f;        /* Sage green - accents */
+            --green-light: #84a98c;       /* Light sage - hover states */
+            --green-pale: #cad2c5;        /* Pale green - subtle backgrounds */
+
             /* Sophisticated Text Colors */
-            --text-primary: #2C2C2C;       /* Charcoal - elegant and readable */
-            --text-secondary: #6B6B6B;     /* Warm gray */
-            --text-tertiary: #9B9B9B;      /* Light gray for subtle text */
+            --text-primary: #1a3a2e;      /* Deep green-black - excellent contrast */
+            --text-secondary: #2d5a4a;    /* Dark green - readable and elegant */
+            --text-tertiary: #6B7F7A;     /* Muted green-gray */
 
             /* Refined Border & Shadow */
-            --border-color: #E8E4DF;       /* Soft taupe border */
-            --border-light: #F2EFE9;       /* Very subtle border */
-            --shadow-sm: 0 1px 3px rgba(44, 44, 44, 0.04);
-            --shadow-md: 0 2px 8px rgba(44, 44, 44, 0.06);
-            --shadow-lg: 0 4px 16px rgba(44, 44, 44, 0.08);
+            --border-color: #cad2c5;      /* Pale green border */
+            --border-light: #e8ebe7;      /* Very subtle border */
+            --shadow-sm: 0 1px 3px rgba(15, 77, 59, 0.08);
+            --shadow-md: 0 2px 8px rgba(15, 77, 59, 0.12);
+            --shadow-lg: 0 4px 16px rgba(15, 77, 59, 0.15);
 
-            /* Elegant Accent Colors - Muted & Sophisticated */
-            --accent-sage: #8B9D83;        /* Calm sage green */
+            /* Legacy accent names (map to new green palette) */
+            --accent-sage: var(--green-medium);
             --accent-taupe: #C9B8A8;       /* Warm taupe */
-            --accent-gold: #D4AF37;        /* Soft gold (luxury touch) */
-            --accent-coral: #E8B4A0;       /* Muted coral (gentle, warm) */
+            --accent-gold: #D4AF37;        /* Soft gold */
+            --accent-coral: #E8B4A0;       /* Muted coral */
             --accent-slate: #7A8A99;       /* Soft slate blue */
 
-            /* Activity Type Colors - Muted Versions */
-            --color-poop: #A67C52;         /* Muted brown */
-            --color-pee: #B8A472;          /* Soft gold-yellow */
-            --color-food: #8B9D83;         /* Sage green */
-            --color-sleep: #7A8A99;        /* Soft slate */
-            --color-meds: #9B8FA5;         /* Muted lavender */
-            --color-vet: #A08C8C;          /* Dusty rose */
-            --color-vaccine: #8FA09B;      /* Soft teal */
-            --color-weight: #9D9189;       /* Warm stone */
+            /* Activity Type Colors - With better contrast */
+            --color-poop: #8B6F47;         /* Deep brown */
+            --color-pee: #D4A017;          /* Bright gold-yellow */
+            --color-food: var(--green-dark);  /* Deep green */
+            --color-sleep: #5A7A9A;        /* Deep slate */
+            --color-meds: #8B73A5;         /* Rich lavender */
+            --color-vet: #9A6B6B;          /* Deep dusty rose */
+            --color-vaccine: #5A8F9A;      /* Deep teal */
+            --color-weight: #8B7A69;       /* Rich stone */
         }
 
         * {
@@ -65,6 +73,13 @@
             font-size: 15px;
             line-height: 1.6;
             letter-spacing: 0.3px;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
 
         .container {
@@ -98,51 +113,143 @@
             text-transform: uppercase;
         }
 
-        /* Recent Activity Summary */
+        /* Quick Log Buttons - Baby App Style */
+        .quick-log {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-log-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 8px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-log-btn:active {
+            transform: scale(0.95);
+        }
+
+        .quick-log-btn .button-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .quick-log-btn.poop-button {
+            border-color: var(--color-poop);
+        }
+
+        .quick-log-btn.poop-button:active {
+            background: rgba(139, 111, 71, 0.1);
+        }
+
+        .quick-log-btn.poop-button .button-icon {
+            color: var(--color-poop);
+        }
+
+        .quick-log-btn.pee-button {
+            border-color: var(--color-pee);
+        }
+
+        .quick-log-btn.pee-button:active {
+            background: rgba(212, 160, 23, 0.1);
+        }
+
+        .quick-log-btn.pee-button .button-icon {
+            color: var(--color-pee);
+        }
+
+        .quick-log-btn.food-button {
+            border-color: var(--color-food);
+        }
+
+        .quick-log-btn.food-button:active {
+            background: rgba(26, 92, 71, 0.1);
+        }
+
+        .quick-log-btn.food-button .button-icon {
+            color: var(--color-food);
+        }
+
+        .quick-log-btn.sleep-button {
+            border-color: var(--color-sleep);
+        }
+
+        .quick-log-btn.sleep-button:active {
+            background: rgba(90, 122, 154, 0.1);
+        }
+
+        .quick-log-btn.sleep-button .button-icon {
+            color: var(--color-sleep);
+        }
+
+        /* Recent Activity Summary - Horizontal & Condensed */
         .recent-activity {
             background: var(--bg-secondary);
             border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 18px 16px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow-sm);
         }
 
         .recent-activity-title {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
-            margin-bottom: 14px;
-            font-weight: 500;
+            margin-bottom: 8px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .recent-activity-list {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+
+        .recent-activity-list::-webkit-scrollbar {
+            display: none;
         }
 
         .recent-activity-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
+            gap: 6px;
+            padding: 6px 10px;
             background: var(--bg-tertiary);
-            border-radius: 10px;
+            border-radius: 16px;
             border: 1px solid var(--border-light);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .recent-activity-item:hover {
             background: var(--bg-secondary);
-            border-color: var(--border-color);
+            border-color: var(--green-pale);
+            transform: translateY(-1px);
         }
 
         .recent-activity-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -150,30 +257,29 @@
         }
 
         .recent-activity-icon svg {
-            width: 18px;
-            height: 18px;
-            opacity: 0.8;
+            width: 12px;
+            height: 12px;
+            opacity: 0.85;
         }
 
         .recent-activity-details {
-            flex: 1;
-            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
         }
 
         .recent-activity-type {
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 12px;
+            font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 2px;
         }
 
         .recent-activity-meta {
-            font-size: 12px;
-            color: var(--text-secondary);
+            display: none; /* Hide to save space */
         }
 
         .recent-activity-time {
-            font-size: 12px;
+            font-size: 10px;
             color: var(--text-tertiary);
             white-space: nowrap;
             flex-shrink: 0;
@@ -975,6 +1081,8 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .modal.show {
@@ -989,6 +1097,10 @@
             max-width: 400px;
             width: 100%;
             box-shadow: var(--shadow-lg);
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
+            position: relative;
         }
 
         .modal-header {
@@ -1762,19 +1874,31 @@
             <div class="subtitle">Track your pet's activities</div>
         </div>
 
+        <!-- Quick Log Buttons - Baby App Style -->
+        <div class="quick-log">
+            <button class="quick-log-btn poop-button" onclick="logActivity('Poop', '💩')">
+                <svg class="button-icon"><use href="#icon-poop"/></svg>
+                Poop
+            </button>
+            <button class="quick-log-btn pee-button" onclick="logActivity('Pee', '💧')">
+                <svg class="button-icon"><use href="#icon-pee"/></svg>
+                Pee
+            </button>
+            <button class="quick-log-btn food-button" onclick="logActivity('Food', '🍖')">
+                <svg class="button-icon"><use href="#icon-food"/></svg>
+                Food
+            </button>
+            <button class="quick-log-btn sleep-button" onclick="logActivity('Sleep', '😴')">
+                <svg class="button-icon"><use href="#icon-sleep"/></svg>
+                Sleep
+            </button>
+        </div>
+
         <!-- Recent Activity Summary -->
         <div class="recent-activity" id="recent-activity-widget">
             <div class="recent-activity-title">Recent Activity</div>
             <div class="recent-activity-list" id="recent-activity-list">
                 <!-- Populated by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Daily Stats Widget -->
-        <div class="stats-widget">
-            <div class="stats-title">📊 Today's Activity</div>
-            <div class="stats-grid" id="stats-grid">
-                <div class="spinner"></div>
             </div>
         </div>
 
@@ -1801,6 +1925,14 @@
             </div>
             <div class="pet-chips" id="pet-chips">
                 <div class="spinner" style="width: 24px; height: 24px; border-width: 2px;"></div>
+            </div>
+        </div>
+
+        <!-- Daily Stats Widget -->
+        <div class="stats-widget">
+            <div class="stats-title">📊 Today's Activity</div>
+            <div class="stats-grid" id="stats-grid">
+                <div class="spinner"></div>
             </div>
         </div>
 
@@ -2145,8 +2277,23 @@
         // User management state
         let currentUser = localStorage.getItem('currentUser') || 'Tara';
 
+        // Modal Body Lock Helpers
+        function lockBody() {
+            const scrollY = window.scrollY;
+            document.body.style.top = `-${scrollY}px`;
+            document.body.classList.add('modal-open');
+        }
+
+        function unlockBody() {
+            const scrollY = document.body.style.top;
+            document.body.classList.remove('modal-open');
+            document.body.style.top = '';
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+
         // Pet Management Functions
         window.openAddPetModal = function() {
+            lockBody();
             document.getElementById('pet-modal').classList.add('show');
             document.getElementById('pet-name').value = '';
             document.getElementById('pet-species').value = '';
@@ -2156,6 +2303,7 @@
 
         window.closeModal = function() {
             document.getElementById('pet-modal').classList.remove('show');
+            unlockBody();
         };
 
         window.selectEmoji = function(emoji) {
@@ -2550,12 +2698,14 @@
             document.getElementById('edit-note').value = activity.note || '';
 
             // Show modal
+            lockBody();
             document.getElementById('edit-modal').classList.add('show');
         };
 
         window.closeEditModal = function() {
             document.getElementById('edit-modal').classList.remove('show');
             currentEditActivityId = null;
+            unlockBody();
         };
 
         window.saveEditActivity = function() {
@@ -2684,11 +2834,13 @@
             document.getElementById('vet-datetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
             document.getElementById('vet-notes').value = '';
             document.getElementById('vet-cost').value = '';
+            lockBody();
             document.getElementById('vet-modal').classList.add('show');
         };
 
         window.closeVetModal = function() {
             document.getElementById('vet-modal').classList.remove('show');
+            unlockBody();
         };
 
         window.saveVetVisit = function() {
@@ -2749,11 +2901,13 @@
             document.getElementById('vaccine-datetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
             document.getElementById('vaccine-name').value = '';
             document.getElementById('vaccine-notes').value = '';
+            lockBody();
             document.getElementById('vaccine-modal').classList.add('show');
         };
 
         window.closeVaccineModal = function() {
             document.getElementById('vaccine-modal').classList.remove('show');
+            unlockBody();
         };
 
         window.saveVaccination = function() {
@@ -2820,11 +2974,13 @@
             document.getElementById('weight-value').value = '';
             document.getElementById('weight-unit').value = 'lbs';
             document.getElementById('weight-notes').value = '';
+            lockBody();
             document.getElementById('weight-modal').classList.add('show');
         };
 
         window.closeWeightModal = function() {
             document.getElementById('weight-modal').classList.remove('show');
+            unlockBody();
         };
 
         window.saveWeight = function() {
@@ -3298,7 +3454,9 @@
                 let startX = 0;
                 let currentX = 0;
                 let isDragging = false;
+                let startTranslate = 0;
                 const container = item.querySelector('.activity-item-container');
+                const swipeAmount = -140;
 
                 // Remove old listeners if any
                 container.removeEventListener('touchstart', handleTouchStart);
@@ -3309,6 +3467,7 @@
                     startX = e.touches[0].clientX;
                     currentX = startX;
                     isDragging = true;
+                    startTranslate = item.classList.contains('swiped') ? swipeAmount : 0;
                     container.style.transition = 'none';
                 }
 
@@ -3317,18 +3476,19 @@
 
                     currentX = e.touches[0].clientX;
                     const diff = currentX - startX;
+                    let newTranslate = startTranslate + diff;
 
-                    // Only allow left swipe (diff < 0) or swipe back to right if already swiped
-                    if (diff < 0) {
-                        // Swiping left
-                        const maxSwipe = -140;
-                        const translateX = Math.max(maxSwipe, diff);
-                        container.style.transform = `translateX(${translateX}px)`;
-                    } else if (item.classList.contains('swiped') && diff > 0) {
-                        // Swiping right to close
-                        const translateX = Math.min(0, -140 + diff);
-                        container.style.transform = `translateX(${translateX}px)`;
+                    // Apply resistance at boundaries
+                    if (newTranslate > 0) {
+                        // Resistance when trying to swipe right from closed position
+                        newTranslate = newTranslate * 0.3;
+                    } else if (newTranslate < swipeAmount) {
+                        // Resistance when trying to swipe left beyond max
+                        const overSwipe = newTranslate - swipeAmount;
+                        newTranslate = swipeAmount + (overSwipe * 0.3);
                     }
+
+                    container.style.transform = `translateX(${newTranslate}px)`;
                 }
 
                 function handleTouchEnd() {
@@ -3336,34 +3496,45 @@
                     isDragging = false;
 
                     const diff = currentX - startX;
-                    container.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    const velocity = diff; // Simple velocity calculation
+                    const currentTranslate = startTranslate + diff;
 
-                    // Close all other swiped items
+                    container.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)';
+
+                    // Close all other swiped items first
                     document.querySelectorAll('.activity-item.swiped').forEach(otherItem => {
                         if (otherItem !== item) {
                             otherItem.classList.remove('swiped');
+                            const otherContainer = otherItem.querySelector('.activity-item-container');
+                            otherContainer.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                            otherContainer.style.transform = 'translateX(0)';
                         }
                     });
 
-                    // Determine if swipe was significant enough
-                    if (diff < -50) {
+                    // Determine final position with lower threshold
+                    const threshold = 30; // Lower threshold for easier swiping
+
+                    if (velocity < -threshold || currentTranslate < (swipeAmount / 2)) {
                         // Swipe left - reveal actions
                         item.classList.add('swiped');
-                    } else if (diff > 50 && item.classList.contains('swiped')) {
+                        container.style.transform = `translateX(${swipeAmount}px)`;
+                    } else if (velocity > threshold || currentTranslate > (swipeAmount / 2)) {
                         // Swipe right - hide actions
                         item.classList.remove('swiped');
-                    } else if (item.classList.contains('swiped')) {
-                        // Keep swiped if already swiped
-                        container.style.transform = 'translateX(-140px)';
-                    } else {
-                        // Return to original position
                         container.style.transform = 'translateX(0)';
+                    } else {
+                        // Keep current state based on threshold
+                        if (item.classList.contains('swiped')) {
+                            container.style.transform = `translateX(${swipeAmount}px)`;
+                        } else {
+                            container.style.transform = 'translateX(0)';
+                        }
                     }
                 }
 
-                container.addEventListener('touchstart', handleTouchStart, { passive: true });
-                container.addEventListener('touchmove', handleTouchMove, { passive: true });
-                container.addEventListener('touchend', handleTouchEnd, { passive: true });
+                container.addEventListener('touchstart', handleTouchStart);
+                container.addEventListener('touchmove', handleTouchMove);
+                container.addEventListener('touchend', handleTouchEnd);
             });
         }
 
