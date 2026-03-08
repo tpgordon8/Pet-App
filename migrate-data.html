@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetLog Data Migration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d5a4a;
+        }
+        button {
+            background: #2d5a4a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1a5c47;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log div {
+            margin: 5px 0;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 PetLog Data Migration</h1>
+        <p>This tool will migrate your existing PetLog data from the old structure to the new household-based structure.</p>
+        
+        <p><strong>What this does:</strong></p>
+        <ul>
+            <li>Reads existing <code>/pets</code> and <code>/activities</code> data</li>
+            <li>Creates a default household with code <strong>PET-DEFAULT</strong></li>
+            <li>Moves all data to <code>/households/PET-DEFAULT/</code></li>
+            <li>Preserves all your existing pets and activity logs</li>
+        </ul>
+
+        <p><strong>⚠️ Important:</strong></p>
+        <ul>
+            <li>This migration is <strong>one-way</strong> - back up your data first if needed</li>
+            <li>Make sure you're logged in as an admin</li>
+            <li>Do NOT close this page until migration completes</li>
+        </ul>
+
+        <button onclick="startMigration()" id="migrate-btn">🚀 Start Migration</button>
+        <button onclick="clearLog()" style="background: #6b7280;">Clear Log</button>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZeE0mf4ptN0wunDbEFbgMZ29nfWIA4NQ",
+            authDomain: "petlog-c4c1e.firebaseapp.com",
+            databaseURL: "https://petlog-c4c1e-default-rtdb.firebaseio.com",
+            projectId: "petlog-c4c1e",
+            storageBucket: "petlog-c4c1e.firebasestorage.app",
+            messagingSenderId: "417384966953",
+            appId: "1:417384966953:web:8b00d0cac96e2b7ec2a538"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        const DEFAULT_HOUSEHOLD_ID = 'PET-DEFAULT';
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        window.clearLog = function() {
+            document.getElementById('log').innerHTML = '';
+        };
+
+        window.startMigration = async function() {
+            const btn = document.getElementById('migrate-btn');
+            btn.disabled = true;
+
+            log('🚀 Starting migration...', 'info');
+
+            try {
+                // Sign in anonymously if not already signed in
+                if (!auth.currentUser) {
+                    log('Signing in anonymously...', 'info');
+                    await signInAnonymously(auth);
+                    log('✅ Signed in successfully', 'success');
+                }
+
+                // Step 1: Read existing pets
+                log('📖 Reading existing pets...', 'info');
+                const petsSnapshot = await get(ref(database, 'pets'));
+                const pets = petsSnapshot.val();
+                
+                if (pets) {
+                    log(`Found ${Object.keys(pets).length} pets`, 'success');
+                } else {
+                    log('No pets found in old structure', 'info');
+                }
+
+                // Step 2: Read existing activities
+                log('📖 Reading existing activities...', 'info');
+                const activitiesSnapshot = await get(ref(database, 'activities'));
+                const activities = activitiesSnapshot.val();
+                
+                if (activities) {
+                    log(`Found ${Object.keys(activities).length} activities`, 'success');
+                } else {
+                    log('No activities found in old structure', 'info');
+                }
+
+                // Step 3: Create default household
+                log(`🏠 Creating default household: ${DEFAULT_HOUSEHOLD_ID}...`, 'info');
+                await set(ref(database, `households/${DEFAULT_HOUSEHOLD_ID}/metadata`), {
+                    createdAt: Date.now(),
+                    createdBy: auth.currentUser.uid,
+                    code: DEFAULT_HOUSEHOLD_ID,
+                    migrated: true
+                });
+                log('✅ Household created', 'success');
+
+                // Step 4: Migrate pets
+                if (pets) {
+                    log('🐾 Migrating pets...', 'info');
+                    await set(ref(database, `households/${DEFAULT_HOUSEHOLD_ID}/pets`), pets);
+                    log(`✅ Migrated ${Object.keys(pets).length} pets`, 'success');
+                }
+
+                // Step 5: Migrate activities
+                if (activities) {
+                    log('📝 Migrating activities...', 'info');
+                    await set(ref(database, `households/${DEFAULT_HOUSEHOLD_ID}/activities`), activities);
+                    log(`✅ Migrated ${Object.keys(activities).length} activities`, 'success');
+                }
+
+                // Step 6: Verify migration
+                log('🔍 Verifying migration...', 'info');
+                const migratedPetsSnapshot = await get(ref(database, `households/${DEFAULT_HOUSEHOLD_ID}/pets`));
+                const migratedActivitiesSnapshot = await get(ref(database, `households/${DEFAULT_HOUSEHOLD_ID}/activities`));
+
+                if (migratedPetsSnapshot.exists() && migratedActivitiesSnapshot.exists()) {
+                    log('✅ Migration verified successfully!', 'success');
+                    
+                    // Step 7: Clean up old structure (OPTIONAL - uncomment to delete)
+                    log('⚠️ Old data still exists at /pets and /activities', 'info');
+                    log('To delete old data, uncomment the cleanup code in the script', 'info');
+                    
+                    // Uncomment these lines to delete old data after verification:
+                    // await remove(ref(database, 'pets'));
+                    // await remove(ref(database, 'activities'));
+                    // log('✅ Old data deleted', 'success');
+
+                    log('', 'info');
+                    log('🎉 MIGRATION COMPLETE!', 'success');
+                    log(`Your data is now in household: ${DEFAULT_HOUSEHOLD_ID}`, 'success');
+                    log('You can now use the main app with household support', 'success');
+                } else {
+                    throw new Error('Migration verification failed');
+                }
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error('Migration error:', error);
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        // Auto-authenticate on load
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                log(`Authenticated as: ${user.uid}`, 'success');
+            } else {
+                log('Not authenticated - will sign in when you start migration', 'info');
+            }
+        });
+
+        log('Ready to migrate. Click "Start Migration" when ready.', 'info');
+    </script>
+</body>
+</html>

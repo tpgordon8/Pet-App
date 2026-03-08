@@ -53,6 +53,12 @@
             --color-vet: #9A6B6B;          /* Deep dusty rose */
             --color-vaccine: #5A8F9A;      /* Deep teal */
             --color-weight: #8B7A69;       /* Rich stone */
+
+            /* Responsive Spacing */
+            --padding-mobile: 16px;
+            --padding-tablet: 24px;
+            --padding-desktop: 32px;
+            --max-width: 1200px;
         }
 
         * {
@@ -73,6 +79,26 @@
             font-size: 15px;
             line-height: 1.6;
             letter-spacing: 0.3px;
+            /* Safe area padding for notched devices */
+            padding-left: max(var(--padding-mobile), env(safe-area-inset-left));
+            padding-right: max(var(--padding-mobile), env(safe-area-inset-right));
+            padding-top: max(var(--padding-mobile), env(safe-area-inset-top));
+            padding-bottom: max(var(--padding-mobile), env(safe-area-inset-bottom));
+        }
+
+        /* Responsive padding breakpoints */
+        @media (min-width: 768px) {
+            body {
+                padding-left: max(var(--padding-tablet), env(safe-area-inset-left));
+                padding-right: max(var(--padding-tablet), env(safe-area-inset-right));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            body {
+                padding-left: max(var(--padding-desktop), env(safe-area-inset-left));
+                padding-right: max(var(--padding-desktop), env(safe-area-inset-right));
+            }
         }
 
         body.modal-open {
@@ -85,9 +111,22 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding: 16px 16px;
+            padding: 0;
             padding-top: 60px;
             min-height: 100vh;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                max-width: 600px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 800px;
+            }
         }
 
         .header {
@@ -115,18 +154,21 @@
 
         /* Quick Log Buttons - Baby App Style */
         .quick-log {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             gap: 8px;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
 
         .quick-log-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            padding: 14px 8px;
+            padding: 14px 12px;
             background: var(--bg-secondary);
             border: 2px solid var(--border-color);
             border-radius: 14px;
@@ -136,6 +178,17 @@
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--shadow-sm);
+            flex: 0 0 auto;
+            min-width: 72px;
+            min-height: 72px;
+        }
+
+        @media (max-width: 480px) {
+            .quick-log-btn {
+                min-width: 64px;
+                min-height: 64px;
+                padding: 10px 8px;
+            }
         }
 
         .quick-log-btn:active {
@@ -455,6 +508,15 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
             gap: 12px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+                gap: 8px;
+            }
         }
 
         .stat-item {
@@ -464,6 +526,8 @@
             border: 1px solid var(--border-light);
             border-radius: 8px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            max-width: 120px;
         }
 
         .stat-item:active {
@@ -621,20 +685,23 @@
         }
 
         .medical-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             gap: 8px;
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
+            flex-wrap: wrap;
         }
 
         .medical-action-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 4px;
-            padding: 10px 6px;
+            padding: 10px 12px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -643,6 +710,15 @@
             color: var(--text-primary);
             cursor: pointer;
             transition: all 0.2s ease;
+            flex: 0 1 auto;
+            min-width: 90px;
+        }
+
+        @media (max-width: 480px) {
+            .medical-action-btn {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 0;
+            }
         }
 
         .medical-action-btn:active {
@@ -2054,6 +2130,9 @@
         <div class="header">
             <div class="title">PetLog</div>
             <div class="subtitle">Track your pet's activities</div>
+            <button onclick="openHouseholdSettings()" style="position: absolute; top: 20px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 14px; cursor: pointer; font-size: 18px; transition: all 0.2s ease;">
+                ⚙️
+            </button>
         </div>
 
         <!-- Quick Log Buttons - Baby App Style -->
@@ -2443,10 +2522,76 @@
         </div>
     </div>
 
+    <!-- Household Setup Modal -->
+    <div class="modal show" id="household-modal" style="z-index: 10000;">
+        <div class="modal-content">
+            <div class="modal-header">🏠 Welcome to PetLog!</div>
+
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; text-align: center;">
+                Create a household or join an existing one
+            </p>
+
+            <button class="modal-btn modal-btn-primary" onclick="showCreateHousehold()" style="margin-bottom: 12px; width: 100%;">
+                🏠 Create New Household
+            </button>
+
+            <div style="text-align: center; margin: 12px 0; color: var(--text-tertiary); font-size: 12px; font-weight: 600;">
+                OR
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Enter Household Code</label>
+                <input type="text" class="form-input" id="household-code-input" placeholder="PET-XXXX" maxlength="8" style="text-transform: uppercase; text-align: center; font-size: 16px; letter-spacing: 2px;">
+            </div>
+
+            <button class="modal-btn modal-btn-secondary" onclick="joinHousehold()" style="width: 100%;">
+                🔑 Join Household
+            </button>
+        </div>
+    </div>
+
+    <!-- Household Settings Modal -->
+    <div class="modal" id="household-settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">⚙️ Household Settings</div>
+
+            <!-- Household Code Display -->
+            <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                <div style="font-size: 10px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">
+                    Your Household Code
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div id="household-code-display" style="flex: 1; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 3px; color: var(--text-primary);">
+                        PET-XXXX
+                    </div>
+                    <button class="modal-btn modal-btn-secondary" onclick="copyHouseholdCode()" style="padding: 10px 16px;">
+                        📋
+                    </button>
+                    <button class="modal-btn modal-btn-secondary" onclick="shareHouseholdCode()" style="padding: 10px 16px;">
+                        📤
+                    </button>
+                </div>
+            </div>
+
+            <!-- Members List (Admin Only) -->
+            <div id="household-members-section" style="display: none;">
+                <div style="font-size: 10px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">
+                    Household Members
+                </div>
+                <div id="household-members-list"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeHouseholdSettings()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, push, onValue, set, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, push, onValue, set, remove, update, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -2462,6 +2607,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const auth = getAuth(app);
 
         // Pet management state
         let pets = [];
@@ -2471,6 +2617,12 @@
 
         // User management state
         let currentUser = localStorage.getItem('currentUser') || 'Tara';
+
+        // Household management state
+        let currentHouseholdId = null;
+        let currentUserId = null;
+        let isUserAdmin = false;
+        let householdMembers = [];
 
         // Modal Body Lock Helpers
         function lockBody() {
@@ -2485,6 +2637,357 @@
             document.body.style.top = '';
             window.scrollTo(0, parseInt(scrollY || '0') * -1);
         }
+
+        // Household Management Functions
+        function generateHouseholdCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'PET-';
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            if (/iPhone/.test(ua)) return "iPhone";
+            if (/iPad/.test(ua)) return "iPad";
+            if (/Android/.test(ua)) return "Android";
+            if (/Mac/.test(ua)) return "Mac";
+            if (/Windows/.test(ua)) return "Windows PC";
+            return "Unknown Device";
+        }
+
+        window.showCreateHousehold = async function() {
+            const userName = prompt("What's your name?") || "User";
+            const deviceName = prompt("What device is this?", getDeviceName()) || getDeviceName();
+
+            const code = generateHouseholdCode();
+            const userId = auth.currentUser.uid;
+
+            try {
+                // Create household in database
+                await set(ref(database, `households/${code}/metadata`), {
+                    createdAt: Date.now(),
+                    createdBy: userId,
+                    code: code
+                });
+
+                // Add creator as first member (admin)
+                await set(ref(database, `households/${code}/members/${userId}`), {
+                    userName: userName,
+                    deviceName: deviceName,
+                    joinedAt: Date.now(),
+                    lastActive: Date.now(),
+                    isAdmin: true
+                });
+
+                // Link user to household
+                await set(ref(database, `users/${userId}`), {
+                    householdId: code,
+                    userName: userName,
+                    deviceName: deviceName,
+                    isAdmin: true,
+                    joinedAt: Date.now()
+                });
+
+                currentHouseholdId = code;
+                currentUserId = userId;
+                currentUser = userName;
+                isUserAdmin = true;
+
+                localStorage.setItem('currentUser', userName);
+
+                showToast(`✅ Household created! Code: ${code}`, 'success');
+                document.getElementById('household-modal').classList.remove('show');
+                unlockBody();
+
+                // Initialize app with household data
+                await initializeHouseholdData(code);
+            } catch (error) {
+                console.error('Error creating household:', error);
+                showToast(`❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.joinHousehold = async function() {
+            const code = document.getElementById('household-code-input').value.toUpperCase().trim();
+
+            if (!code || !code.startsWith('PET-')) {
+                showToast('❌ Please enter a valid household code (PET-XXXX)', 'error');
+                return;
+            }
+
+            const userName = prompt("What's your name?") || "User";
+            const deviceName = prompt("What device is this?", getDeviceName()) || getDeviceName();
+
+            // Check if household exists
+            const householdRef = ref(database, `households/${code}/metadata`);
+            const snapshot = await get(householdRef);
+
+            if (!snapshot.exists()) {
+                showToast('❌ Household code not found', 'error');
+                return;
+            }
+
+            const userId = auth.currentUser.uid;
+
+            try {
+                // Add to household members list
+                await set(ref(database, `households/${code}/members/${userId}`), {
+                    userName: userName,
+                    deviceName: deviceName,
+                    joinedAt: Date.now(),
+                    lastActive: Date.now(),
+                    isAdmin: false
+                });
+
+                // Link user to household
+                await set(ref(database, `users/${userId}`), {
+                    householdId: code,
+                    userName: userName,
+                    deviceName: deviceName,
+                    isAdmin: false,
+                    joinedAt: Date.now()
+                });
+
+                currentHouseholdId = code;
+                currentUserId = userId;
+                currentUser = userName;
+                isUserAdmin = false;
+
+                localStorage.setItem('currentUser', userName);
+
+                showToast(`✅ Joined household ${code}!`, 'success');
+                document.getElementById('household-modal').classList.remove('show');
+                unlockBody();
+
+                // Initialize app with household data
+                await initializeHouseholdData(code);
+            } catch (error) {
+                console.error('Error joining household:', error);
+                showToast(`❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.openHouseholdSettings = function() {
+            if (!currentHouseholdId) return;
+
+            lockBody();
+            document.getElementById('household-code-display').textContent = currentHouseholdId;
+
+            // Show household modal
+            document.getElementById('household-settings-modal').classList.add('show');
+
+            // Load members list if admin
+            if (isUserAdmin) {
+                loadHouseholdMembers();
+            }
+        };
+
+        window.closeHouseholdSettings = function() {
+            document.getElementById('household-settings-modal').classList.remove('show');
+            unlockBody();
+        };
+
+        window.copyHouseholdCode = function() {
+            const code = currentHouseholdId;
+            navigator.clipboard.writeText(code);
+            showToast(`📋 Code copied: ${code}`, 'success');
+        };
+
+        window.shareHouseholdCode = function() {
+            const code = currentHouseholdId;
+            if (navigator.share) {
+                navigator.share({
+                    title: "Join my PetLog household!",
+                    text: `Join my pet tracking household with code: ${code}`,
+                    url: window.location.href
+                }).catch(err => {
+                    console.log('Share cancelled');
+                    copyHouseholdCode();
+                });
+            } else {
+                copyHouseholdCode();
+            }
+        };
+
+        async function loadHouseholdMembers() {
+            if (!isUserAdmin) return;
+
+            const membersRef = ref(database, `households/${currentHouseholdId}/members`);
+            const snapshot = await get(membersRef);
+
+            if (!snapshot.exists()) return;
+
+            const membersData = snapshot.val();
+            const membersList = document.getElementById('household-members-list');
+            const membersSection = document.getElementById('household-members-section');
+
+            membersSection.style.display = 'block';
+
+            let membersHtml = '';
+            Object.entries(membersData).forEach(([uid, member]) => {
+                const isCurrentUser = uid === currentUserId;
+                const memberHtml = `
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 8px;">
+                        <div style="flex-shrink: 0; font-size: 20px;">
+                            ${member.isAdmin ? '👑' : '👤'}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
+                                ${member.userName}${isCurrentUser ? ' (You)' : ''}
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">
+                                📱 ${member.deviceName}
+                            </div>
+                            <div style="font-size: 10px; color: var(--text-tertiary);">
+                                Last active: ${formatTimestamp(member.lastActive)}
+                            </div>
+                        </div>
+                        ${!isCurrentUser && isUserAdmin ? `
+                            <button class="modal-btn modal-btn-secondary" onclick="removeMember('${uid}')" style="padding: 6px 12px; font-size: 11px;">
+                                ❌ Remove
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                membersHtml += memberHtml;
+            });
+
+            membersList.innerHTML = membersHtml;
+        }
+
+        window.removeMember = async function(memberId) {
+            if (!isUserAdmin) {
+                showToast('❌ Only admins can remove members', 'error');
+                return;
+            }
+
+            const confirmed = confirm('Remove this member from your household? They will lose access immediately.');
+            if (!confirmed) return;
+
+            try {
+                // Remove member's household association
+                await set(ref(database, `users/${memberId}/householdId`), null);
+
+                // Remove from household members list
+                await remove(ref(database, `households/${currentHouseholdId}/members/${memberId}`));
+
+                showToast('✅ Member removed from household', 'success');
+                loadHouseholdMembers();
+            } catch (error) {
+                console.error('Error removing member:', error);
+                showToast(`❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        async function updateLastActive() {
+            if (!currentHouseholdId || !currentUserId) return;
+
+            try {
+                await update(ref(database, `households/${currentHouseholdId}/members/${currentUserId}`), {
+                    lastActive: Date.now()
+                });
+            } catch (error) {
+                console.error('Error updating last active:', error);
+            }
+        }
+
+        // Update last active every 5 minutes
+        setInterval(updateLastActive, 5 * 60 * 1000);
+
+        async function initializeHouseholdData(householdId) {
+            currentHouseholdId = householdId;
+
+            // Load pets from household
+            const petsRef = ref(database, `households/${householdId}/pets`);
+            onValue(petsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    pets = Object.entries(data).map(([id, pet]) => ({
+                        id,
+                        ...pet
+                    }));
+                } else {
+                    pets = [];
+                }
+                renderPetChips();
+                updateCompactBar();
+            });
+
+            // Load activities from household
+            const activitiesRef = ref(database, `households/${householdId}/activities`);
+            onValue(activitiesRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    currentActivities = Object.entries(data)
+                        .map(([id, activity]) => ({ id, ...activity }))
+                        .sort((a, b) => b.timestamp - a.timestamp);
+
+                    const filteredActivities = filterActivitiesByPet(currentActivities);
+                    renderActivities(filteredActivities);
+                    renderStats(calculateTodayStats(filteredActivities));
+                    renderMedicalSummary(filteredActivities);
+                    renderRecentActivity(filteredActivities.slice(0, 3));
+                } else {
+                    currentActivities = [];
+                    renderActivities([]);
+                    renderStats({ poop: 0, pee: 0, food: 0, sleep: 0, meds: 0 });
+                    renderMedicalSummary([]);
+                    renderRecentActivity([]);
+                }
+
+                document.getElementById('loading-indicator').style.display = 'none';
+            });
+
+            // Update last active
+            updateLastActive();
+        }
+
+        // Authentication Flow
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('Authenticated:', user.uid);
+                currentUserId = user.uid;
+
+                // Check if user has a household
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+
+                if (!snapshot.exists() || !snapshot.val().householdId) {
+                    // Show household setup modal
+                    lockBody();
+                    document.getElementById('household-modal').classList.add('show');
+                } else {
+                    // User already has household, load data
+                    const userData = snapshot.val();
+                    currentHouseholdId = userData.householdId;
+                    currentUser = userData.userName;
+                    isUserAdmin = userData.isAdmin || false;
+
+                    localStorage.setItem('currentUser', currentUser);
+
+                    // Hide household modal if showing
+                    document.getElementById('household-modal').classList.remove('show');
+                    unlockBody();
+
+                    // Initialize household data
+                    await initializeHouseholdData(currentHouseholdId);
+                }
+            } else {
+                // No user signed in, sign in anonymously
+                console.log('Signing in anonymously...');
+                signInAnonymously(auth)
+                    .then(() => {
+                        console.log('Signed in anonymously');
+                    })
+                    .catch((error) => {
+                        console.error('Auth error:', error);
+                        showToast('⚠️ Authentication failed', 'error');
+                    });
+            }
+        });
 
         // Pet Management Functions
         window.openAddPetModal = function() {
@@ -2525,8 +3028,13 @@
                 return;
             }
 
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
             const petId = 'pet_' + Date.now();
-            const petsRef = ref(database, `pets/${petId}`);
+            const petsRef = ref(database, `households/${currentHouseholdId}/pets/${petId}`);
 
             set(petsRef, {
                 name: name,
@@ -3112,6 +3620,11 @@
             const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
             const timestamp = new Date(datetime).getTime();
 
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
             const activity = {
                 type: 'Vet Visit',
                 emoji: '🏥',
@@ -3124,12 +3637,13 @@
                 }
             };
 
-            const activitiesRef = ref(database, 'activities');
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
             push(activitiesRef, activity)
                 .then(() => {
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ Vet visit logged for ${petName}!`, 'success');
                     closeVetModal();
+                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -3184,6 +3698,11 @@
             const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
             const timestamp = new Date(datetime).getTime();
 
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
             const activity = {
                 type: 'Vaccination',
                 emoji: '💉',
@@ -3196,12 +3715,13 @@
                 }
             };
 
-            const activitiesRef = ref(database, 'activities');
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
             push(activitiesRef, activity)
                 .then(() => {
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ ${vaccineName} vaccination logged for ${petName}!`, 'success');
                     closeVaccineModal();
+                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -3258,6 +3778,11 @@
             const petId = currentPetId === 'all' ? pets[0].id : currentPetId;
             const timestamp = new Date(datetime).getTime();
 
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
             const activity = {
                 type: 'Weight Check',
                 emoji: '⚖️',
@@ -3271,12 +3796,13 @@
                 }
             };
 
-            const activitiesRef = ref(database, 'activities');
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
             push(activitiesRef, activity)
                 .then(() => {
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ Weight logged for ${petName}: ${weightValue} ${weightUnit}`, 'success');
                     closeWeightModal();
+                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -3349,17 +3875,25 @@
                 petId: petId
             };
 
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
             if (!isOnline) {
                 offlineQueue.push(activity);
                 showToast(`📵 ${type} saved offline - will sync later`, 'success');
                 return;
             }
 
-            const activitiesRef = ref(database, 'activities');
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
             push(activitiesRef, activity)
                 .then(() => {
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ ${type} logged for ${petName}!`, 'success');
+
+                    // Update last active
+                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
