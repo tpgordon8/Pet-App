@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput, RefreshControl } from 'react-native';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, push, onValue, remove, update } from 'firebase/database';
+import { getStorage } from 'firebase/storage';
 
 // Contexts
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
@@ -13,7 +14,9 @@ import { Header } from './components/layout/Header';
 import { PetSelector } from './components/pet/PetSelector';
 import { IntroScreen, isOnboardingComplete } from './components/onboarding/IntroScreen';
 import { MedicationManager } from './components/medication/MedicationManager';
-import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill, Undo2, Copy, Clock } from 'lucide-react-native';
+import { pickImage, uploadImageToStorage } from './utils/imageUpload';
+import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill, Undo2, Copy, Clock, Camera, X } from 'lucide-react-native';
+import { Image } from 'react-native';
 
 // 🔥 Firebase configuration
 const firebaseConfig = {
@@ -29,6 +32,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const storage = getStorage(app);
 
 // Main App Component (wrapped in contexts)
 function AppContent() {
@@ -46,6 +50,8 @@ function AppContent() {
   const [lastActivityId, setLastActivityId] = useState(null);
   // 📋 State to track last activity data for duplicate
   const [lastActivityData, setLastActivityData] = useState(null);
+  // 📷 State for selected photo
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   // 🎯 Check if onboarding is complete on mount
   useEffect(() => {
@@ -88,7 +94,7 @@ function AppContent() {
   }, []);
 
   // 📝 Function to log an activity to Firebase
-  const logActivity = (type, emoji) => {
+  const logActivity = async (type, emoji) => {
     const activitiesRef = ref(database, 'activities');
 
     const activityData = {
@@ -104,13 +110,24 @@ function AppContent() {
       activityData.note = note.trim();
     }
 
+    // Upload photo if one was selected
+    if (selectedPhoto) {
+      try {
+        const photoURL = await uploadImageToStorage(storage, selectedPhoto.uri, selectedPetId);
+        activityData.photoURL = photoURL;
+      } catch (error) {
+        Alert.alert('Upload Error', 'Failed to upload photo. Logging without photo.');
+      }
+    }
+
     push(activitiesRef, activityData)
       .then((newActivityRef) => {
         // Track the last activity for undo and duplicate
         setLastActivityId(newActivityRef.key);
         setLastActivityData({ type, emoji, note: activityData.note });
-        // Clear note after successful log
+        // Clear note and photo after successful log
         setNote('');
+        setSelectedPhoto(null);
       })
       .catch((error) => {
         Alert.alert('Error', 'Failed to log activity: ' + error.message);
@@ -307,6 +324,32 @@ function AppContent() {
           )}
         </View>
 
+        {/* 📷 Photo picker and preview */}
+        <View style={styles.photoContainer}>
+          {selectedPhoto ? (
+            <View style={[styles.photoPreview, { borderColor: colors.border }]}>
+              <Image source={{ uri: selectedPhoto.uri }} style={styles.photoImage} />
+              <TouchableOpacity
+                onPress={() => setSelectedPhoto(null)}
+                style={[styles.removePhotoButton, { backgroundColor: colors.textSecondary }]}
+              >
+                <X size={16} color="#fff" strokeWidth={2} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={async () => {
+                const image = await pickImage();
+                if (image) setSelectedPhoto(image);
+              }}
+              style={[styles.addPhotoButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+            >
+              <Camera size={20} color={colors.primary} strokeWidth={2} />
+              <Text style={[styles.addPhotoText, { color: colors.primary }]}>Add Photo</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* ↩️ Quick action buttons */}
         {(lastActivityId || lastActivityData) && (
           <View style={styles.quickActionsContainer}>
@@ -420,6 +463,12 @@ function AppContent() {
                         "{activity.note}"
                       </Text>
                     )}
+                    {activity.photoURL && (
+                      <Image
+                        source={{ uri: activity.photoURL }}
+                        style={[styles.activityPhoto, { borderColor: colors.border }]}
+                      />
+                    )}
                     <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
                       {formatTime(activity.timestamp)}
                     </Text>
@@ -486,6 +535,47 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  photoContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  photoPreview: {
+    position: 'relative',
+    width: 120,
+    height: 120,
+    borderRadius: 12,
+    borderWidth: 2,
+    overflow: 'hidden',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
+  },
+  removePhotoButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addPhotoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    gap: 8,
+  },
+  addPhotoText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   quickActionsContainer: {
     flexDirection: 'row',
@@ -597,6 +687,14 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: 2,
     marginBottom: 2,
+  },
+  activityPhoto: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    marginTop: 8,
+    marginBottom: 4,
+    borderWidth: 1,
   },
   activityTime: {
     fontSize: 13,
