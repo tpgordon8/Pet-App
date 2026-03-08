@@ -12,6 +12,7 @@ import { PetProvider, usePets } from './contexts/PetContext';
 import { Header } from './components/layout/Header';
 import { PetSelector } from './components/pet/PetSelector';
 import { IntroScreen, isOnboardingComplete } from './components/onboarding/IntroScreen';
+import { MedicationManager } from './components/medication/MedicationManager';
 import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill, Undo2, Copy, Clock } from 'lucide-react-native';
 
 // 🔥 Firebase configuration
@@ -384,6 +385,9 @@ function AppContent() {
             <Text style={[styles.buttonText, { color: colors.activity.meds.text }]}>Meds</Text>
           </TouchableOpacity>
         </View>
+
+        {/* 💊 Medication Manager */}
+        <MedicationManager database={database} />
 
         {/* 📱 Activity Feed */}
         <View style={[styles.feedContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
