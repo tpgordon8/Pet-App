@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput, RefreshControl } from 'react-native';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, push, onValue } from 'firebase/database';
+import { getDatabase, ref, push, onValue, remove, update } from 'firebase/database';
 
 // Contexts
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
@@ -12,7 +12,7 @@ import { PetProvider, usePets } from './contexts/PetContext';
 import { Header } from './components/layout/Header';
 import { PetSelector } from './components/pet/PetSelector';
 import { IntroScreen, isOnboardingComplete } from './components/onboarding/IntroScreen';
-import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill } from 'lucide-react-native';
+import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill, Undo2, Copy, Clock } from 'lucide-react-native';
 
 // 🔥 Firebase configuration
 const firebaseConfig = {
@@ -41,6 +41,10 @@ function AppContent() {
   const [refreshing, setRefreshing] = useState(false);
   // 🎯 State for onboarding
   const [showIntro, setShowIntro] = useState(null); // null = checking, true = show, false = hide
+  // ↩️ State to track last activity for undo
+  const [lastActivityId, setLastActivityId] = useState(null);
+  // 📋 State to track last activity data for duplicate
+  const [lastActivityData, setLastActivityData] = useState(null);
 
   // 🎯 Check if onboarding is complete on mount
   useEffect(() => {
@@ -100,13 +104,89 @@ function AppContent() {
     }
 
     push(activitiesRef, activityData)
-      .then(() => {
+      .then((newActivityRef) => {
+        // Track the last activity for undo and duplicate
+        setLastActivityId(newActivityRef.key);
+        setLastActivityData({ type, emoji, note: activityData.note });
         // Clear note after successful log
         setNote('');
       })
       .catch((error) => {
         Alert.alert('Error', 'Failed to log activity: ' + error.message);
       });
+  };
+
+  // 📋 Function to duplicate the last activity
+  const duplicateLastActivity = () => {
+    if (!lastActivityData) {
+      Alert.alert('Nothing to Duplicate', 'No recent activity to duplicate.');
+      return;
+    }
+
+    // Log the same activity again with a new timestamp
+    logActivity(lastActivityData.type, lastActivityData.emoji);
+  };
+
+  // 🕐 Function to adjust activity timestamp
+  const adjustActivityTime = (activityId, currentTimestamp) => {
+    const timeOptions = [
+      { label: '- 30 minutes', minutes: -30 },
+      { label: '- 15 minutes', minutes: -15 },
+      { label: '- 5 minutes', minutes: -5 },
+      { label: '+ 5 minutes', minutes: 5 },
+      { label: '+ 15 minutes', minutes: 15 },
+      { label: '+ 30 minutes', minutes: 30 },
+    ];
+
+    Alert.alert(
+      'Adjust Time',
+      'How much should we adjust this activity\'s time?',
+      [
+        ...timeOptions.map(option => ({
+          text: option.label,
+          onPress: () => {
+            const newTimestamp = currentTimestamp + (option.minutes * 60000);
+            const activityRef = ref(database, `activities/${activityId}`);
+            update(activityRef, { timestamp: newTimestamp })
+              .catch((error) => {
+                Alert.alert('Error', 'Failed to adjust time: ' + error.message);
+              });
+          }
+        })),
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
+
+  // ↩️ Function to undo the last activity
+  const undoLastActivity = () => {
+    if (!lastActivityId) {
+      Alert.alert('Nothing to Undo', 'No recent activity to undo.');
+      return;
+    }
+
+    const activityRef = ref(database, `activities/${lastActivityId}`);
+
+    Alert.alert(
+      'Undo Last Activity',
+      'Are you sure you want to delete the last activity?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Undo',
+          style: 'destructive',
+          onPress: () => {
+            remove(activityRef)
+              .then(() => {
+                setLastActivityId(null);
+              })
+              .catch((error) => {
+                Alert.alert('Error', 'Failed to undo activity: ' + error.message);
+              });
+          }
+        }
+      ]
+    );
   };
 
   // 🔄 Pull-to-refresh handler
@@ -226,6 +306,32 @@ function AppContent() {
           )}
         </View>
 
+        {/* ↩️ Quick action buttons */}
+        {(lastActivityId || lastActivityData) && (
+          <View style={styles.quickActionsContainer}>
+            {lastActivityId && (
+              <TouchableOpacity
+                onPress={undoLastActivity}
+                style={[styles.quickActionButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+              >
+                <Undo2 size={16} color={colors.primary} strokeWidth={2} />
+                <Text style={[styles.quickActionText, { color: colors.primary }]}>Undo</Text>
+              </TouchableOpacity>
+            )}
+            {lastActivityData && (
+              <TouchableOpacity
+                onPress={duplicateLastActivity}
+                style={[styles.quickActionButton, { backgroundColor: colors.card, borderColor: colors.border }]}
+              >
+                <Copy size={16} color={colors.primary} strokeWidth={2} />
+                <Text style={[styles.quickActionText, { color: colors.primary }]}>
+                  Repeat {lastActivityData.type}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
         {/* 🔘 Button section */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -287,33 +393,44 @@ function AppContent() {
               No activities yet. Tap a button to start logging! 🐾
             </Text>
           ) : (
-            filteredActivities.map((activity) => (
-              <View
-                key={activity.id}
-                style={[styles.activityItem, { backgroundColor: colors.background }]}
-              >
-                <View style={[styles.activityIconCircle, {
-                  backgroundColor: colors.activity[activity.type.toLowerCase()]?.bg || colors.card
-                }]}>
-                  {getActivityIcon(activity.type)}
-                </View>
-                <View style={styles.activityDetails}>
-                  <Text style={[styles.activityText, { color: colors.text }]}>
-                    <Text style={[styles.activityUser, { color: colors.primary }]}>
-                      {activity.user}
-                    </Text> logged {activity.type}
-                  </Text>
-                  {activity.note && (
-                    <Text style={[styles.activityNote, { color: colors.textSecondary }]}>
-                      "{activity.note}"
+            filteredActivities.map((activity) => {
+              const isRecent = Date.now() - activity.timestamp < 2 * 60 * 60 * 1000; // 2 hours
+              return (
+                <View
+                  key={activity.id}
+                  style={[styles.activityItem, { backgroundColor: colors.background }]}
+                >
+                  <View style={[styles.activityIconCircle, {
+                    backgroundColor: colors.activity[activity.type.toLowerCase()]?.bg || colors.card
+                  }]}>
+                    {getActivityIcon(activity.type)}
+                  </View>
+                  <View style={styles.activityDetails}>
+                    <Text style={[styles.activityText, { color: colors.text }]}>
+                      <Text style={[styles.activityUser, { color: colors.primary }]}>
+                        {activity.user}
+                      </Text> logged {activity.type}
                     </Text>
+                    {activity.note && (
+                      <Text style={[styles.activityNote, { color: colors.textSecondary }]}>
+                        "{activity.note}"
+                      </Text>
+                    )}
+                    <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
+                      {formatTime(activity.timestamp)}
+                    </Text>
+                  </View>
+                  {isRecent && (
+                    <TouchableOpacity
+                      onPress={() => adjustActivityTime(activity.id, activity.timestamp)}
+                      style={[styles.timeAdjustButton, { backgroundColor: colors.card }]}
+                    >
+                      <Clock size={16} color={colors.textSecondary} strokeWidth={2} />
+                    </TouchableOpacity>
                   )}
-                  <Text style={[styles.activityTime, { color: colors.textTertiary }]}>
-                    {formatTime(activity.timestamp)}
-                  </Text>
                 </View>
-              </View>
-            ))
+              );
+            })
           )}
         </View>
       </ScrollView>
@@ -365,6 +482,27 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  quickActionsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginBottom: 12,
+    gap: 8,
+  },
+  quickActionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+  },
+  quickActionText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   buttonContainer: {
     paddingHorizontal: 20,
@@ -458,5 +596,13 @@ const styles = StyleSheet.create({
   },
   activityTime: {
     fontSize: 13,
+  },
+  timeAdjustButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
   },
 });
