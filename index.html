@@ -2523,7 +2523,7 @@
     </div>
 
     <!-- Household Setup Modal -->
-    <div class="modal show" id="household-modal" style="z-index: 10000;">
+    <div class="modal" id="household-modal" style="z-index: 10000;">
         <div class="modal-content">
             <div class="modal-header">🏠 Welcome to PetLog!</div>
 
@@ -2659,13 +2659,27 @@
         }
 
         window.showCreateHousehold = async function() {
-            const userName = prompt("What's your name?") || "User";
-            const deviceName = prompt("What device is this?", getDeviceName()) || getDeviceName();
+            const userName = prompt("What's your name?");
+            if (!userName || userName.trim() === '') {
+                showToast('❌ Name is required', 'error');
+                return;
+            }
+
+            const deviceName = prompt("What device is this?", getDeviceName());
+            if (!deviceName || deviceName.trim() === '') {
+                showToast('❌ Device name is required', 'error');
+                return;
+            }
+
+            console.log('[CREATE] Starting household creation...', { userName, deviceName });
 
             const code = generateHouseholdCode();
             const userId = auth.currentUser.uid;
 
             try {
+                // Show loading
+                showToast('⏳ Creating household...', 'info');
+                console.log('[CREATE] Generating code:', code);
                 // Create household in database
                 await set(ref(database, `households/${code}/metadata`), {
                     createdAt: Date.now(),
@@ -2698,15 +2712,24 @@
 
                 localStorage.setItem('currentUser', userName);
 
+                console.log('[CREATE] Household created successfully!', { code, userId });
                 showToast(`✅ Household created! Code: ${code}`, 'success');
                 document.getElementById('household-modal').classList.remove('show');
                 unlockBody();
 
+                console.log('[CREATE] Initializing household data...');
                 // Initialize app with household data
                 await initializeHouseholdData(code);
+                console.log('[CREATE] Household initialization complete!');
             } catch (error) {
-                console.error('Error creating household:', error);
+                console.error('[CREATE] Error creating household:', error);
                 showToast(`❌ Error: ${error.message}`, 'error');
+
+                // Retry mechanism - offer to retry
+                if (confirm('Failed to create household. Would you like to retry?')) {
+                    console.log('[CREATE] User requested retry');
+                    setTimeout(() => window.showCreateHousehold(), 500);
+                }
             }
         };
 
@@ -2718,21 +2741,38 @@
                 return;
             }
 
-            const userName = prompt("What's your name?") || "User";
-            const deviceName = prompt("What device is this?", getDeviceName()) || getDeviceName();
-
-            // Check if household exists
-            const householdRef = ref(database, `households/${code}/metadata`);
-            const snapshot = await get(householdRef);
-
-            if (!snapshot.exists()) {
-                showToast('❌ Household code not found', 'error');
+            const userName = prompt("What's your name?");
+            if (!userName || userName.trim() === '') {
+                showToast('❌ Name is required', 'error');
                 return;
             }
+
+            const deviceName = prompt("What device is this?", getDeviceName());
+            if (!deviceName || deviceName.trim() === '') {
+                showToast('❌ Device name is required', 'error');
+                return;
+            }
+
+            console.log('[JOIN] Starting household join process...', { code, userName, deviceName });
 
             const userId = auth.currentUser.uid;
 
             try {
+                // Show loading
+                showToast('⏳ Joining household...', 'info');
+                console.log('[JOIN] Checking if household exists...');
+
+                // Check if household exists
+                const householdRef = ref(database, `households/${code}/metadata`);
+                const snapshot = await get(householdRef);
+
+                if (!snapshot.exists()) {
+                    console.error('[JOIN] Household not found:', code);
+                    showToast('❌ Household code not found', 'error');
+                    return;
+                }
+
+                console.log('[JOIN] Household found, adding member...');
                 // Add to household members list
                 await set(ref(database, `households/${code}/members/${userId}`), {
                     userName: userName,
@@ -2758,15 +2798,24 @@
 
                 localStorage.setItem('currentUser', userName);
 
+                console.log('[JOIN] Successfully joined household!', { code, userId });
                 showToast(`✅ Joined household ${code}!`, 'success');
                 document.getElementById('household-modal').classList.remove('show');
                 unlockBody();
 
+                console.log('[JOIN] Initializing household data...');
                 // Initialize app with household data
                 await initializeHouseholdData(code);
+                console.log('[JOIN] Household initialization complete!');
             } catch (error) {
-                console.error('Error joining household:', error);
+                console.error('[JOIN] Error joining household:', error);
                 showToast(`❌ Error: ${error.message}`, 'error');
+
+                // Retry mechanism - offer to retry
+                if (confirm('Failed to join household. Would you like to retry?')) {
+                    console.log('[JOIN] User requested retry');
+                    setTimeout(() => window.joinHousehold(), 500);
+                }
             }
         };
 
@@ -2948,43 +2997,57 @@
         // Authentication Flow
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                console.log('Authenticated:', user.uid);
+                console.log('[AUTH] User authenticated:', user.uid);
                 currentUserId = user.uid;
 
-                // Check if user has a household
-                const userRef = ref(database, `users/${user.uid}`);
-                const snapshot = await get(userRef);
+                try {
+                    // Check if user has a household
+                    console.log('[AUTH] Checking for existing household...');
+                    const userRef = ref(database, `users/${user.uid}`);
+                    const snapshot = await get(userRef);
 
-                if (!snapshot.exists() || !snapshot.val().householdId) {
-                    // Show household setup modal
+                    if (!snapshot.exists() || !snapshot.val().householdId) {
+                        // Show household setup modal
+                        console.log('[AUTH] No household found, showing setup modal');
+                        lockBody();
+                        document.getElementById('household-modal').classList.add('show');
+                    } else {
+                        // User already has household, load data
+                        const userData = snapshot.val();
+                        currentHouseholdId = userData.householdId;
+                        currentUser = userData.userName;
+                        isUserAdmin = userData.isAdmin || false;
+
+                        console.log('[AUTH] Found existing household:', currentHouseholdId);
+                        localStorage.setItem('currentUser', currentUser);
+
+                        // Hide household modal if showing
+                        document.getElementById('household-modal').classList.remove('show');
+                        unlockBody();
+
+                        // Initialize household data
+                        console.log('[AUTH] Initializing household data...');
+                        await initializeHouseholdData(currentHouseholdId);
+                        console.log('[AUTH] Household data loaded successfully');
+                    }
+                } catch (error) {
+                    console.error('[AUTH] Error during authentication flow:', error);
+                    showToast(`❌ Error loading data: ${error.message}`, 'error');
+
+                    // Show household modal as fallback
                     lockBody();
                     document.getElementById('household-modal').classList.add('show');
-                } else {
-                    // User already has household, load data
-                    const userData = snapshot.val();
-                    currentHouseholdId = userData.householdId;
-                    currentUser = userData.userName;
-                    isUserAdmin = userData.isAdmin || false;
-
-                    localStorage.setItem('currentUser', currentUser);
-
-                    // Hide household modal if showing
-                    document.getElementById('household-modal').classList.remove('show');
-                    unlockBody();
-
-                    // Initialize household data
-                    await initializeHouseholdData(currentHouseholdId);
                 }
             } else {
                 // No user signed in, sign in anonymously
-                console.log('Signing in anonymously...');
+                console.log('[AUTH] No user found, signing in anonymously...');
                 signInAnonymously(auth)
                     .then(() => {
-                        console.log('Signed in anonymously');
+                        console.log('[AUTH] Signed in anonymously successfully');
                     })
                     .catch((error) => {
-                        console.error('Auth error:', error);
-                        showToast('⚠️ Authentication failed', 'error');
+                        console.error('[AUTH] Authentication error:', error);
+                        showToast('⚠️ Authentication failed. Please refresh the page.', 'error');
                     });
             }
         });
