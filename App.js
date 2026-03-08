@@ -90,7 +90,8 @@ function AppContent() {
       type: type,
       emoji: emoji,
       timestamp: Date.now(),
-      user: 'You' // Later we'll add real user names
+      user: 'You', // Later we'll add real user names
+      petId: selectedPetId // Associate activity with selected pet
     };
 
     // Add note if one was entered
@@ -178,6 +179,11 @@ function AppContent() {
   if (showIntro) {
     return <IntroScreen onComplete={() => setShowIntro(false)} />;
   }
+
+  // Filter activities by selected pet
+  const filteredActivities = selectedPetId === 'all'
+    ? activities
+    : activities.filter(activity => activity.petId === selectedPetId);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -276,12 +282,12 @@ function AppContent() {
         {/* 📱 Activity Feed */}
         <View style={[styles.feedContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <Text style={[styles.feedTitle, { color: colors.text }]}>Recent Activity</Text>
-          {activities.length === 0 ? (
+          {filteredActivities.length === 0 ? (
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
               No activities yet. Tap a button to start logging! 🐾
             </Text>
           ) : (
-            activities.map((activity) => (
+            filteredActivities.map((activity) => (
               <View
                 key={activity.id}
                 style={[styles.activityItem, { backgroundColor: colors.background }]}

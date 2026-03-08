@@ -3,8 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Moon, Sun } from 'lucide-react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { typography, spacing, borderRadius } from '../../utils/theme';
-import { ExitButton } from './ExitButton';
-import { RefreshButton } from './RefreshButton';
 
 export const Header = () => {
   const { isDark, toggleTheme, colors } = useTheme();
@@ -18,21 +16,17 @@ export const Header = () => {
         </Text>
       </View>
 
-      <View style={styles.headerActions}>
-        <TouchableOpacity
-          onPress={toggleTheme}
-          style={[styles.themeToggle, { backgroundColor: colors.background }]}
-          accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {isDark ? (
-            <Sun size={20} color={colors.primary} strokeWidth={2} />
-          ) : (
-            <Moon size={20} color={colors.primary} strokeWidth={2} />
-          )}
-        </TouchableOpacity>
-        <RefreshButton />
-        <ExitButton />
-      </View>
+      <TouchableOpacity
+        onPress={toggleTheme}
+        style={[styles.themeToggle, { backgroundColor: colors.background }]}
+        accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {isDark ? (
+          <Sun size={20} color={colors.primary} strokeWidth={2} />
+        ) : (
+          <Moon size={20} color={colors.primary} strokeWidth={2} />
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -56,10 +50,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: typography.fontSize.sm,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   themeToggle: {
     width: 40,
