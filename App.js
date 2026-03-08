@@ -11,6 +11,7 @@ import { PetProvider, usePets } from './contexts/PetContext';
 // Components
 import { Header } from './components/layout/Header';
 import { PetSelector } from './components/pet/PetSelector';
+import { IntroScreen, isOnboardingComplete } from './components/onboarding/IntroScreen';
 import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill } from 'lucide-react-native';
 
 // 🔥 Firebase configuration
@@ -38,6 +39,17 @@ function AppContent() {
   const [note, setNote] = useState('');
   // 🔄 State for pull-to-refresh
   const [refreshing, setRefreshing] = useState(false);
+  // 🎯 State for onboarding
+  const [showIntro, setShowIntro] = useState(null); // null = checking, true = show, false = hide
+
+  // 🎯 Check if onboarding is complete on mount
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      const completed = await isOnboardingComplete();
+      setShowIntro(!completed);
+    };
+    checkOnboarding();
+  }, []);
 
   // 🎧 Listen for real-time updates from Firebase
   useEffect(() => {
@@ -152,6 +164,20 @@ function AppContent() {
         return null;
     }
   };
+
+  // Show loading state while checking onboarding
+  if (showIntro === null) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: colors.text }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  // Show intro screen if onboarding not complete
+  if (showIntro) {
+    return <IntroScreen onComplete={() => setShowIntro(false)} />;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -358,6 +384,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    display: 'flex', // Ensure flexbox is used
+    flexDirection: 'row', // Ensure proper flex direction
   },
   buttonText: {
     fontSize: 17,
@@ -403,6 +431,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    display: 'flex',
+    flexDirection: 'row',
   },
   activityDetails: {
     flex: 1,

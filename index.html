@@ -198,6 +198,51 @@
         .quick-log-btn .button-icon {
             width: 28px;
             height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        /* Emoji and Icon Centering Fix for Modern Devices (2022-2026) */
+        .quick-log-btn .button-icon,
+        .quick-log-btn svg,
+        [class*="iconCircle"],
+        [class*="avatarCircle"] {
+            /* Flexbox centering - works on all modern browsers */
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            /* Remove any text alignment issues */
+            text-align: center !important;
+            /* Ensure no padding offsets */
+            padding: 0 !important;
+            /* Fix emoji baseline alignment */
+            line-height: 1 !important;
+            /* Prevent emoji shifting on iOS */
+            vertical-align: middle !important;
+            /* Ensure emojis don't cause overflow */
+            overflow: visible !important;
+        }
+
+        /* Fix for emoji rendering on iOS/Safari */
+        @supports (-webkit-appearance: none) {
+            .quick-log-btn .button-icon,
+            [class*="avatarEmoji"] {
+                /* Safari-specific fix for emoji alignment */
+                transform: translateY(0) !important;
+                position: relative !important;
+                top: 0 !important;
+            }
+        }
+
+        /* Fix for Android Chrome emoji rendering */
+        @supports (font: -apple-system-body) {
+            .quick-log-btn .button-icon,
+            [class*="avatarEmoji"] {
+                /* Chromium-specific adjustments */
+                font-feature-settings: normal !important;
+            }
         }
 
         .quick-log-btn.poop-button {
@@ -4832,6 +4877,38 @@
                 }
             }, { onlyOnce: true });
         }, 60000);
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered:', registration.scope);
+
+                        // Check for updates periodically
+                        setInterval(() => {
+                            registration.update();
+                        }, 60000); // Check every minute
+
+                        // Listen for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available, prompt user to refresh
+                                    console.log('🔄 New version available! Refresh to update.');
+                                    // Could show a toast notification here
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
