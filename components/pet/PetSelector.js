@@ -147,8 +147,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
-    display: 'flex',
-    flexDirection: 'row',
   },
   avatarEmoji: {
     fontSize: 20,

@@ -622,8 +622,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
-    display: 'flex', // Ensure flexbox is used
-    flexDirection: 'row', // Ensure proper flex direction
   },
   buttonText: {
     fontSize: 17,
@@ -669,8 +667,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
-    display: 'flex',
-    flexDirection: 'row',
   },
   activityDetails: {
     flex: 1,
