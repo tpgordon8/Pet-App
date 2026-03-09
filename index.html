@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#8B9D83">
     <link rel="manifest" href="/manifest.json">
@@ -3092,11 +3092,31 @@
                 console.log('[AUTH] No user found, signing in anonymously...');
                 signInAnonymously(auth)
                     .then(() => {
-                        console.log('[AUTH] Signed in anonymously successfully');
+                        console.log('[AUTH] ✓ Signed in anonymously successfully');
                     })
                     .catch((error) => {
-                        console.error('[AUTH] Authentication error:', error);
-                        showToast('⚠️ Authentication failed. Please refresh the page.', 'error');
+                        console.error('[AUTH] ❌ Authentication error:', error);
+
+                        // Provide specific guidance based on error code
+                        let errorMessage = '⚠️ Authentication failed. Please refresh the page.';
+
+                        if (error.code === 'auth/api-key-not-valid') {
+                            errorMessage = '⚠️ Firebase API key error. Please check your Firebase configuration.';
+                            console.error('[AUTH] API key is invalid or restricted. Check Firebase Console settings.');
+                        } else if (error.code === 'auth/operation-not-allowed') {
+                            errorMessage = '⚠️ Anonymous sign-in is disabled. Please enable it in Firebase Console → Authentication → Sign-in method.';
+                            console.error('[AUTH] Anonymous authentication is not enabled in Firebase Console.');
+                        } else if (error.code === 'auth/network-request-failed') {
+                            errorMessage = '⚠️ Network error. Please check your connection and try again.';
+                        }
+
+                        showToast(errorMessage, 'error');
+
+                        // Log detailed error for debugging
+                        console.error('[AUTH] Error details:', {
+                            code: error.code,
+                            message: error.message
+                        });
                     });
             }
         });
