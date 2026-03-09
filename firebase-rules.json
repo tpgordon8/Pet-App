@@ -1,39 +1,20 @@
 {
   "rules": {
-    "households": {
-      "$householdId": {
-        ".read": "auth != null && root.child('users').child(auth.uid).child('householdId').val() == $householdId",
-        ".write": "auth != null && root.child('users').child(auth.uid).child('householdId').val() == $householdId",
-        "metadata": {
-          ".validate": "newData.hasChildren(['createdAt', 'createdBy', 'code'])"
-        },
-        "members": {
-          "$memberId": {
-            ".write": "auth != null && (auth.uid == $memberId || root.child('users').child(auth.uid).child('isAdmin').val() == true)",
-            ".validate": "newData.hasChildren(['userName', 'deviceName', 'joinedAt', 'lastActive', 'isAdmin'])"
-          }
-        },
-        "pets": {
-          ".indexOn": ["name", "createdAt"],
-          "$petId": {
-            ".validate": "newData.hasChildren(['name', 'emoji', 'createdAt'])"
-          }
-        },
-        "activities": {
-          ".indexOn": ["timestamp", "petId", "type"],
-          "$activityId": {
-            ".validate": "newData.hasChildren(['type', 'emoji', 'timestamp', 'user', 'petId'])"
-          }
-        }
-      }
+    "pets": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["name", "createdAt"]
     },
-    "users": {
-      "$uid": {
-        ".read": "auth.uid == $uid || root.child('users').child(auth.uid).child('isAdmin').val() == true",
-        ".write": "auth.uid == $uid",
-        "householdId": {
-          ".write": "auth.uid == $uid || root.child('users').child(auth.uid).child('isAdmin').val() == true"
-        }
+    "activities": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["timestamp", "petId", "type"]
+    },
+    "medications": {
+      ".read": true,
+      ".write": true,
+      "$petId": {
+        ".indexOn": ["active", "createdAt"]
       }
     }
   }

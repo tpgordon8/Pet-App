@@ -1,12 +1,12 @@
 # Firebase Security Rules Setup
 
 ## Current Status
-⚠️ **Important:** Firebase security rules need to be configured in your Firebase Console.
+✅ **Current Status:** Firebase security rules are configured for open family access (last updated: March 9, 2026).
 
 ## How to Apply Rules
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select your project: **pet-activity-logger**
+2. Select your project: **petlog-c4c1e**
 3. Navigate to **Realtime Database** > **Rules** tab
 4. Copy the contents from `firebase-rules.json`
 5. Paste into the rules editor
@@ -15,8 +15,8 @@
 ## Current Rules Configuration
 
 The `firebase-rules.json` file contains:
-- **Open read/write access** for `pets` and `activities` nodes
-- **Basic validation** to ensure required fields are present
+- **Open read/write access** for `pets`, `activities`, and `medications` nodes
+- **Performance indexes** for efficient queries
 - Suitable for trusted family member use (Tara & Meag)
 
 ## Security Considerations
@@ -27,11 +27,20 @@ The `firebase-rules.json` file contains:
   "rules": {
     "pets": {
       ".read": true,
-      ".write": true
+      ".write": true,
+      ".indexOn": ["name", "createdAt"]
     },
     "activities": {
       ".read": true,
-      ".write": true
+      ".write": true,
+      ".indexOn": ["timestamp", "petId", "type"]
+    },
+    "medications": {
+      ".read": true,
+      ".write": true,
+      "$petId": {
+        ".indexOn": ["active", "createdAt"]
+      }
     }
   }
 }
@@ -55,11 +64,20 @@ If you ever want to restrict access, use authenticated rules:
   "rules": {
     "pets": {
       ".read": "auth != null",
-      ".write": "auth != null"
+      ".write": "auth != null",
+      ".indexOn": ["name", "createdAt"]
     },
     "activities": {
       ".read": "auth != null",
-      ".write": "auth != null"
+      ".write": "auth != null",
+      ".indexOn": ["timestamp", "petId", "type"]
+    },
+    "medications": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$petId": {
+        ".indexOn": ["active", "createdAt"]
+      }
     }
   }
 }
