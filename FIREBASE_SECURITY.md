@@ -5,12 +5,76 @@
 
 ## How to Apply Rules
 
+### Option 1: Manual Deployment (Firebase Console)
+
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Select your project: **petlog-c4c1e**
 3. Navigate to **Realtime Database** > **Rules** tab
 4. Copy the contents from `firebase-rules.json`
 5. Paste into the rules editor
 6. Click **Publish**
+
+**Mobile Tip:** Use desktop mode in your mobile browser to access Firebase Console on your phone.
+
+### Option 2: CLI Deployment (Recommended)
+
+Deploy rules from the command line without using Firebase Console:
+
+#### One-time setup:
+```bash
+# Install Firebase CLI globally
+npm install -g firebase-tools
+
+# Login to Firebase (opens browser for authentication)
+firebase login
+```
+
+#### Deploy rules:
+
+**Using npm scripts:**
+```bash
+npm run deploy:rules
+```
+
+**Using the deployment script:**
+```bash
+./deploy-firebase-rules.sh
+```
+
+**Direct Firebase CLI command:**
+```bash
+firebase deploy --only database --project petlog-c4c1e
+```
+
+#### Verify deployment:
+- Check: https://console.firebase.google.com/project/petlog-c4c1e/database/petlog-c4c1e-default-rtdb/rules
+- Test app: https://pet-app-five-chi.vercel.app/
+
+### Option 3: Automated Deployment (GitHub Actions)
+
+For automatic deployment when rules change:
+
+#### Setup (one-time):
+
+1. **Generate a Firebase CI token:**
+   ```bash
+   firebase login:ci
+   ```
+   Copy the token that's generated (looks like `1//0c-abcd1234...`)
+
+2. **Add token to GitHub Secrets:**
+   - Go to: https://github.com/tpgordon8/Pet-App/settings/secrets/actions
+   - Click "New repository secret"
+   - Name: `FIREBASE_TOKEN`
+   - Value: Paste the CI token
+   - Click "Add secret"
+
+3. **Done!** Future changes to `firebase-rules.json` will auto-deploy when pushed to `main` branch.
+
+You can also manually trigger deployment:
+- Go to: https://github.com/tpgordon8/Pet-App/actions
+- Select "Deploy Firebase Rules" workflow
+- Click "Run workflow"
 
 ## Current Rules Configuration
 

@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "deploy:rules": "firebase deploy --only database",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:all": "firebase deploy"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.0.1",
@@ -23,6 +26,9 @@
     "react-dom": "^19.2.4",
     "react-native": "0.81.5",
     "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.27.0"
   },
   "private": true
 }
