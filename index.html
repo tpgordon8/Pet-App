@@ -2625,14 +2625,6 @@
                 </div>
             </div>
 
-            <!-- Members List (Admin Only) -->
-            <div id="household-members-section" style="display: none;">
-                <div style="font-size: 10px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;">
-                    Household Members
-                </div>
-                <div id="household-members-list"></div>
-            </div>
-
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-secondary" onclick="closeHouseholdSettings()">Close</button>
             </div>
@@ -2668,13 +2660,11 @@
         let selectedEmoji = '🐕';
 
         // User management state
-        let currentUser = localStorage.getItem('currentUser') || 'Tara';
+        let currentUser = localStorage.getItem('currentUser') || '';
 
         // Household management state
         let currentHouseholdId = null;
         let currentUserId = null;
-        let isUserAdmin = false;
-        let householdMembers = [];
 
         // Modal Body Lock Helpers
         function lockBody() {
@@ -2700,15 +2690,6 @@
             return code;
         }
 
-        function getDeviceName() {
-            const ua = navigator.userAgent;
-            if (/iPhone/.test(ua)) return "iPhone";
-            if (/iPad/.test(ua)) return "iPad";
-            if (/Android/.test(ua)) return "Android";
-            if (/Mac/.test(ua)) return "Mac";
-            if (/Windows/.test(ua)) return "Windows PC";
-            return "Unknown Device";
-        }
 
         // Ensure user ID is initialized from localStorage
         async function ensureUserIdInitialized() {
@@ -2738,72 +2719,46 @@
                 return;
             }
 
-            const deviceName = prompt("What device is this?", getDeviceName());
-            if (!deviceName || deviceName.trim() === '') {
-                showToast('❌ Device name is required', 'error');
-                return;
-            }
-
-            console.log('[CREATE] Starting household creation...', { userName, deviceName });
+            console.log('[CREATE] Starting household creation...');
 
             const code = generateHouseholdCode();
             const userId = await ensureUserIdInitialized();
 
             try {
-                // Show loading
                 showToast('⏳ Creating household...', 'info');
-                console.log('[CREATE] Generating code:', code);
-                // Create household in database
+
+                // Create household metadata
                 await set(ref(database, `households/${code}/metadata`), {
                     createdAt: Date.now(),
-                    createdBy: userId,
                     code: code
                 });
 
-                // Add creator as first member (admin)
+                // Add creator as member
                 await set(ref(database, `households/${code}/members/${userId}`), {
-                    userName: userName,
-                    deviceName: deviceName,
-                    joinedAt: Date.now(),
-                    lastActive: Date.now(),
-                    isAdmin: true
-                });
-
-                // Link user to household
-                await set(ref(database, `users/${userId}`), {
-                    householdId: code,
-                    userName: userName,
-                    deviceName: deviceName,
-                    isAdmin: true,
+                    name: userName,
                     joinedAt: Date.now()
                 });
 
+                // Save to state and localStorage
                 currentHouseholdId = code;
                 currentUserId = userId;
                 currentUser = userName;
-                isUserAdmin = true;
 
                 localStorage.setItem('currentUser', userName);
                 localStorage.setItem('householdId', code);
+                localStorage.setItem('userId', userId);
 
-                console.log('[CREATE] Household created successfully!', { code, userId });
+                console.log('[CREATE] Household created!', code);
                 showToast(`✅ Household created! Code: ${code}`, 'success');
+
                 document.getElementById('household-modal').classList.remove('show');
                 unlockBody();
 
-                console.log('[CREATE] Initializing household data...');
-                // Initialize app with household data
+                // Initialize household data
                 await initializeHouseholdData(code);
-                console.log('[CREATE] Household initialization complete!');
             } catch (error) {
-                console.error('[CREATE] Error creating household:', error);
+                console.error('[CREATE] Error:', error);
                 showToast(`❌ Error: ${error.message}`, 'error');
-
-                // Retry mechanism - offer to retry
-                if (confirm('Failed to create household. Would you like to retry?')) {
-                    console.log('[CREATE] User requested retry');
-                    setTimeout(() => window.showCreateHousehold(), 500);
-                }
             }
         };
 
@@ -2821,76 +2776,48 @@
                 return;
             }
 
-            const deviceName = prompt("What device is this?", getDeviceName());
-            if (!deviceName || deviceName.trim() === '') {
-                showToast('❌ Device name is required', 'error');
-                return;
-            }
-
-            console.log('[JOIN] Starting household join process...', { code, userName, deviceName });
+            console.log('[JOIN] Joining household...');
 
             const userId = await ensureUserIdInitialized();
 
             try {
-                // Show loading
                 showToast('⏳ Joining household...', 'info');
-                console.log('[JOIN] Checking if household exists...');
 
                 // Check if household exists
                 const householdRef = ref(database, `households/${code}/metadata`);
                 const snapshot = await get(householdRef);
 
                 if (!snapshot.exists()) {
-                    console.error('[JOIN] Household not found:', code);
                     showToast('❌ Household code not found', 'error');
                     return;
                 }
 
-                console.log('[JOIN] Household found, adding member...');
-                // Add to household members list
+                // Add to household members
                 await set(ref(database, `households/${code}/members/${userId}`), {
-                    userName: userName,
-                    deviceName: deviceName,
-                    joinedAt: Date.now(),
-                    lastActive: Date.now(),
-                    isAdmin: false
-                });
-
-                // Link user to household
-                await set(ref(database, `users/${userId}`), {
-                    householdId: code,
-                    userName: userName,
-                    deviceName: deviceName,
-                    isAdmin: false,
+                    name: userName,
                     joinedAt: Date.now()
                 });
 
+                // Save to state and localStorage
                 currentHouseholdId = code;
                 currentUserId = userId;
                 currentUser = userName;
-                isUserAdmin = false;
 
                 localStorage.setItem('currentUser', userName);
                 localStorage.setItem('householdId', code);
+                localStorage.setItem('userId', userId);
 
-                console.log('[JOIN] Successfully joined household!', { code, userId });
+                console.log('[JOIN] Joined household!', code);
                 showToast(`✅ Joined household ${code}!`, 'success');
+
                 document.getElementById('household-modal').classList.remove('show');
                 unlockBody();
 
-                console.log('[JOIN] Initializing household data...');
-                // Initialize app with household data
+                // Initialize household data
                 await initializeHouseholdData(code);
-                console.log('[JOIN] Household initialization complete!');
             } catch (error) {
-                console.error('[JOIN] Error joining household:', error);
+                console.error('[JOIN] Error:', error);
                 showToast(`❌ Error: ${error.message}`, 'error');
-
-                // Retry mechanism - offer to retry
-                if (confirm('Failed to join household. Would you like to retry?')) {
-                    console.log('[JOIN] User requested retry');
-                    setTimeout(() => window.joinHousehold(), 500);
-                }
             }
         };
 
@@ -2902,11 +2829,6 @@
 
             // Show household modal
             document.getElementById('household-settings-modal').classList.add('show');
-
-            // Load members list if admin
-            if (isUserAdmin) {
-                loadHouseholdMembers();
-            }
         };
 
         window.closeHouseholdSettings = function() {
@@ -2936,90 +2858,6 @@
             }
         };
 
-        async function loadHouseholdMembers() {
-            if (!isUserAdmin) return;
-
-            const membersRef = ref(database, `households/${currentHouseholdId}/members`);
-            const snapshot = await get(membersRef);
-
-            if (!snapshot.exists()) return;
-
-            const membersData = snapshot.val();
-            const membersList = document.getElementById('household-members-list');
-            const membersSection = document.getElementById('household-members-section');
-
-            membersSection.style.display = 'block';
-
-            let membersHtml = '';
-            Object.entries(membersData).forEach(([uid, member]) => {
-                const isCurrentUser = uid === currentUserId;
-                const memberHtml = `
-                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 8px;">
-                        <div style="flex-shrink: 0; font-size: 20px;">
-                            ${member.isAdmin ? '👑' : '👤'}
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
-                                ${member.userName}${isCurrentUser ? ' (You)' : ''}
-                            </div>
-                            <div style="font-size: 11px; color: var(--text-secondary);">
-                                📱 ${member.deviceName}
-                            </div>
-                            <div style="font-size: 10px; color: var(--text-tertiary);">
-                                Last active: ${formatTimestamp(member.lastActive)}
-                            </div>
-                        </div>
-                        ${!isCurrentUser && isUserAdmin ? `
-                            <button class="modal-btn modal-btn-secondary" onclick="removeMember('${uid}')" style="padding: 6px 12px; font-size: 11px;">
-                                ❌ Remove
-                            </button>
-                        ` : ''}
-                    </div>
-                `;
-                membersHtml += memberHtml;
-            });
-
-            membersList.innerHTML = membersHtml;
-        }
-
-        window.removeMember = async function(memberId) {
-            if (!isUserAdmin) {
-                showToast('❌ Only admins can remove members', 'error');
-                return;
-            }
-
-            const confirmed = confirm('Remove this member from your household? They will lose access immediately.');
-            if (!confirmed) return;
-
-            try {
-                // Remove member's household association
-                await set(ref(database, `users/${memberId}/householdId`), null);
-
-                // Remove from household members list
-                await remove(ref(database, `households/${currentHouseholdId}/members/${memberId}`));
-
-                showToast('✅ Member removed from household', 'success');
-                loadHouseholdMembers();
-            } catch (error) {
-                console.error('Error removing member:', error);
-                showToast(`❌ Error: ${error.message}`, 'error');
-            }
-        };
-
-        async function updateLastActive() {
-            if (!currentHouseholdId || !currentUserId) return;
-
-            try {
-                await update(ref(database, `households/${currentHouseholdId}/members/${currentUserId}`), {
-                    lastActive: Date.now()
-                });
-            } catch (error) {
-                console.error('Error updating last active:', error);
-            }
-        }
-
-        // Update last active every 5 minutes
-        setInterval(updateLastActive, 5 * 60 * 1000);
 
         async function initializeHouseholdData(householdId) {
             currentHouseholdId = householdId;
@@ -3064,17 +2902,13 @@
 
                 document.getElementById('loading-indicator').style.display = 'none';
             });
-
-            // Update last active
-            updateLastActive();
         }
 
-        // Initialization Flow (No Auth Required)
-        // Simple initialization - no blocking modals, no household requirement
+        // Initialization Flow
         (async function initializeApp() {
             console.log('[INIT] Starting app initialization...');
 
-            // Generate a user ID from localStorage or create new one
+            // Initialize or get user ID
             let userId = localStorage.getItem('userId');
             if (!userId) {
                 userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -3083,14 +2917,23 @@
             }
             currentUserId = userId;
 
-            // NOTE: Household feature is currently disabled to simplify the app
-            // All data uses root /pets and /activities paths
-            // Users: Tara and Meag (simple mode)
-            console.log('[INIT] Using simple mode - root level data paths');
+            // Check if user has a household
+            const householdId = localStorage.getItem('householdId');
+            const userName = localStorage.getItem('currentUser');
 
-            // Clear any old household data from localStorage to prevent conflicts
-            // (Keeping this commented out to not break existing users)
-            // localStorage.removeItem('householdId');
+            if (householdId && userName) {
+                console.log('[INIT] Found existing household:', householdId);
+                currentHouseholdId = householdId;
+                currentUser = userName;
+
+                // Initialize household data
+                await initializeHouseholdData(householdId);
+            } else {
+                console.log('[INIT] No household found - showing setup modal');
+                // Show household setup modal
+                lockBody();
+                document.getElementById('household-modal').classList.add('show');
+            }
         })();
 
         // Pet Management Functions
@@ -3132,13 +2975,13 @@
                 return;
             }
 
-            const petId = 'pet_' + Date.now();
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
 
-            // Support both household mode and simple mode
-            const petsPath = currentHouseholdId
-                ? `households/${currentHouseholdId}/pets/${petId}`
-                : `pets/${petId}`;
-            const petsRef = ref(database, petsPath);
+            const petId = 'pet_' + Date.now();
+            const petsRef = ref(database, `households/${currentHouseholdId}/pets/${petId}`);
 
             set(petsRef, {
                 name: name,
@@ -3611,7 +3454,12 @@
                 updateData.note = null;
             }
 
-            const activityRef = ref(database, `activities/${currentEditActivityId}`);
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
+            const activityRef = ref(database, `households/${currentHouseholdId}/activities/${currentEditActivityId}`);
             update(activityRef, updateData).then(() => {
                 showToast('✅ Activity updated!', 'success');
                 closeEditModal();
@@ -3624,6 +3472,11 @@
             const activity = currentActivities.find(a => a.id === activityId);
             if (!activity) return;
 
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
             // Confirm deletion
             if (!confirm(`Delete this ${activity.type} activity?`)) {
                 return;
@@ -3633,7 +3486,7 @@
             deletedActivity = { id: activityId, ...activity };
 
             // Delete from Firebase
-            const activityRef = ref(database, `activities/${activityId}`);
+            const activityRef = ref(database, `households/${currentHouseholdId}/activities/${activityId}`);
             remove(activityRef).then(() => {
                 showDeleteToast();
                 startUndoTimeout();
@@ -3643,11 +3496,11 @@
         };
 
         window.undoDelete = function() {
-            if (!deletedActivity) return;
+            if (!deletedActivity || !currentHouseholdId) return;
 
             clearTimeout(undoTimeout);
 
-            const activityRef = ref(database, `activities/${deletedActivity.id}`);
+            const activityRef = ref(database, `households/${currentHouseholdId}/activities/${deletedActivity.id}`);
             const { id, ...activityData } = deletedActivity;
 
             set(activityRef, activityData).then(() => {
@@ -3747,7 +3600,6 @@
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ Vet visit logged for ${petName}!`, 'success');
                     closeVetModal();
-                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -3825,7 +3677,6 @@
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ ${vaccineName} vaccination logged for ${petName}!`, 'success');
                     closeVaccineModal();
-                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -3906,7 +3757,6 @@
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ Weight logged for ${petName}: ${weightValue} ${weightUnit}`, 'success');
                     closeWeightModal();
-                    updateLastActive();
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -3944,10 +3794,12 @@
 
         // Process offline queue
         function processOfflineQueue() {
+            if (!currentHouseholdId) return;
+
             const queue = [...offlineQueue];
             offlineQueue = [];
             queue.forEach(item => {
-                const activitiesRef = ref(database, 'activities');
+                const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
                 push(activitiesRef, item);
             });
             showToast(`✅ Synced ${queue.length} offline activities`);
@@ -3985,21 +3837,17 @@
                 return;
             }
 
-            // Support both household mode and simple mode
-            const activitiesPath = currentHouseholdId
-                ? `households/${currentHouseholdId}/activities`
-                : 'activities';
-            const activitiesRef = ref(database, activitiesPath);
+            if (!currentHouseholdId) {
+                showToast('❌ No household selected', 'error');
+                return;
+            }
+
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
 
             push(activitiesRef, activity)
                 .then(() => {
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ ${type} logged for ${petName}!`, 'success');
-
-                    // Update last active if in household mode
-                    if (currentHouseholdId) {
-                        updateLastActive();
-                    }
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
@@ -4813,12 +4661,14 @@
         }, { passive: true });
 
         function refreshData() {
+            if (!currentHouseholdId) return;
+
             // Show loading indicator
             pullIndicator.classList.add('show');
 
             // Reload data from Firebase
-            const activitiesRef = ref(database, 'activities');
-            const petsRef = ref(database, 'pets');
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
+            const petsRef = ref(database, `households/${currentHouseholdId}/pets`);
 
             Promise.all([
                 new Promise((resolve) => onValue(activitiesRef, resolve, { once: true })),
@@ -4835,46 +4685,8 @@
             });
         }
 
-        // Listen for real-time updates
-        const activitiesRef = ref(database, 'activities');
-        onValue(activitiesRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                currentActivities = Object.entries(data)
-                    .map(([id, activity]) => ({ id, ...activity }))
-                    .sort((a, b) => b.timestamp - a.timestamp);
-
-                const filteredActivities = filterActivitiesByPet(currentActivities);
-                renderRecentActivity(currentActivities); // Show all recent activities (not filtered by pet)
-                renderActivities(filteredActivities);
-                renderStats(calculateTodayStats(filteredActivities));
-                renderMedicalSummary(filteredActivities);
-            } else {
-                currentActivities = [];
-                renderRecentActivity([]);
-                renderActivities([]);
-                renderStats({ Poop: 0, Pee: 0, Food: 0, Sleep: 0, Meds: 0 });
-                renderMedicalSummary([]);
-            }
-        }, (error) => {
-            console.error('Firebase error:', error);
-            document.getElementById('activities').innerHTML =
-                '<div class="empty-text">⚠️ Connection error. Please refresh the page.</div>';
-        });
-
-        // Update relative times every minute
-        setInterval(() => {
-            const activitiesRef = ref(database, 'activities');
-            onValue(activitiesRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const activitiesArray = Object.entries(data)
-                        .map(([id, activity]) => ({ id, ...activity }))
-                        .sort((a, b) => b.timestamp - a.timestamp);
-                    renderActivities(activitiesArray);
-                }
-            }, { onlyOnce: true });
-        }, 60000);
+        // Note: Real-time listeners are set up in initializeHouseholdData()
+        // No global listeners needed here since data is household-scoped
     </script>
 </body>
 </html>
