@@ -2710,6 +2710,22 @@
             return "Unknown Device";
         }
 
+        async function ensureUserIdInitialized() {
+            if (auth.currentUser) {
+                return auth.currentUser.uid;
+            }
+
+            console.log('[AUTH] No current user, signing in anonymously...');
+            try {
+                const userCredential = await signInAnonymously(auth);
+                console.log('[AUTH] Anonymous sign-in successful:', userCredential.user.uid);
+                return userCredential.user.uid;
+            } catch (error) {
+                console.error('[AUTH] Error signing in anonymously:', error);
+                throw new Error('Failed to initialize user authentication');
+            }
+        }
+
         window.showCreateHousehold = async function() {
             const userName = prompt("What's your name?");
             if (!userName || userName.trim() === '') {
@@ -2726,7 +2742,7 @@
             console.log('[CREATE] Starting household creation...', { userName, deviceName });
 
             const code = generateHouseholdCode();
-            const userId = auth.currentUser.uid;
+            const userId = await ensureUserIdInitialized();
 
             try {
                 // Show loading
@@ -2808,7 +2824,7 @@
 
             console.log('[JOIN] Starting household join process...', { code, userName, deviceName });
 
-            const userId = auth.currentUser.uid;
+            const userId = await ensureUserIdInitialized();
 
             try {
                 // Show loading
