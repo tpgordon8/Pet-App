@@ -2908,6 +2908,17 @@
         (async function initializeApp() {
             console.log('[INIT] Starting app initialization...');
 
+            try {
+                // Sign in anonymously to Firebase (required for database access)
+                console.log('[INIT] Signing in to Firebase...');
+                await signInAnonymously(auth);
+                console.log('[INIT] Firebase auth successful');
+            } catch (error) {
+                console.error('[INIT] Firebase auth error:', error);
+                showToast('❌ Connection error. Please refresh the page.', 'error');
+                return;
+            }
+
             // Initialize or get user ID
             let userId = localStorage.getItem('userId');
             if (!userId) {
