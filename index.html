@@ -3065,6 +3065,7 @@
         }
 
         // Initialization Flow (No Auth Required)
+        // Simple initialization - no blocking modals, no household requirement
         (async function initializeApp() {
             console.log('[INIT] Starting app initialization...');
 
@@ -3077,33 +3078,14 @@
             }
             currentUserId = userId;
 
-            // Check for existing household in localStorage
-            const savedHouseholdId = localStorage.getItem('householdId');
-            const savedUserName = localStorage.getItem('currentUser');
+            // NOTE: Household feature is currently disabled to simplify the app
+            // All data uses root /pets and /activities paths
+            // Users: Tara and Meag (simple mode)
+            console.log('[INIT] Using simple mode - root level data paths');
 
-            if (savedHouseholdId && savedUserName) {
-                // User has previously set up a household
-                console.log('[INIT] Found saved household:', savedHouseholdId);
-                currentHouseholdId = savedHouseholdId;
-                currentUser = savedUserName;
-
-                try {
-                    // Try to load household data
-                    console.log('[INIT] Loading household data...');
-                    await initializeHouseholdData(currentHouseholdId);
-                    console.log('[INIT] Household data loaded successfully');
-                } catch (error) {
-                    console.error('[INIT] Error loading household data:', error);
-                    // Show household modal if data fails to load
-                    lockBody();
-                    document.getElementById('household-modal').classList.add('show');
-                }
-            } else {
-                // No household setup yet, show the modal
-                console.log('[INIT] No household found, showing setup modal');
-                lockBody();
-                document.getElementById('household-modal').classList.add('show');
-            }
+            // Clear any old household data from localStorage to prevent conflicts
+            // (Keeping this commented out to not break existing users)
+            // localStorage.removeItem('householdId');
         })();
 
         // Pet Management Functions
@@ -3145,13 +3127,13 @@
                 return;
             }
 
-            if (!currentHouseholdId) {
-                showToast('❌ No household selected', 'error');
-                return;
-            }
-
             const petId = 'pet_' + Date.now();
-            const petsRef = ref(database, `households/${currentHouseholdId}/pets/${petId}`);
+
+            // Support both household mode and simple mode
+            const petsPath = currentHouseholdId
+                ? `households/${currentHouseholdId}/pets/${petId}`
+                : `pets/${petId}`;
+            const petsRef = ref(database, petsPath);
 
             set(petsRef, {
                 name: name,
@@ -3992,25 +3974,27 @@
                 petId: petId
             };
 
-            if (!currentHouseholdId) {
-                showToast('❌ No household selected', 'error');
-                return;
-            }
-
             if (!isOnline) {
                 offlineQueue.push(activity);
                 showToast(`📵 ${type} saved offline - will sync later`, 'success');
                 return;
             }
 
-            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
+            // Support both household mode and simple mode
+            const activitiesPath = currentHouseholdId
+                ? `households/${currentHouseholdId}/activities`
+                : 'activities';
+            const activitiesRef = ref(database, activitiesPath);
+
             push(activitiesRef, activity)
                 .then(() => {
                     const petName = pets.find(p => p.id === petId)?.name || 'Pet';
                     showToast(`✅ ${type} logged for ${petName}!`, 'success');
 
-                    // Update last active
-                    updateLastActive();
+                    // Update last active if in household mode
+                    if (currentHouseholdId) {
+                        updateLastActive();
+                    }
                 })
                 .catch(error => {
                     showToast(`❌ ${error.message}`, 'error');
