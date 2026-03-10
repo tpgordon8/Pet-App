@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, TextInput, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, RefreshControl } from 'react-native';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, push, onValue, remove, update } from 'firebase/database';
+import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
 
 // Contexts
@@ -14,9 +14,12 @@ import { Header } from './components/layout/Header';
 import { PetSelector } from './components/pet/PetSelector';
 import { IntroScreen, isOnboardingComplete } from './components/onboarding/IntroScreen';
 import { MedicationManager } from './components/medication/MedicationManager';
-import { pickImage, uploadImageToStorage } from './utils/imageUpload';
 import { Droplet, Droplets, UtensilsCrossed, Moon as MoonIcon, Pill, Undo2, Copy, Clock, Camera, X } from 'lucide-react-native';
 import { Image } from 'react-native';
+
+// Hooks
+import { useActivities } from './hooks/useActivities';
+import { useActivityForm } from './hooks/useActivityForm';
 
 // 🔥 Firebase configuration
 const firebaseConfig = {
@@ -38,20 +41,31 @@ const storage = getStorage(app);
 function AppContent() {
   const { colors } = useTheme();
   const { selectedPetId, getSelectedPets } = usePets();
-  // 📊 State to store activities from Firebase
-  const [activities, setActivities] = useState([]);
-  // 📝 State for optional note input
-  const [note, setNote] = useState('');
+
   // 🔄 State for pull-to-refresh
   const [refreshing, setRefreshing] = useState(false);
   // 🎯 State for onboarding
   const [showIntro, setShowIntro] = useState(null); // null = checking, true = show, false = hide
-  // ↩️ State to track last activity for undo
-  const [lastActivityId, setLastActivityId] = useState(null);
-  // 📋 State to track last activity data for duplicate
-  const [lastActivityData, setLastActivityData] = useState(null);
-  // 📷 State for selected photo
-  const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+  // Custom hooks for activities and form management
+  const {
+    activities,
+    logActivity: logActivityToFirebase,
+    undoLastActivity,
+    adjustActivityTime,
+    duplicateLastActivity: duplicateActivity,
+    lastActivityId,
+    lastActivityData,
+  } = useActivities(database, storage, selectedPetId);
+
+  const {
+    note,
+    setNote,
+    selectedPhoto,
+    setSelectedPhoto,
+    handlePhotoSelect,
+    clearForm,
+  } = useActivityForm();
 
   // 🎯 Check if onboarding is complete on mount
   useEffect(() => {
@@ -62,149 +76,18 @@ function AppContent() {
     checkOnboarding();
   }, []);
 
-  // 🎧 Listen for real-time updates from Firebase
-  useEffect(() => {
-    console.log('🔌 Connecting to Firebase...');
-    const activitiesRef = ref(database, 'activities');
-
-    // This runs every time data changes in Firebase!
-    const unsubscribe = onValue(activitiesRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log('📡 Firebase data received:', data);
-      if (data) {
-        // Convert object to array and sort by timestamp (newest first)
-        const activitiesArray = Object.entries(data).map(([id, activity]) => ({
-          id,
-          ...activity
-        })).sort((a, b) => b.timestamp - a.timestamp);
-
-        console.log('✅ Activities:', activitiesArray.length);
-        setActivities(activitiesArray);
-      } else {
-        console.log('⚠️ No activities found');
-        setActivities([]);
-      }
-    }, (error) => {
-      console.log('❌ Firebase error:', error);
-      Alert.alert('Connection Error', 'Cannot connect to Firebase: ' + error.message);
-    });
-
-    // Cleanup listener when component unmounts
-    return () => unsubscribe();
-  }, []);
-
-  // 📝 Function to log an activity to Firebase
+  // 📝 Wrapper function to log activity and clear form
   const logActivity = async (type, emoji) => {
-    const activitiesRef = ref(database, 'activities');
-
-    const activityData = {
-      type: type,
-      emoji: emoji,
-      timestamp: Date.now(),
-      user: 'You', // Later we'll add real user names
-      petId: selectedPetId // Associate activity with selected pet
-    };
-
-    // Add note if one was entered
-    if (note.trim()) {
-      activityData.note = note.trim();
+    const success = await logActivityToFirebase(type, emoji, note, selectedPhoto);
+    if (success) {
+      clearForm();
     }
-
-    // Upload photo if one was selected
-    if (selectedPhoto) {
-      try {
-        const photoURL = await uploadImageToStorage(storage, selectedPhoto.uri, selectedPetId);
-        activityData.photoURL = photoURL;
-      } catch (error) {
-        Alert.alert('Upload Error', 'Failed to upload photo. Logging without photo.');
-      }
-    }
-
-    push(activitiesRef, activityData)
-      .then((newActivityRef) => {
-        // Track the last activity for undo and duplicate
-        setLastActivityId(newActivityRef.key);
-        setLastActivityData({ type, emoji, note: activityData.note });
-        // Clear note and photo after successful log
-        setNote('');
-        setSelectedPhoto(null);
-      })
-      .catch((error) => {
-        Alert.alert('Error', 'Failed to log activity: ' + error.message);
-      });
   };
 
-  // 📋 Function to duplicate the last activity
+  // 📋 Wrapper function to duplicate activity
   const duplicateLastActivity = () => {
-    if (!lastActivityData) {
-      Alert.alert('Nothing to Duplicate', 'No recent activity to duplicate.');
-      return;
-    }
-
-    // Log the same activity again with a new timestamp
-    logActivity(lastActivityData.type, lastActivityData.emoji);
-  };
-
-  // 🕐 Function to adjust activity timestamp
-  const adjustActivityTime = (activityId, currentTimestamp) => {
-    const timeOptions = [
-      { label: '- 30 minutes', minutes: -30 },
-      { label: '- 15 minutes', minutes: -15 },
-      { label: '- 5 minutes', minutes: -5 },
-      { label: '+ 5 minutes', minutes: 5 },
-      { label: '+ 15 minutes', minutes: 15 },
-      { label: '+ 30 minutes', minutes: 30 },
-    ];
-
-    Alert.alert(
-      'Adjust Time',
-      'How much should we adjust this activity\'s time?',
-      [
-        ...timeOptions.map(option => ({
-          text: option.label,
-          onPress: () => {
-            const newTimestamp = currentTimestamp + (option.minutes * 60000);
-            const activityRef = ref(database, `activities/${activityId}`);
-            update(activityRef, { timestamp: newTimestamp })
-              .catch((error) => {
-                Alert.alert('Error', 'Failed to adjust time: ' + error.message);
-              });
-          }
-        })),
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
-  };
-
-  // ↩️ Function to undo the last activity
-  const undoLastActivity = () => {
-    if (!lastActivityId) {
-      Alert.alert('Nothing to Undo', 'No recent activity to undo.');
-      return;
-    }
-
-    const activityRef = ref(database, `activities/${lastActivityId}`);
-
-    Alert.alert(
-      'Undo Last Activity',
-      'Are you sure you want to delete the last activity?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Undo',
-          style: 'destructive',
-          onPress: () => {
-            remove(activityRef)
-              .then(() => {
-                setLastActivityId(null);
-              })
-              .catch((error) => {
-                Alert.alert('Error', 'Failed to undo activity: ' + error.message);
-              });
-          }
-        }
-      ]
-    );
+    duplicateActivity(note, selectedPhoto);
+    clearForm();
   };
 
   // 🔄 Pull-to-refresh handler
@@ -338,10 +221,7 @@ function AppContent() {
             </View>
           ) : (
             <TouchableOpacity
-              onPress={async () => {
-                const image = await pickImage();
-                if (image) setSelectedPhoto(image);
-              }}
+              onPress={handlePhotoSelect}
               style={[styles.addPhotoButton, { backgroundColor: colors.card, borderColor: colors.border }]}
             >
               <Camera size={20} color={colors.primary} strokeWidth={2} />
