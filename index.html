@@ -2763,6 +2763,7 @@
                 isUserAdmin = true;
 
                 localStorage.setItem('currentUser', userName);
+                localStorage.setItem('householdId', code);
 
                 console.log('[CREATE] Household created successfully!', { code, userId });
                 showToast(`✅ Household created! Code: ${code}`, 'success');
@@ -2849,6 +2850,7 @@
                 isUserAdmin = false;
 
                 localStorage.setItem('currentUser', userName);
+                localStorage.setItem('householdId', code);
 
                 console.log('[JOIN] Successfully joined household!', { code, userId });
                 showToast(`✅ Joined household ${code}!`, 'success');
@@ -3046,83 +3048,47 @@
             updateLastActive();
         }
 
-        // Authentication Flow
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log('[AUTH] User authenticated:', user.uid);
-                currentUserId = user.uid;
+        // Initialization Flow (No Auth Required)
+        (async function initializeApp() {
+            console.log('[INIT] Starting app initialization...');
+
+            // Generate a user ID from localStorage or create new one
+            let userId = localStorage.getItem('userId');
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId', userId);
+                console.log('[INIT] Created new user ID:', userId);
+            }
+            currentUserId = userId;
+
+            // Check for existing household in localStorage
+            const savedHouseholdId = localStorage.getItem('householdId');
+            const savedUserName = localStorage.getItem('currentUser');
+
+            if (savedHouseholdId && savedUserName) {
+                // User has previously set up a household
+                console.log('[INIT] Found saved household:', savedHouseholdId);
+                currentHouseholdId = savedHouseholdId;
+                currentUser = savedUserName;
 
                 try {
-                    // Check if user has a household
-                    console.log('[AUTH] Checking for existing household...');
-                    const userRef = ref(database, `users/${user.uid}`);
-                    const snapshot = await get(userRef);
-
-                    if (!snapshot.exists() || !snapshot.val().householdId) {
-                        // Show household setup modal
-                        console.log('[AUTH] No household found, showing setup modal');
-                        lockBody();
-                        document.getElementById('household-modal').classList.add('show');
-                    } else {
-                        // User already has household, load data
-                        const userData = snapshot.val();
-                        currentHouseholdId = userData.householdId;
-                        currentUser = userData.userName;
-                        isUserAdmin = userData.isAdmin || false;
-
-                        console.log('[AUTH] Found existing household:', currentHouseholdId);
-                        localStorage.setItem('currentUser', currentUser);
-
-                        // Hide household modal if showing
-                        document.getElementById('household-modal').classList.remove('show');
-                        unlockBody();
-
-                        // Initialize household data
-                        console.log('[AUTH] Initializing household data...');
-                        await initializeHouseholdData(currentHouseholdId);
-                        console.log('[AUTH] Household data loaded successfully');
-                    }
+                    // Try to load household data
+                    console.log('[INIT] Loading household data...');
+                    await initializeHouseholdData(currentHouseholdId);
+                    console.log('[INIT] Household data loaded successfully');
                 } catch (error) {
-                    console.error('[AUTH] Error during authentication flow:', error);
-                    showToast(`❌ Error loading data: ${error.message}`, 'error');
-
-                    // Show household modal as fallback
+                    console.error('[INIT] Error loading household data:', error);
+                    // Show household modal if data fails to load
                     lockBody();
                     document.getElementById('household-modal').classList.add('show');
                 }
             } else {
-                // No user signed in, sign in anonymously
-                console.log('[AUTH] No user found, signing in anonymously...');
-                signInAnonymously(auth)
-                    .then(() => {
-                        console.log('[AUTH] ✓ Signed in anonymously successfully');
-                    })
-                    .catch((error) => {
-                        console.error('[AUTH] ❌ Authentication error:', error);
-
-                        // Provide specific guidance based on error code
-                        let errorMessage = '⚠️ Authentication failed. Please refresh the page.';
-
-                        if (error.code === 'auth/api-key-not-valid') {
-                            errorMessage = '⚠️ Firebase API key error. Please check your Firebase configuration.';
-                            console.error('[AUTH] API key is invalid or restricted. Check Firebase Console settings.');
-                        } else if (error.code === 'auth/operation-not-allowed') {
-                            errorMessage = '⚠️ Anonymous sign-in is disabled. Please enable it in Firebase Console → Authentication → Sign-in method.';
-                            console.error('[AUTH] Anonymous authentication is not enabled in Firebase Console.');
-                        } else if (error.code === 'auth/network-request-failed') {
-                            errorMessage = '⚠️ Network error. Please check your connection and try again.';
-                        }
-
-                        showToast(errorMessage, 'error');
-
-                        // Log detailed error for debugging
-                        console.error('[AUTH] Error details:', {
-                            code: error.code,
-                            message: error.message
-                        });
-                    });
+                // No household setup yet, show the modal
+                console.log('[INIT] No household found, showing setup modal');
+                lockBody();
+                document.getElementById('household-modal').classList.add('show');
             }
-        });
+        })();
 
         // Pet Management Functions
         window.openAddPetModal = function() {
