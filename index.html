@@ -2710,20 +2710,25 @@
             return "Unknown Device";
         }
 
+        // Ensure user ID is initialized from localStorage
         async function ensureUserIdInitialized() {
-            if (auth.currentUser) {
-                return auth.currentUser.uid;
+            if (!currentUserId) {
+                let userId = localStorage.getItem('userId');
+                if (!userId) {
+                    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('userId', userId);
+                    console.log('[AUTH] Created new user ID:', userId);
+                }
+                currentUserId = userId;
+                console.log('[AUTH] User ID initialized:', currentUserId);
             }
 
-            console.log('[AUTH] No current user, signing in anonymously...');
-            try {
-                const userCredential = await signInAnonymously(auth);
-                console.log('[AUTH] Anonymous sign-in successful:', userCredential.user.uid);
-                return userCredential.user.uid;
-            } catch (error) {
-                console.error('[AUTH] Error signing in anonymously:', error);
-                throw new Error('Failed to initialize user authentication');
+            // Validate userId exists
+            if (!currentUserId) {
+                throw new Error('Failed to initialize user ID. Please check localStorage access.');
             }
+
+            return currentUserId;
         }
 
         window.showCreateHousehold = async function() {
