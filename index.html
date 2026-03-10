@@ -2713,8 +2713,13 @@
         }
 
         window.showCreateHousehold = async function() {
+            console.log('[CREATE] Function called');
+
             const userName = prompt("What's your name?");
+            console.log('[CREATE] User name:', userName);
+
             if (!userName || userName.trim() === '') {
+                console.error('[CREATE] Name validation failed');
                 showToast('❌ Name is required', 'error');
                 return;
             }
@@ -2722,22 +2727,28 @@
             console.log('[CREATE] Starting household creation...');
 
             const code = generateHouseholdCode();
+            console.log('[CREATE] Code:', code);
+
             const userId = await ensureUserIdInitialized();
+            console.log('[CREATE] User ID:', userId);
 
             try {
                 showToast('⏳ Creating household...', 'info');
 
+                console.log('[CREATE] Writing to Firebase...');
                 // Create household metadata
                 await set(ref(database, `households/${code}/metadata`), {
                     createdAt: Date.now(),
                     code: code
                 });
+                console.log('[CREATE] Metadata written');
 
                 // Add creator as member
                 await set(ref(database, `households/${code}/members/${userId}`), {
                     name: userName,
                     joinedAt: Date.now()
                 });
+                console.log('[CREATE] Member added');
 
                 // Save to state and localStorage
                 currentHouseholdId = code;
@@ -2756,8 +2767,10 @@
 
                 // Initialize household data
                 await initializeHouseholdData(code);
+                console.log('[CREATE] Done!');
             } catch (error) {
-                console.error('[CREATE] Error:', error);
+                console.error('[CREATE] FULL ERROR:', error);
+                alert('ERROR: ' + error.message + '\n\nCheck browser console (F12) for details');
                 showToast(`❌ Error: ${error.message}`, 'error');
             }
         };
