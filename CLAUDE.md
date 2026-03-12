@@ -67,7 +67,12 @@ PetLog is a modern web-based pet activity tracking application with real-time sy
 - `/retro` - Retrospective analysis
 
 **Installation:**
-gstack is installed at `~/.claude/skills/gstack`
+- Global install: `~/.claude/skills/gstack`
+- Project install: `.claude/skills/gstack` (committed to repo for teammates)
+
+**Troubleshooting:**
+If gstack skills aren't working, run: `cd .claude/skills/gstack && ./setup`
+This rebuilds the browser binary and registers skills.
 
 ---
 
