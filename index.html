@@ -2888,6 +2888,7 @@
                     pets = [];
                 }
                 renderPetChips();
+                renderUserChips();
                 updateCompactBar();
             });
 
@@ -3029,7 +3030,11 @@
             renderPetChips();
             updateCompactBar();
             // Refresh stats and activities for selected pet
-            const activitiesRef = ref(database, 'activities');
+            if (!currentHouseholdId) {
+                console.error('[SELECT_PET] No household ID available');
+                return;
+            }
+            const activitiesRef = ref(database, `households/${currentHouseholdId}/activities`);
             onValue(activitiesRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -3277,19 +3282,8 @@
             });
         }
 
-        // Load pets from Firebase
-        const petsRef = ref(database, 'pets');
-        onValue(petsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                pets = Object.entries(data).map(([id, pet]) => ({ id, ...pet }));
-            } else {
-                pets = [];
-            }
-            renderPetChips();
-            renderUserChips();
-            updateCompactBar();
-        });
+        // Note: Pets are loaded in initializeHouseholdData() using household-scoped paths
+        // No global pet listener needed here
 
         // Activity Edit/Delete Management
         let currentActivities = [];
