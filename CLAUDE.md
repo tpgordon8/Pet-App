@@ -50,6 +50,27 @@ PetLog is a modern web-based pet activity tracking application with real-time sy
 
 ---
 
+## gstack - Web Browsing Tool
+
+**CRITICAL - Always use gstack for web browsing:**
+
+- Use the `/browse` skill from gstack for **ALL** web browsing tasks
+- **NEVER** use `mcp__claude-in-chrome__*` tools
+- gstack provides fast, persistent headless Chromium for web interaction
+
+**Available gstack skills:**
+- `/browse` - Navigate, read, interact with web pages
+- `/plan-ceo-review` - CEO-level plan review
+- `/plan-eng-review` - Engineering plan review
+- `/review` - Code/content review
+- `/ship` - Shipping checklist
+- `/retro` - Retrospective analysis
+
+**Installation:**
+gstack is installed at `~/.claude/skills/gstack`
+
+---
+
 ## Database Schema
 
 ```javascript
