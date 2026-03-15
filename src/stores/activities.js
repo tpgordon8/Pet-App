@@ -49,6 +49,9 @@ export const useActivitiesStore = defineStore('activities', () => {
       sleep: today.filter(a => a.type === 'Sleep').length,
       meds: today.filter(a => a.type === 'Meds').length,
       walk: today.filter(a => a.type === 'Walk').length,
+      vetVisit: today.filter(a => a.type === 'Vet Visit').length,
+      vaccination: today.filter(a => a.type === 'Vaccination').length,
+      weightCheck: today.filter(a => a.type === 'Weight Check').length,
       total: today.length
     }
   })
@@ -102,7 +105,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
-  async function logActivity(type, emoji, notes = '', photoFile = null) {
+  async function logActivity(type, emoji, notes = '', photoFile = null, medicalData = null) {
     if (!householdStore.householdId || !householdStore.memberName) {
       toast.error('Please sign in first')
       return false
@@ -146,6 +149,11 @@ export const useActivitiesStore = defineStore('activities', () => {
         activity.photoUrl = photoUrl
       }
 
+      // Add medical data if provided
+      if (medicalData) {
+        activity.medicalData = medicalData
+      }
+
       const activitiesRef = dbRef(database, `households/${householdStore.householdId}/activities`)
       await push(activitiesRef, activity)
 
@@ -154,8 +162,8 @@ export const useActivitiesStore = defineStore('activities', () => {
     } catch (error) {
       console.error('Error logging activity:', error)
 
-      // Note: Don't queue activities with photos for offline sync (too complex)
-      if (!photoFile) {
+      // Note: Don't queue activities with photos or medical data for offline sync (too complex)
+      if (!photoFile && !medicalData) {
         const activity = {
           type,
           emoji,
@@ -167,7 +175,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         offlineQueue.value.push(activity)
         toast.warning('Saved offline. Will sync when online.')
       } else {
-        toast.error('Failed to upload photo. Please try again.')
+        toast.error('Failed to log activity. Please try again.')
       }
 
       return false

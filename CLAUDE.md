@@ -16,9 +16,11 @@
 Tailr is a modern web-based pet activity tracking application with real-time sync across devices. It allows pet parents (primarily Tara and Meag) to track daily activities (poop, pee, food, sleep, meds) and medical records (vet visits, vaccinations, weight) for multiple pets.
 
 **Key Characteristics:**
-- Single-file web application (index.html contains HTML + CSS + JavaScript)
-- Zero build step - deploy by pushing to git
+- Modern Vue 3 web application with Composition API
+- Vite for fast development and optimized builds
 - Firebase Realtime Database for real-time sync
+- Pinia for state management
+- TailwindCSS for styling
 - PWA-ready (Progressive Web App)
 - Deployed on Vercel
 - Mobile-first design with iOS-style interactions
@@ -28,14 +30,18 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 ## Technology Stack
 
 **Frontend:**
-- Vanilla JavaScript (no framework)
-- HTML5 + CSS3
-- Custom SVG icons
-- jsPDF for PDF exports
+- Vue 3 (Composition API with `<script setup>`)
+- Vite (build tool and dev server)
+- Pinia (state management)
+- Vue Router (client-side routing)
+- TailwindCSS (utility-first CSS)
+- date-fns (date formatting and manipulation)
+- @vueuse/core (Vue composition utilities)
+- jsPDF (PDF exports)
 
 **Backend:**
 - Firebase Realtime Database (real-time sync)
-- Firebase Storage (future for photos)
+- Firebase Storage (photo attachments)
 - Firebase project ID: `petlog-c4c1e` (kept unchanged for backwards compatibility; internal ID doesn't affect user experience)
 - Database URL: `https://petlog-c4c1e-default-rtdb.firebaseio.com`
 
@@ -44,9 +50,11 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 - Firebase Hosting configured as backup
 - Auto-deploy on git push to main
 
-**Future:**
-- React Native components exist in `/components` and `/contexts` for potential iOS app
-- App.js contains React Native foundation (not currently used)
+**Development Tools:**
+- ESLint (code linting)
+- Prettier (code formatting)
+- Vitest (unit testing)
+- Playwright (e2e testing)
 
 ---
 
@@ -164,29 +172,49 @@ https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
 ```
 Pet-App/
-├── index.html              # MAIN WEB APP (all HTML/CSS/JS)
-├── App.js                  # React Native foundation (future iOS app)
-├── package.json            # Dependencies
+├── index.html              # Entry point (loads Vue app)
+├── package.json            # Dependencies and scripts
+├── vite.config.js          # Vite configuration
+├── tailwind.config.js      # TailwindCSS configuration
 ├── manifest.json           # PWA manifest
 ├── firebase.json           # Firebase configuration
 ├── firebase-rules.json     # Database security rules
 ├── vercel.json             # Vercel deployment config
 │
-├── components/             # React Native components (not used in web app)
-│   ├── layout/
-│   └── pet/
+├── src/                    # Vue 3 application source
+│   ├── main.js             # App entry point
+│   ├── App.vue             # Root component
+│   ├── router/             # Vue Router configuration
+│   │   └── index.js
+│   ├── stores/             # Pinia stores (state management)
+│   │   ├── activities.js   # Activity tracking state
+│   │   ├── pets.js         # Pet management state
+│   │   └── household.js    # User/household state
+│   ├── views/              # Page components
+│   │   ├── OnboardingView.vue    # Initial setup flow
+│   │   ├── HomeView.vue          # Home/landing page
+│   │   └── DashboardView.vue     # Main app dashboard
+│   ├── components/         # Reusable Vue components
+│   │   ├── ActivityButton.vue
+│   │   ├── ActivityFeed.vue
+│   │   ├── ActivityNotesModal.vue
+│   │   ├── MedicalModal.vue
+│   │   ├── EditActivityModal.vue
+│   │   ├── AddPetModal.vue
+│   │   ├── PetSelector.vue
+│   │   ├── MemberSelector.vue
+│   │   ├── StatsWidget.vue
+│   │   ├── EmojiPicker.vue
+│   │   └── ToastContainer.vue
+│   ├── composables/        # Composition API composables
+│   │   └── useToast.js
+│   ├── firebase/           # Firebase configuration
+│   │   └── config.js
+│   └── assets/             # Static assets (CSS, images)
+│       └── main.css        # Global styles + TailwindCSS
 │
-├── contexts/               # React contexts (not used in web app)
-│   ├── ThemeContext.js
-│   └── PetContext.js
-│
-├── utils/                  # Utility functions (not used in web app)
-│
-├── hooks/                  # Custom React hooks
-│   ├── useActivities.js
-│   └── useActivityForm.js
-│
-├── assets/                 # Images and icons
+├── public/                 # Static files (served as-is)
+│   └── favicon.ico
 │
 ├── .github/                # GitHub workflows
 │
@@ -196,50 +224,48 @@ Pet-App/
     ├── ROADMAP.md          # Feature roadmap and priorities
     ├── CLAUDE.md           # THIS FILE - AI assistant context
     ├── DEPLOYMENT.md       # Deployment instructions
-    ├── FIREBASE_SECURITY.md # Security rules documentation
-    └── FUTURE_IOS_MIGRATION.md # iOS app migration plan
+    └── FIREBASE_SECURITY.md # Security rules documentation
 ```
 
 ---
 
 ## Development History
 
-### Completed Features (All in index.html)
+### Completed Features (Vue 3 Application)
 
-**CHUNK 1: Design Refresh (March 2026)**
-- Clean minimalist UI with glassmorphism effects
+**Architecture Migration (March 2026)**
+- Migrated from vanilla JavaScript to Vue 3 + Vite
+- Implemented Pinia for state management
+- Added Vue Router for client-side routing
+- Integrated TailwindCSS for utility-first styling
+- Modular component architecture with SFC (Single File Components)
+
+**Core Features**
+- Multi-pet tracking with custom emoji and species
+- Pet selector (All Pets vs individual pet filtering)
+- Household member management (multiple users per household)
+- Real-time Firebase sync across devices
+- Offline queue with automatic sync when online
+- Photo attachments with Firebase Storage
+- Activity notes (optional, 200 char limit)
 - Dark mode support (auto-detect + manual toggle)
-- CSS variables for theming
-- Elegant sage green accent color palette
-- Georgia serif typography for refined look
+- PWA support with offline capabilities
 
-**CHUNK 2: Multi-Pet Support**
-- Pet profiles with custom emoji
-- Pet selector (All Pets vs individual pet)
-- Activities tagged with petId
-- Pet-specific statistics
-- Add pet modal with emoji picker
-
-**CHUNK 3: User Authentication**
-- Simple username selection (Tara vs Meag)
-- No password required (household trust model)
-- Activities tagged with username
-- User selection persists via localStorage
-- Visual feedback for active user
-
-**CHUNK 4: Activity Management**
-- Edit activity (type, timestamp, notes)
+**Daily Activity Tracking**
+- Poop, Pee, Food, Sleep, Meds, Walk
+- Quick-log buttons with today's count
+- Activity feed with date grouping
+- Edit functionality (type, timestamp, notes)
 - Delete with confirmation
-- Undo delete (5-second window)
-- iOS-style swipe gestures
-- Action buttons on hover
+- Inline notes and photo display
 
-**CHUNK 5: Medical Tracking**
+**Medical Tracking (Newly Implemented)**
 - Vet Visit logging (notes, cost)
-- Vaccination logging (name, date, notes)
-- Weight Check logging (value, unit, notes)
+- Vaccination logging (vaccine name, notes)
+- Weight Check logging (weight, unit, notes)
 - Medical data displays inline in activity feed
-- Separate "Medical" section in UI
+- Separate "Medical Tracking" section in UI
+- Medical activities cannot be edited (intentional - delete and re-add instead)
 
 ### Known Limitations
 
@@ -283,51 +309,102 @@ Pet-App/
 
 ## Code Patterns & Conventions
 
-### JavaScript Style
-- Vanilla JavaScript (ES6+)
-- Global functions (no modules due to single-file architecture)
-- Firebase SDK loaded via CDN
-- LocalStorage for client-side persistence
-- Real-time Firebase listeners for data sync
+### Vue 3 Component Style
+- Composition API with `<script setup>` syntax
+- Single File Components (.vue files)
+- Reactive state with `ref()` and `reactive()`
+- Computed values with `computed()`
+- Lifecycle hooks: `onMounted()`, `onUnmounted()`, `watch()`
+- Props validation with `defineProps()`
+- Events with `defineEmits()`
 
-### CSS Conventions
-- CSS variables for theming (--primary-color, --bg-color, etc.)
-- Mobile-first responsive design
-- 44px minimum touch targets (Apple HIG)
-- Glassmorphism: `backdrop-filter: blur(20px)` with transparency
-- Transitions: 0.3s ease for theme changes, 0.2s for interactions
-
-### Firebase Patterns
+### Pinia Store Patterns
 ```javascript
-// Listen to data
-firebase.database().ref('activities').on('value', (snapshot) => {
-  // Handle data
-});
+// Define a store (src/stores/activities.js)
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 
-// Write data
-firebase.database().ref('activities').push({
-  type: 'Poop',
-  timestamp: Date.now(),
-  petId: currentPetId,
-  user: currentUser
-});
+export const useActivitiesStore = defineStore('activities', () => {
+  // State
+  const activities = ref([])
 
-// Update data
-firebase.database().ref(`activities/${activityId}`).update({
-  type: newType,
-  timestamp: newTimestamp
-});
+  // Computed
+  const sortedActivities = computed(() => {
+    return [...activities.value].sort((a, b) => b.timestamp - a.timestamp)
+  })
 
-// Delete data
-firebase.database().ref(`activities/${activityId}`).remove();
+  // Actions
+  async function logActivity(type, emoji) {
+    // ...
+  }
+
+  return { activities, sortedActivities, logActivity }
+})
+
+// Use in a component
+import { useActivitiesStore } from '@/stores/activities'
+const activitiesStore = useActivitiesStore()
 ```
 
-### State Management
-- `currentPetId` - Currently selected pet (stored in localStorage)
-- `currentUser` - Currently selected user (Tara or Meag, stored in localStorage)
-- `currentActivities` - Array of all activities (synced from Firebase)
+### CSS/TailwindCSS Conventions
+- TailwindCSS utility classes for most styling
+- Custom CSS in `<style scoped>` for component-specific styles
+- TailwindCSS theme customization in `tailwind.config.js`
+- Mobile-first responsive design with Tailwind breakpoints (sm:, md:, lg:)
+- Dark mode with `dark:` variant classes
+- Custom color palette: sage (primary), gray (neutrals)
+
+### Firebase Patterns (in Pinia Stores)
+```javascript
+import { ref as dbRef, push, onValue, update, remove } from 'firebase/database'
+import { database } from '@/firebase/config'
+
+// Listen to data
+const activitiesRef = dbRef(database, `households/${householdId}/activities`)
+const listener = onValue(activitiesRef, (snapshot) => {
+  const data = snapshot.val()
+  // Handle data
+})
+
+// Write data
+await push(activitiesRef, {
+  type: 'Poop',
+  timestamp: Date.now(),
+  petId: selectedPetId,
+  user: currentMember
+})
+
+// Update data
+const activityRef = dbRef(database, `households/${householdId}/activities/${activityId}`)
+await update(activityRef, { type: 'Walk', notes: 'Updated' })
+
+// Delete data
+await remove(activityRef)
+```
+
+### State Management (Pinia Stores)
+**activitiesStore:**
+- `activities` - Array of all activities (synced from Firebase)
+- `sortedActivities` - Computed sorted activities
+- `todayActivities` - Computed today's activities
+- `stats` - Computed activity stats for today
+- `logActivity()` - Log a new activity
+- `updateActivity()` - Edit an existing activity
+- `deleteActivity()` - Remove an activity
+
+**petsStore:**
 - `pets` - Array of all pets (synced from Firebase)
-- Theme state - Stored in localStorage, applied via CSS class on body
+- `selectedPetId` - Currently selected pet ID (persisted to localStorage)
+- `selectedPet` - Computed currently selected pet object
+- `addPet()` - Add a new pet
+- `updatePet()` - Edit pet details
+- `deletePet()` - Remove a pet
+
+**householdStore:**
+- `householdId` - Current household ID
+- `memberName` - Current user's name
+- `currentMember` - Currently active member
+- `members` - Array of household members
 
 ---
 
@@ -352,31 +429,115 @@ When making changes, verify:
 
 ## Common Tasks & Patterns
 
-### Adding a New Activity Type
+### Adding a New Regular Activity Type
 
-1. **Add button in HTML** (in `<div class="button-grid">`)
-```html
-<button class="activity-btn" onclick="logActivity('New Type', '🆕')">
-  <span class="emoji">🆕</span>
-  <span>New Type</span>
-</button>
+1. **Add button in DashboardView.vue** (in Quick Log section)
+```vue
+<ActivityButton
+  emoji="🆕"
+  label="New Type"
+  :count="activitiesStore.stats.newType"
+  @click="showActivityNotes('New Type', '🆕')"
+  :disabled="activitiesStore.loading"
+/>
 ```
 
-2. **Update stats calculation** (in `updateStats()` function)
+2. **Update stats calculation** in `src/stores/activities.js`
 ```javascript
-const newTypeCount = currentActivities.filter(a => a.type === 'New Type').length;
+const stats = computed(() => {
+  const today = todayActivities.value
+  return {
+    // ... existing stats
+    newType: today.filter(a => a.type === 'New Type').length,
+    total: today.length
+  }
+})
 ```
 
-3. **Add to edit modal dropdown** (in `<select id="edit-activity-type">`)
-```html
+3. **Add to edit modal dropdown** in `src/components/EditActivityModal.vue`
+```vue
 <option value="New Type">🆕 New Type</option>
 ```
 
-### Adding a New Filter
+4. **Update emoji map** in `src/components/EditActivityModal.vue`
+```javascript
+const emojiMap = {
+  // ... existing mappings
+  'New Type': '🆕'
+}
+```
 
-1. Add filter chip to UI
-2. Update filter logic in activity rendering
-3. Persist filter state to localStorage (optional)
+### Adding a New Medical Activity Type
+
+1. **Create form in MedicalModal.vue** (add new conditional section)
+2. **Add button in DashboardView.vue** (in Medical Tracking section)
+3. **Update stats in activities store** (add new computed stat)
+4. **Handle new medical data structure** in `logActivity()` method
+
+### Creating a New Vue Component
+
+1. **Create file** in `src/components/ComponentName.vue`
+```vue
+<template>
+  <div class="component-name">
+    <!-- Your markup -->
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+
+const props = defineProps({
+  // Define props
+})
+
+const emit = defineEmits(['event-name'])
+
+// Component logic
+</script>
+
+<style scoped>
+/* Component-specific styles */
+</style>
+```
+
+2. **Import in parent component**
+```javascript
+import ComponentName from '@/components/ComponentName.vue'
+```
+
+3. **Use in template**
+```vue
+<ComponentName :prop="value" @event-name="handler" />
+```
+
+### Adding a New Pinia Store
+
+1. **Create store file** in `src/stores/storeName.js`
+```javascript
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+export const useStoreNameStore = defineStore('storeName', () => {
+  const state = ref([])
+
+  const computed = computed(() => {
+    // Computed value
+  })
+
+  async function action() {
+    // Action logic
+  }
+
+  return { state, computed, action }
+})
+```
+
+2. **Use in component**
+```javascript
+import { useStoreNameStore } from '@/stores/storeName'
+const storeNameStore = useStoreNameStore()
+```
 
 ### Modifying Database Schema
 
@@ -414,24 +575,30 @@ npm run deploy:all
 
 See ROADMAP.md for full details. Key priorities:
 
-**High Impact:**
-- Activity notes field (currently only on medical activities)
-- Pet edit/delete functionality
+**✅ Recently Completed:**
+- ✅ Activity notes field (implemented for all activities)
+- ✅ Photo attachments (implemented with Firebase Storage)
+- ✅ Edit activity functionality (implemented for regular activities)
+- ✅ Medical tracking (Vet Visit, Vaccination, Weight Check)
+- ✅ Pet edit/delete functionality (implemented in stores)
+
+**High Impact - TODO:**
 - Activity search/filter by keyword
 - CSV export with all filters
 - PDF reports for vet visits
+- Weight trend chart visualization
 
-**Medium Impact:**
+**Medium Impact - TODO:**
 - Vaccination due date reminders
-- Weight trend chart
 - Activity pattern insights
-- Photo attachments
+- Bulk operations (delete multiple activities)
+- Data export/import for backup
 
-**Future iOS App:**
-- SwiftUI port using same Firebase backend
-- React Native components in /components ready for reuse
-- Identical database schema for seamless sync
-- Apple-specific features (HealthKit, Widgets, Siri)
+**Future Considerations:**
+- Mobile app (React Native or SwiftUI)
+- Integration with wearables
+- Multi-household support
+- Shared access with vets
 
 ---
 
@@ -463,15 +630,24 @@ git log --oneline -10
 
 ### Development
 ```bash
-# Install dependencies (React Native)
+# Install dependencies
 npm install
 
-# Start Expo dev server (React Native, not needed for web)
-npm start
+# Start Vite dev server (with hot module replacement)
+npm run dev
+# Opens at http://localhost:5173
 
-# Web app (open directly)
-# Just open index.html in browser or use any static server
-python3 -m http.server 8000
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run tests
+npm run test:unit
+
+# Run linter
+npm run lint
 ```
 
 ### Firebase
@@ -499,8 +675,10 @@ https://petlog-c4c1e-default-rtdb.firebaseio.com
 **Repository:**
 tpgordon8/Pet-App
 
-**Primary File:**
-/home/user/Pet-App/index.html (contains entire web app)
+**Primary Directories:**
+- `/home/user/Pet-App/src/` - Vue 3 application source
+- `/home/user/Pet-App/src/stores/` - Pinia state management
+- `/home/user/Pet-App/src/components/` - Vue components
 
 ---
 
@@ -511,27 +689,30 @@ tpgordon8/Pet-App
 - ❌ Never create new branches without user approval
 - ❌ Never use wrong branch naming format (must be `claude/<name>-Etaqb`)
 - ❌ Never make destructive changes without user confirmation
-- ❌ Never add complex dependencies (keep it vanilla JS)
 - ❌ Never break backwards compatibility with existing data
-- ❌ Never create separate files when code belongs in index.html
+- ❌ Never modify Firebase database schema without careful consideration
+- ❌ Never add heavy dependencies without justification
 
 ### What TO Do
 - ✅ Always check current branch first
-- ✅ Always read index.html before making changes
-- ✅ Always test changes in browser if possible
-- ✅ Always maintain single-file architecture for web app
+- ✅ Always read relevant component/store files before making changes
+- ✅ Always test changes with `npm run dev` when possible
+- ✅ Always follow Vue 3 Composition API patterns with `<script setup>`
+- ✅ Always use Pinia stores for state management (not local component state for shared data)
 - ✅ Always preserve existing functionality
-- ✅ Always add code to index.html (not separate files)
 - ✅ Always commit with descriptive messages
 - ✅ Always use retry logic for git push (network failures)
+- ✅ Always use TailwindCSS utility classes for styling when possible
+- ✅ Always emit events from child components instead of mutating props
 
 ### When to Ask User
-- Before implementing complex authentication
-- Before changing database schema significantly
-- Before adding external dependencies/libraries
-- Before creating new files (vs adding to index.html)
-- Before implementing features not in ROADMAP.md
+- Before implementing complex authentication systems
+- Before changing Firebase database schema significantly
+- Before adding external dependencies/libraries (especially large ones)
+- Before creating new routes or major UI restructuring
+- Before implementing features not discussed or in ROADMAP.md
 - Before making destructive git operations
+- Before refactoring large portions of the codebase
 
 ---
 
@@ -545,24 +726,34 @@ tpgordon8/Pet-App
 1. Read this file (CLAUDE.md) first for full context
 2. Check current git branch
 3. Read relevant documentation (DEVLOG.md, ROADMAP.md, README.md)
-4. Read index.html if making code changes
-5. Make changes, test, commit, push to correct branch
+4. Read relevant component/store files before making changes
+5. Make changes, test with `npm run dev`, commit, push to correct branch
 
 ---
 
-**Last Updated:** 2026-03-10
-**Document Version:** 1.0
+**Last Updated:** 2026-03-15
+**Document Version:** 2.0 (Vue 3 Migration)
 **Maintained By:** Claude AI Assistant
 
 ---
 
 ## Appendix: File Descriptions
 
-| File | Purpose | Modify? |
-|------|---------|---------|
-| index.html | Main web app (HTML/CSS/JS) | ✅ YES - primary development file |
-| App.js | React Native entry point | ⚠️ Only for future iOS app |
+| File/Directory | Purpose | Modify? |
+|----------------|---------|---------|
+| index.html | HTML entry point (loads Vue app) | ⚠️ Rarely - only for meta tags |
+| src/main.js | Vue app initialization | ⚠️ Only when adding global plugins |
+| src/App.vue | Root Vue component | ⚠️ Only for app-wide changes |
+| src/router/ | Vue Router config | ⚠️ Only when adding routes |
+| src/stores/ | Pinia stores | ✅ YES - modify for state logic |
+| src/views/ | Page components | ✅ YES - modify for page layouts |
+| src/components/ | Reusable components | ✅ YES - modify for UI features |
+| src/composables/ | Composition utilities | ✅ YES - add reusable logic |
+| src/firebase/config.js | Firebase initialization | ⚠️ Only for config changes |
+| src/assets/main.css | Global CSS + Tailwind | ⚠️ Only for global styles |
 | package.json | Dependencies | ⚠️ Only if adding npm packages |
+| vite.config.js | Vite build config | ⚠️ Only for build settings |
+| tailwind.config.js | TailwindCSS config | ⚠️ Only for theme customization |
 | manifest.json | PWA manifest | ⚠️ Only for PWA config changes |
 | firebase.json | Firebase config | ⚠️ Only for deployment changes |
 | firebase-rules.json | Database security | ⚠️ Only for security rules |

@@ -1,13 +1,106 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-15 (Activity Notes & Photo Attachments)
-**Current Status:** Enhanced activity logging with notes and photos ✅
+**Last Updated:** 2026-03-15 (Medical Tracking & Edit Functionality)
+**Current Status:** Medical tracking and activity editing implemented ✅
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
 ---
 
-## 📸 NEW FEATURES: Activity Notes & Photo Attachments (2026-03-15)
+## 🏥 NEW FEATURES: Medical Tracking & Edit Functionality (2026-03-15)
+
+**Commit:** `77ae792`
+**Status:** ✅ COMPLETE
+
+### Feature 1: Medical Activity Tracking
+**What:** Comprehensive medical tracking for vet visits, vaccinations, and weight checks
+
+**Implementation:**
+- Created `MedicalModal.vue` component with three specialized forms
+- Added "Medical Tracking" section to Dashboard with 3 activity buttons
+- Extended activities store to handle `medicalData` structure
+- Medical data displays inline in ActivityFeed with structured formatting
+- Stats computation tracks medical activity counts
+
+**Vet Visit:**
+- Notes (required, 500 char limit)
+- Cost (optional, formatted as currency)
+
+**Vaccination:**
+- Vaccine name (required)
+- Notes (optional, 300 char limit)
+
+**Weight Check:**
+- Weight (required) with unit selector (lbs/kg)
+- Notes (optional, 300 char limit)
+
+**Database Schema:**
+```javascript
+activity.medicalData = {
+  // Vet Visit
+  notes: "Annual checkup - all good",
+  cost: 150.00
+
+  // Vaccination
+  vaccineName: "Rabies",
+  notes: "Next due: 2027-03-15"
+
+  // Weight Check
+  weight: 45.5,
+  unit: "lbs",
+  notes: "Down 2 lbs from last month"
+}
+```
+
+**Files Changed:**
+- ✅ Created: `src/components/MedicalModal.vue`
+- ✅ Updated: `src/views/DashboardView.vue` (medical section)
+- ✅ Updated: `src/stores/activities.js` (medicalData support)
+- ✅ Updated: `src/components/ActivityFeed.vue` (medical data display)
+
+### Feature 2: Edit Activity Functionality
+**What:** Edit existing regular activities (type, timestamp, notes)
+
+**Implementation:**
+- Created `EditActivityModal.vue` component
+- Edit button appears on hover in ActivityFeed
+- Can edit: activity type, date/time, notes
+- Medical activities intentionally excluded from editing
+- Real-time sync across devices
+
+**Design Decision:**
+Medical activities cannot be edited because they contain structured data (medicalData object) that would require complex form handling. Users should delete and re-add medical activities if corrections are needed.
+
+**Files Changed:**
+- ✅ Created: `src/components/EditActivityModal.vue`
+- ✅ Updated: `src/components/ActivityFeed.vue` (edit button)
+- ✅ Updated: `src/views/DashboardView.vue` (edit handlers)
+
+### Feature 3: Documentation Updates
+**What:** Updated all documentation to reflect Vue 3 architecture
+
+**Changes:**
+- Updated CLAUDE.md with Vue 3 patterns and examples
+- Removed all vanilla JavaScript references
+- Added Composition API, Pinia, and TailwindCSS patterns
+- Updated project structure, tech stack, and best practices
+- Documented new features in DEVLOG.md
+
+**Files Changed:**
+- ✅ Updated: `CLAUDE.md` (Vue 3 architecture, version 2.0)
+- ✅ Updated: `DEVLOG.md` (medical tracking and edit features)
+
+**Testing:**
+- ✅ Medical modal forms validate correctly
+- ✅ Medical data saves to Firebase with correct structure
+- ✅ Medical data displays inline in activity feed
+- ✅ Edit modal pre-fills with current activity data
+- ✅ Edit saves update activity in real-time
+- ✅ Edit button only appears for editable activities
+
+---
+
+## 📸 Activity Notes & Photo Attachments (2026-03-15)
 
 **Commit:** `dca3d10`
 **Status:** ✅ COMPLETE

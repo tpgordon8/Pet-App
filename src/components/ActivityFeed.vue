@@ -64,6 +64,40 @@
             <p v-if="activity.notes" class="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {{ activity.notes }}
             </p>
+
+            <!-- Medical Data Display -->
+            <div v-if="activity.medicalData" class="mt-2 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg space-y-1">
+              <!-- Vet Visit -->
+              <template v-if="activity.type === 'Vet Visit'">
+                <p v-if="activity.medicalData.notes" class="text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Notes:</strong> {{ activity.medicalData.notes }}
+                </p>
+                <p v-if="activity.medicalData.cost" class="text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Cost:</strong> ${{ activity.medicalData.cost.toFixed(2) }}
+                </p>
+              </template>
+
+              <!-- Vaccination -->
+              <template v-if="activity.type === 'Vaccination'">
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Vaccine:</strong> {{ activity.medicalData.vaccineName }}
+                </p>
+                <p v-if="activity.medicalData.notes" class="text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Notes:</strong> {{ activity.medicalData.notes }}
+                </p>
+              </template>
+
+              <!-- Weight Check -->
+              <template v-if="activity.type === 'Weight Check'">
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Weight:</strong> {{ activity.medicalData.weight }} {{ activity.medicalData.unit }}
+                </p>
+                <p v-if="activity.medicalData.notes" class="text-sm text-gray-700 dark:text-gray-300">
+                  <strong>Notes:</strong> {{ activity.medicalData.notes }}
+                </p>
+              </template>
+            </div>
+
             <img
               v-if="activity.photoUrl"
               :src="activity.photoUrl"
@@ -75,6 +109,14 @@
 
           <!-- Actions (hover) -->
           <div class="flex gap-2 opacity-0 hover:opacity-100 transition-opacity">
+            <button
+              v-if="canEdit(activity)"
+              @click="$emit('edit', activity)"
+              class="text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 text-sm p-1"
+              title="Edit"
+            >
+              ✏️
+            </button>
             <button
               @click="$emit('delete', activity.id)"
               class="text-red-500 hover:text-red-700 dark:hover:text-red-400 text-sm p-1"
@@ -160,6 +202,12 @@ function getPetEmoji(petId) {
 
 function openPhoto(url) {
   window.open(url, '_blank')
+}
+
+function canEdit(activity) {
+  // Medical activities cannot be edited (too complex)
+  const medicalTypes = ['Vet Visit', 'Vaccination', 'Weight Check']
+  return !medicalTypes.includes(activity.type)
 }
 </script>
 

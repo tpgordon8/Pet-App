@@ -100,6 +100,39 @@
         </div>
       </div>
 
+      <!-- Medical Tracking Section -->
+      <div class="card">
+        <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
+          Medical Tracking
+          <span v-if="petsStore.selectedPet" class="text-sage-600 dark:text-sage-400">
+            for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
+          </span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <ActivityButton
+            emoji="🏥"
+            label="Vet Visit"
+            :count="activitiesStore.stats.vetVisit"
+            @click="showMedicalModal('Vet Visit', '🏥')"
+            :disabled="activitiesStore.loading"
+          />
+          <ActivityButton
+            emoji="💉"
+            label="Vaccination"
+            :count="activitiesStore.stats.vaccination"
+            @click="showMedicalModal('Vaccination', '💉')"
+            :disabled="activitiesStore.loading"
+          />
+          <ActivityButton
+            emoji="⚖️"
+            label="Weight Check"
+            :count="activitiesStore.stats.weightCheck"
+            @click="showMedicalModal('Weight Check', '⚖️')"
+            :disabled="activitiesStore.loading"
+          />
+        </div>
+      </div>
+
       <!-- Activity Feed -->
       <div class="card">
         <ActivityFeed
@@ -107,6 +140,7 @@
           :pets="petsStore.pets"
           :show-pet-names="petsStore.selectedPetId === 'all'"
           @delete="handleDelete"
+          @edit="handleEdit"
         />
       </div>
     </div>
@@ -125,6 +159,23 @@
       @close="showNotesModal = false"
       @save="handleSaveActivity"
     />
+
+    <!-- Medical Modal -->
+    <MedicalModal
+      :show="showMedicalModalRef"
+      :activity-type="pendingMedical.type"
+      :emoji="pendingMedical.emoji"
+      @close="showMedicalModalRef = false"
+      @save="handleSaveMedical"
+    />
+
+    <!-- Edit Activity Modal -->
+    <EditActivityModal
+      :show="showEditModal"
+      :activity="editingActivity"
+      @close="showEditModal = false"
+      @save="handleSaveEdit"
+    />
   </div>
 </template>
 
@@ -141,6 +192,8 @@ import PetSelector from '@/components/PetSelector.vue'
 import MemberSelector from '@/components/MemberSelector.vue'
 import AddPetModal from '@/components/AddPetModal.vue'
 import ActivityNotesModal from '@/components/ActivityNotesModal.vue'
+import MedicalModal from '@/components/MedicalModal.vue'
+import EditActivityModal from '@/components/EditActivityModal.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
@@ -149,7 +202,11 @@ const petsStore = usePetsStore()
 
 const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
+const showMedicalModalRef = ref(false)
+const showEditModal = ref(false)
 const pendingActivity = ref({ type: '', emoji: '' })
+const pendingMedical = ref({ type: '', emoji: '' })
+const editingActivity = ref(null)
 
 onMounted(() => {
   // Start Firebase listeners for real-time sync
@@ -198,6 +255,32 @@ async function handleSaveActivity(data) {
 async function handleDelete(activityId) {
   if (confirm('Are you sure you want to delete this activity?')) {
     await activitiesStore.deleteActivity(activityId)
+  }
+}
+
+function showMedicalModal(type, emoji) {
+  pendingMedical.value = { type, emoji }
+  showMedicalModalRef.value = true
+}
+
+async function handleSaveMedical(medicalData) {
+  await activitiesStore.logActivity(
+    pendingMedical.value.type,
+    pendingMedical.value.emoji,
+    '', // no notes field for medical activities
+    null, // no photo
+    medicalData
+  )
+}
+
+function handleEdit(activity) {
+  editingActivity.value = activity
+  showEditModal.value = true
+}
+
+async function handleSaveEdit(updates) {
+  if (editingActivity.value) {
+    await activitiesStore.updateActivity(editingActivity.value.id, updates)
   }
 }
 </script>
