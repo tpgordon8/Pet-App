@@ -193,7 +193,6 @@ function handleSubmit() {
   gap: 1rem;
   padding: 1rem;
   background: white;
-  dark:background: #1f2937;
   border: 2px solid #e5e7eb;
   border-radius: 0.75rem;
   cursor: pointer;
