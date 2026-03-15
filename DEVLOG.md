@@ -731,3 +731,184 @@ Each chunk gets its own clear commit message:
 ✅ Ready for user testing
 
 **Ready for user feedback and CHUNK 3 authorization!**
+
+---
+
+## Vue 3 Rebuild - Week 0: Foundation Setup (2026-03-15)
+
+### Goal: Initialize Modern Stack & Archive Legacy App
+
+**Status:** ✅ COMPLETED
+
+### What Was Built
+
+**Infrastructure:**
+- Vue 3.4 + Vite 5 project initialized
+- Tailwind CSS 3 configured with playful luxury theme
+- Pinia 2 state management setup
+- Vue Router 4 with auth guards
+- PWA configuration with vite-plugin-pwa
+- Firebase Realtime Database integration (kept `petlog-c4c1e` project)
+
+**Archived:**
+- `index.html` (4,710 lines) → `archive/index-legacy.html`
+- React Native files → `archive/react-native/`
+- Legacy `package.json` → `archive/package-legacy.json`
+
+**Created Files:**
+1. **Configuration:**
+   - `vite.config.js` - Vite + PWA plugin, Firebase caching strategy
+   - `tailwind.config.js` - Sage green theme, glassmorphism utilities
+   - `postcss.config.js` - Tailwind + Autoprefixer
+   - `.env` - Firebase credentials (gitignored)
+   - `.env.example` - Template for team
+
+2. **Vue App Structure:**
+   - `src/main.js` - App entry point
+   - `src/App.vue` - Root component with dark mode detection
+   - `src/assets/main.css` - Tailwind imports + custom utilities
+   - `src/router/index.js` - Routes with household auth guard
+   - `src/firebase/config.js` - Firebase SDK initialization
+
+3. **Stores (Pinia):**
+   - `src/stores/household.js` - Household creation/join logic
+
+4. **Views:**
+   - `src/views/HomeView.vue` - Landing page
+   - `src/views/OnboardingView.vue` - Create/join household flow
+   - `src/views/DashboardView.vue` - Activity dashboard (placeholder)
+
+### Technical Details
+
+**Build Output:**
+```
+dist/index.html                           1.16 kB
+dist/assets/index-DZb2qM5x.css           14.52 kB
+dist/assets/HomeView-DMyZcERa.js          0.98 kB
+dist/assets/DashboardView-Bcy8DVop.js     1.63 kB
+dist/assets/OnboardingView-fwb0IOml.js    4.57 kB
+dist/assets/vue-vendor-BcFvu_wJ.js       92.97 kB (Vue + Router + Pinia)
+dist/assets/firebase-Dth_Ub0p.js        331.88 kB (Firebase SDK)
+✓ built in 4.58s
+```
+
+**Bundle Sizes:**
+- Total JS: ~436 KB (uncompressed)
+- Total CSS: ~14.5 KB
+- Firebase chunk: 331 KB (largest, but cached aggressively)
+- Vue vendor chunk: 93 KB (shared across routes)
+
+**PWA Features:**
+- Service worker with Workbox
+- Offline caching for Firebase Realtime DB
+- Manifest.json for installability
+- Cache-first strategy for assets
+
+### Database Schema (Unchanged)
+
+```javascript
+/households/{householdCode}
+  code: string
+  passcode: string (TODO: hash in production)
+  createdAt: timestamp
+  members:
+    {memberName}:
+      name: string
+      joinedAt: timestamp
+```
+
+### What Works
+
+- ✅ `npm run dev` - Development server on port 3000
+- ✅ `npm run build` - Production build (4.58s)
+- ✅ `npm run preview` - Preview production build
+- ✅ Create household flow (saves to Firebase)
+- ✅ Join household flow (validates passcode)
+- ✅ LocalStorage persistence (household ID, member name)
+- ✅ Router navigation with auth guards
+- ✅ Dark mode auto-detection
+- ✅ Glassmorphism effects (backdrop-filter)
+- ✅ Responsive mobile-first design
+
+### Known Issues
+
+- ⚠️ Passcode stored in plaintext (need bcrypt in Phase 4)
+- ⚠️ No activity logging yet (Phase 1 Week 1)
+- ⚠️ No pet management yet (Phase 1 Week 2)
+- ⚠️ No real-time sync listeners yet (Phase 1 Week 3)
+
+### Reusable Patterns from Legacy App
+
+**Identified for Phase 1:**
+1. Firebase real-time listener pattern (lines 2800-2850)
+2. Activity schema (type, emoji, timestamp, user, petId)
+3. Offline queue logic (lines 3200-3300)
+4. Toast notification system
+5. Pet emoji picker grid
+6. Activity button grid layout
+
+**Deferred to Later Phases:**
+- Medical tracking forms (Phase 3)
+- PDF export with jsPDF (Phase 3)
+- CSV export (Phase 5)
+- Edit/delete with undo (Phase 2)
+
+### Dependencies Added
+
+**Production:**
+- `vue@3.4.21` - Framework
+- `vue-router@4.3.0` - Routing
+- `pinia@2.1.7` - State management
+- `@vueuse/core@10.9.0` - Composition utilities
+- `firebase@10.14.1` - Backend (kept from legacy)
+- `date-fns@4.1.0` - Date utilities (kept from legacy)
+- `jspdf@2.5.1` - PDF export (for Phase 3)
+- `@lemonsqueezy/lemonsqueezy.js@3.2.0` - Payments (for Phase 4)
+
+**Development:**
+- `@vitejs/plugin-vue@5.0.4` - Vite Vue support
+- `vite@5.2.0` - Build tool
+- `vite-plugin-pwa@0.19.8` - PWA generation
+- `@playwright/test@1.42.1` - E2E testing
+- `vitest@1.4.0` - Unit testing
+- `tailwindcss@3.4.1` - CSS framework
+- `eslint@8.57.0` + `eslint-plugin-vue@9.23.0` - Linting
+- `prettier@3.2.5` - Formatting
+
+**Total Dependencies:** 913 packages (29 vulnerabilities, mostly dev dependencies)
+
+### Commit Details
+
+**Commit:** `da36efb`
+**Message:** "Vue 3 Rebuild: Week 0 foundation setup complete"
+**Files Changed:** 28 files, 21,648 insertions, 11,152 deletions
+**Branch:** `claude/pet-activity-logger-Etaqb`
+**Pushed:** ✅ Successfully pushed to remote
+
+### Next Steps: Phase 1 Week 1 (Activity Logging)
+
+**Planned Deliverables:**
+1. Activity logging buttons (Poop, Pee, Food, Sleep, Meds)
+2. Firebase write operations for activities
+3. Activity feed component with real-time sync
+4. Toast notifications for user feedback
+5. Basic offline queue (localStorage fallback)
+
+**Files to Create:**
+- `src/stores/activities.js` - Activity state management
+- `src/components/ActivityButton.vue` - Reusable button
+- `src/components/ActivityFeed.vue` - Real-time activity list
+- `src/components/Toast.vue` - Notification component
+- `src/composables/useFirebase.js` - Firebase helpers
+- `src/composables/useToast.js` - Toast notification logic
+
+**Reusable Code:**
+- Copy activity button grid from `archive/index-legacy.html` lines 2000-2100
+- Port Firebase listener pattern from lines 2800-2850
+- Adapt offline queue logic from lines 3200-3300
+
+**Estimated Time:** 1 week (40 hours)
+
+---
+
+**Week 0 Complete. Ready for Phase 1 implementation.**
