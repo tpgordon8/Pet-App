@@ -63,7 +63,7 @@
 
 ### 4.1 Photo Attachments
 **Why:** Memory keeping + monitoring physical changes
-- [ ] Add photos to activities
+- [x] Add photos to activities ✅ COMPLETED 2026-03-15
 - [ ] Photo gallery view
 - [ ] Before/after comparisons
 - [ ] Automatic timeline of pet's life
@@ -94,7 +94,7 @@
 
 ### 5.2 Advanced Logging
 **Why:** More detailed tracking
-- [ ] Add notes to activities
+- [x] Add notes to activities ✅ COMPLETED 2026-03-15
 - [ ] Custom activity types
 - [ ] Duration tracking (e.g., 30-min walk)
 - [ ] Location tagging

@@ -4,6 +4,135 @@
 
 ---
 
+## Session: 2026-03-15 - Activity Notes & Photo Attachments
+
+### ✅ FEATURE: Activity Notes for Regular Activities
+
+**Goal:** Allow users to add optional notes to all activity types (not just medical activities)
+
+**Implementation:**
+1. **ActivityNotesModal Component** - New modal that pops up when logging any activity
+   - Optional notes field (200 char limit)
+   - "Skip" button for quick logging without notes
+   - "Log Activity" button to save with notes
+   - Auto-resets when modal closes
+
+2. **Updated DashboardView**
+   - Activity buttons now show modal instead of directly logging
+   - Modal collects notes before calling logActivity
+   - Maintains quick logging flow with skip option
+
+3. **Backend Already Supported**
+   - `logActivity()` in activities store already had notes parameter
+   - ActivityFeed already displayed notes
+   - No database schema changes needed
+
+**What Works:**
+- ✅ Add notes to Poop, Pee, Food, Sleep, Meds, Walk activities
+- ✅ Notes display in activity feed
+- ✅ Optional - can skip and log without notes
+- ✅ Character counter (200 max)
+- ✅ Real-time sync across devices
+
+**User Experience:**
+- Tap activity button → Modal appears
+- Add note (optional) → Tap "Log Activity"
+- OR tap "Skip" for instant logging
+- Toast confirms activity logged
+
+---
+
+### ✅ FEATURE: Photo Attachments
+
+**Goal:** Allow users to attach photos to any activity for visual tracking and memory keeping
+
+**Implementation:**
+1. **Firebase Storage Integration**
+   - Added `getStorage` to firebase config
+   - Created `uploadPhoto()` helper in activities store
+   - Photos stored at: `households/{householdId}/activities/{timestamp}-{filename}`
+
+2. **Updated ActivityNotesModal**
+   - Photo upload button with drag-drop area
+   - Live preview before saving
+   - Remove photo button
+   - 5MB file size limit
+   - Accepts all image formats
+
+3. **Updated Activities Store**
+   - `logActivity()` now accepts photoFile parameter
+   - Uploads photo to Firebase Storage first
+   - Gets download URL and saves to activity
+   - Shows "Uploading photo..." toast during upload
+   - Offline queue skips photo activities (too complex for offline)
+
+4. **Updated ActivityFeed**
+   - Displays photo if `photoUrl` exists
+   - Click photo to open in new tab
+   - Responsive image sizing
+   - Rounded corners for aesthetics
+
+**Database Schema Addition:**
+```javascript
+activity: {
+  type: "Poop",
+  emoji: "💩",
+  timestamp: 1234567890,
+  user: "Tara",
+  petId: "pet_xxx",
+  notes: "Optional notes",
+  photoUrl: "https://firebasestorage.googleapis.com/..." // NEW FIELD
+}
+```
+
+**What Works:**
+- ✅ Upload photos when logging activities
+- ✅ Preview photo before saving
+- ✅ Remove photo if changed mind
+- ✅ Photos sync to Firebase Storage
+- ✅ Display photos in activity feed
+- ✅ Click to view full size
+- ✅ Works on mobile and desktop
+
+**Technical Details:**
+- Uses Firebase Storage `uploadBytes()` and `getDownloadURL()`
+- Photo naming: `{timestamp}-{originalFilename}`
+- Size limit: 5MB (enforced client-side)
+- Format: Any image format (jpg, png, heic, etc.)
+- Stored per household for data isolation
+
+**Potential Enhancements:**
+- ⚠️ No image compression (large photos = slow upload on mobile)
+- ⚠️ No photo gallery view (planned for future)
+- ⚠️ No photo editing/cropping
+- ⚠️ Offline queue doesn't support photos
+
+**iOS App Considerations:**
+- SwiftUI: Use `PhotosPicker` for native photo selection
+- Firebase Storage SDK works identically on iOS
+- Can add camera integration with `UIImagePickerController`
+- Can add photo compression before upload
+- Could use PHPicker for better privacy
+
+**Files Changed:**
+- ✅ `src/components/ActivityNotesModal.vue` - Added photo upload UI
+- ✅ `src/firebase/config.js` - Added Firebase Storage
+- ✅ `src/stores/activities.js` - Added uploadPhoto() and photo support
+- ✅ `src/views/DashboardView.vue` - Updated to handle photo data
+- ✅ `src/components/ActivityFeed.vue` - Display photos
+
+**Deployment:**
+- No Firebase Storage rules needed yet (default allow-all for authenticated users)
+- No additional configuration required
+- Works immediately on deploy
+
+**Next Steps:**
+- Consider adding photo compression for faster mobile uploads
+- Consider adding photo gallery view
+- Consider adding Firebase Storage security rules for production
+
+---
+
 ## Session: 2026-03-15 - Workflow Simplification: Removed Auto-Deployment
 
 ### 🔧 DECISION: Remove GitHub Actions Auto-Deployment for Firebase Rules

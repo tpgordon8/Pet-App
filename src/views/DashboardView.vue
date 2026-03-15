@@ -59,42 +59,42 @@
             emoji="💩"
             label="Poop"
             :count="activitiesStore.stats.poop"
-            @click="logActivity('Poop', '💩')"
+            @click="showActivityNotes('Poop', '💩')"
             :disabled="activitiesStore.loading"
           />
           <ActivityButton
             emoji="💧"
             label="Pee"
             :count="activitiesStore.stats.pee"
-            @click="logActivity('Pee', '💧')"
+            @click="showActivityNotes('Pee', '💧')"
             :disabled="activitiesStore.loading"
           />
           <ActivityButton
             emoji="🍖"
             label="Food"
             :count="activitiesStore.stats.food"
-            @click="logActivity('Food', '🍖')"
+            @click="showActivityNotes('Food', '🍖')"
             :disabled="activitiesStore.loading"
           />
           <ActivityButton
             emoji="😴"
             label="Sleep"
             :count="activitiesStore.stats.sleep"
-            @click="logActivity('Sleep', '😴')"
+            @click="showActivityNotes('Sleep', '😴')"
             :disabled="activitiesStore.loading"
           />
           <ActivityButton
             emoji="💊"
             label="Meds"
             :count="activitiesStore.stats.meds"
-            @click="logActivity('Meds', '💊')"
+            @click="showActivityNotes('Meds', '💊')"
             :disabled="activitiesStore.loading"
           />
           <ActivityButton
             emoji="🚶"
             label="Walk"
             :count="activitiesStore.stats.walk"
-            @click="logActivity('Walk', '🚶')"
+            @click="showActivityNotes('Walk', '🚶')"
             :disabled="activitiesStore.loading"
           />
         </div>
@@ -116,6 +116,15 @@
       :show="showAddPetModal"
       @close="showAddPetModal = false"
     />
+
+    <!-- Activity Notes Modal -->
+    <ActivityNotesModal
+      :show="showNotesModal"
+      :activity-type="pendingActivity.type"
+      :emoji="pendingActivity.emoji"
+      @close="showNotesModal = false"
+      @save="handleSaveActivity"
+    />
   </div>
 </template>
 
@@ -131,6 +140,7 @@ import StatsWidget from '@/components/StatsWidget.vue'
 import PetSelector from '@/components/PetSelector.vue'
 import MemberSelector from '@/components/MemberSelector.vue'
 import AddPetModal from '@/components/AddPetModal.vue'
+import ActivityNotesModal from '@/components/ActivityNotesModal.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
@@ -138,6 +148,8 @@ const activitiesStore = useActivitiesStore()
 const petsStore = usePetsStore()
 
 const showAddPetModal = ref(false)
+const showNotesModal = ref(false)
+const pendingActivity = ref({ type: '', emoji: '' })
 
 onMounted(() => {
   // Start Firebase listeners for real-time sync
@@ -169,8 +181,18 @@ function handleLogout() {
   router.push('/')
 }
 
-async function logActivity(type, emoji) {
-  await activitiesStore.logActivity(type, emoji)
+function showActivityNotes(type, emoji) {
+  pendingActivity.value = { type, emoji }
+  showNotesModal.value = true
+}
+
+async function handleSaveActivity(data) {
+  await activitiesStore.logActivity(
+    pendingActivity.value.type,
+    pendingActivity.value.emoji,
+    data.notes,
+    data.photo
+  )
 }
 
 async function handleDelete(activityId) {

@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { database } from '@/firebase/config'
+import { database, storage } from '@/firebase/config'
 import { ref as dbRef, push, onValue, remove, update, set } from 'firebase/database'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useHouseholdStore } from './household'
 import { usePetsStore } from './pets'
 import { useToast } from '@/composables/useToast'
@@ -85,7 +86,23 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
-  async function logActivity(type, emoji, notes = '') {
+  async function uploadPhoto(file, activityType) {
+    try {
+      const timestamp = Date.now()
+      const filename = `${timestamp}-${file.name}`
+      const photoRef = storageRef(storage, `households/${householdStore.householdId}/activities/${filename}`)
+
+      await uploadBytes(photoRef, file)
+      const url = await getDownloadURL(photoRef)
+
+      return url
+    } catch (error) {
+      console.error('Error uploading photo:', error)
+      throw error
+    }
+  }
+
+  async function logActivity(type, emoji, notes = '', photoFile = null) {
     if (!householdStore.householdId || !householdStore.memberName) {
       toast.error('Please sign in first')
       return false
@@ -105,17 +122,25 @@ export const useActivitiesStore = defineStore('activities', () => {
       return false
     }
 
-    const activity = {
-      type,
-      emoji,
-      timestamp: Date.now(),
-      user: householdStore.currentMember, // Use current member, not logged-in member
-      petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
-      notes
-    }
-
     try {
       loading.value = true
+
+      // Upload photo if provided
+      let photoUrl = null
+      if (photoFile) {
+        toast.info('Uploading photo...')
+        photoUrl = await uploadPhoto(photoFile, type)
+      }
+
+      const activity = {
+        type,
+        emoji,
+        timestamp: Date.now(),
+        user: householdStore.currentMember,
+        petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
+        notes,
+        photoUrl
+      }
 
       const activitiesRef = dbRef(database, `households/${householdStore.householdId}/activities`)
       await push(activitiesRef, activity)
@@ -125,9 +150,22 @@ export const useActivitiesStore = defineStore('activities', () => {
     } catch (error) {
       console.error('Error logging activity:', error)
 
-      // Add to offline queue
-      offlineQueue.value.push(activity)
-      toast.warning('Saved offline. Will sync when online.')
+      // Note: Don't queue activities with photos for offline sync (too complex)
+      if (!photoFile) {
+        const activity = {
+          type,
+          emoji,
+          timestamp: Date.now(),
+          user: householdStore.currentMember,
+          petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
+          notes,
+          photoUrl: null
+        }
+        offlineQueue.value.push(activity)
+        toast.warning('Saved offline. Will sync when online.')
+      } else {
+        toast.error('Failed to upload photo. Please try again.')
+      }
 
       return false
     } finally {

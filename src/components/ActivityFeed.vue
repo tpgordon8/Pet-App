@@ -64,6 +64,13 @@
             <p v-if="activity.notes" class="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {{ activity.notes }}
             </p>
+            <img
+              v-if="activity.photoUrl"
+              :src="activity.photoUrl"
+              alt="Activity photo"
+              class="mt-2 rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+              @click="openPhoto(activity.photoUrl)"
+            />
           </div>
 
           <!-- Actions (hover) -->
@@ -149,6 +156,10 @@ function getPetName(petId) {
 function getPetEmoji(petId) {
   const pet = props.pets.find(p => p.id === petId)
   return pet?.emoji || ''
+}
+
+function openPhoto(url) {
+  window.open(url, '_blank')
 }
 </script>
 

@@ -1,9 +1,90 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-15 (Removed Auto-Deployment Workflow)
-**Current Status:** Simplified deployment - Manual deployment only ✅
+**Last Updated:** 2026-03-15 (Activity Notes & Photo Attachments)
+**Current Status:** Enhanced activity logging with notes and photos ✅
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
+
+---
+
+## 📸 NEW FEATURES: Activity Notes & Photo Attachments (2026-03-15)
+
+**Commit:** `dca3d10`
+**Status:** ✅ COMPLETE
+
+### Feature 1: Activity Notes
+**What:** Optional notes field for all activity types (not just medical)
+
+**Implementation:**
+- Created `ActivityNotesModal.vue` component
+- Modal pops up when logging any activity
+- 200 character limit with counter
+- "Skip" button for quick logging without notes
+- Notes display in activity feed below activity details
+
+**Files Changed:**
+- ✅ Created: `src/components/ActivityNotesModal.vue`
+- ✅ Updated: `src/views/DashboardView.vue`
+- ✅ Updated: `src/components/ActivityFeed.vue` (already displayed notes)
+
+### Feature 2: Photo Attachments
+**What:** Upload photos when logging activities
+
+**Implementation:**
+- Firebase Storage integration
+- Photo upload with live preview
+- 5MB file size limit
+- Photos stored at `households/{id}/activities/{timestamp}-{filename}`
+- Photos display in activity feed
+- Click to view full size in new tab
+
+**Technical Details:**
+- Uses Firebase Storage `uploadBytes()` and `getDownloadURL()`
+- Photos upload before activity is saved
+- Shows "Uploading photo..." toast during upload
+- Offline queue skips photo activities (too complex)
+- Photos stored securely per household
+
+**Files Changed:**
+- ✅ Updated: `src/firebase/config.js` (added Storage import)
+- ✅ Updated: `src/stores/activities.js` (uploadPhoto function)
+- ✅ Updated: `src/components/ActivityNotesModal.vue` (photo upload UI)
+- ✅ Updated: `src/views/DashboardView.vue` (handle photo data)
+- ✅ Updated: `src/components/ActivityFeed.vue` (display photos)
+- ✅ Updated: `DEVLOG.md` (documented features)
+- ✅ Updated: `ROADMAP.md` (marked completed items)
+
+**Database Schema Addition:**
+```javascript
+activity: {
+  type: "Poop",
+  emoji: "💩",
+  timestamp: 1234567890,
+  user: "Tara",
+  petId: "pet_xxx",
+  notes: "Seemed uncomfortable", // NEW (now for all activities)
+  photoUrl: "https://firebasestorage.googleapis.com/..." // NEW
+}
+```
+
+**What Works:**
+- ✅ Add notes to any activity type
+- ✅ Upload photos when logging activities
+- ✅ Photo preview before saving
+- ✅ Photos sync to Firebase Storage
+- ✅ Photos display in activity feed
+- ✅ Click to view full size photo
+- ✅ Character counter for notes (200 max)
+- ✅ Skip button for fast logging
+
+**User Flow:**
+1. Tap activity button (e.g., Poop)
+2. Modal appears with notes and photo options
+3. Optionally add note and/or photo
+4. Tap "Skip" for instant log OR "Log Activity" to save with attachments
+5. Photo uploads (if added)
+6. Activity saved with note and photo URL
+7. Activity appears in feed with note and photo
 
 ---
 
