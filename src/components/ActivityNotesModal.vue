@@ -118,6 +118,7 @@ const emit = defineEmits(['close', 'save'])
 const notes = ref('')
 const photoFile = ref(null)
 const photoPreview = ref(null)
+const fileInputRef = ref(null)
 
 // Reset when modal opens
 watch(() => props.show, (newVal) => {
@@ -130,27 +131,46 @@ watch(() => props.show, (newVal) => {
 
 function handlePhotoSelect(event) {
   const file = event.target.files[0]
-  if (file) {
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Photo must be less than 5MB')
-      return
-    }
+  if (!file) return
 
-    photoFile.value = file
-
-    // Create preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      photoPreview.value = e.target.result
-    }
-    reader.readAsDataURL(file)
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    alert('Please select an image file')
+    event.target.value = ''
+    return
   }
+
+  // Check file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Photo must be less than 5MB')
+    event.target.value = ''
+    return
+  }
+
+  photoFile.value = file
+
+  // Create preview
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    photoPreview.value = e.target.result
+  }
+  reader.onerror = () => {
+    alert('Failed to read image file')
+    photoFile.value = null
+    event.target.value = ''
+  }
+  reader.readAsDataURL(file)
 }
 
-function removePhoto() {
+function removePhoto(event) {
   photoFile.value = null
   photoPreview.value = null
+
+  // Reset file input so same file can be selected again
+  const fileInput = event.target.closest('.card').querySelector('input[type="file"]')
+  if (fileInput) {
+    fileInput.value = ''
+  }
 }
 
 function handleSkip() {

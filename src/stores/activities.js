@@ -138,8 +138,12 @@ export const useActivitiesStore = defineStore('activities', () => {
         timestamp: Date.now(),
         user: householdStore.currentMember,
         petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
-        notes,
-        photoUrl
+        notes
+      }
+
+      // Only add photoUrl if it exists
+      if (photoUrl) {
+        activity.photoUrl = photoUrl
       }
 
       const activitiesRef = dbRef(database, `households/${householdStore.householdId}/activities`)
@@ -158,8 +162,7 @@ export const useActivitiesStore = defineStore('activities', () => {
           timestamp: Date.now(),
           user: householdStore.currentMember,
           petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
-          notes,
-          photoUrl: null
+          notes
         }
         offlineQueue.value.push(activity)
         toast.warning('Saved offline. Will sync when online.')
