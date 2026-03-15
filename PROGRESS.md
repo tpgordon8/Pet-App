@@ -1,13 +1,88 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-15 (Medical Tracking & Edit Functionality)
-**Current Status:** Medical tracking and activity editing implemented ✅
+**Last Updated:** 2026-03-15 (Enhanced Edit/Delete UX)
+**Current Status:** Research-driven edit/delete UX improvements complete ✅
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
 ---
 
-## 🏥 NEW FEATURES: Medical Tracking & Edit Functionality (2026-03-15)
+## 🎨 NEW: Enhanced Edit/Delete UX (2026-03-15)
+
+**Commits:** `bb3ebf8`, `c4c78d4`
+**Status:** ✅ COMPLETE
+
+### Research-Driven Improvements
+**Problem:** Edit/delete buttons were hidden (hover-only), making them invisible to mobile users
+
+**Research Phase:** Analyzed top baby tracking apps (Nara Baby, Huckleberry, Baby Tracker)
+- ✅ Nara Baby: Large, easy-to-tap buttons with color coding
+- ✅ Huckleberry: Users complained "too many taps to edit" (avoid this!)
+- ✅ Baby Tracker: Swipe-left to delete (industry standard)
+- ✅ Apple HIG: 44px minimum touch targets
+
+### Implementation
+
+**1. Always-Visible Action Buttons**
+- Replaced `opacity-0 hover:opacity-100` with always-visible styled buttons
+- Edit button: Blue background (`rgb(59 130 246 / 0.1)`), ✏️ icon + "Edit" label
+- Delete button: Red background (`rgb(239 68 68 / 0.1)`), 🗑️ icon + "Delete" label
+- 44px × 44px touch targets (desktop), 40px × 40px (mobile)
+- Smooth hover animations with `translateY(-1px)` effect
+
+**2. Swipe-to-Delete Gesture (Mobile Only, ≤640px)**
+- Touch event handlers: `touchstart`, `touchmove`, `touchend`
+- Swipe thresholds:
+  - `-80px`: Reveals red delete background
+  - `-120px`: Triggers instant delete
+- Red gradient background visual feedback
+- Prevents accidental page scrolling during swipe
+- Reactive state management per activity
+
+**3. Responsive Design**
+- **Mobile (≤640px):** Icon-only buttons, swipe gestures enabled
+- **Tablet (641-1024px):** Compact layout with smaller labels
+- **Desktop (>1024px):** Full labels with icons, hover effects
+
+**4. Accessibility**
+- ARIA labels: "Edit activity", "Delete activity"
+- Title attributes for tooltips
+- Keyboard accessible (focusable buttons)
+- Sufficient color contrast (WCAG AA compliant)
+
+**5. Dark Mode Support**
+- Adjusted button colors for dark backgrounds
+- Edit: `rgb(96 165 250)` text color
+- Delete: `rgb(248 113 113)` text color
+- All hover states work in dark mode
+
+### Files Changed
+- ✅ Updated: `src/components/ActivityFeed.vue` (250 line changes)
+- ✅ Updated: `DEVLOG.md` (comprehensive technical documentation)
+- ✅ Updated: `PROGRESS.md` (this file)
+
+### Testing
+- ✅ Build succeeds (`npm run build` - no errors)
+- ✅ Syntax validation passed
+- ✅ Code review complete
+- ✅ Responsive breakpoints verified
+- ✅ Dark mode compatibility confirmed
+
+### User Experience Improvements
+**Before:**
+- Hidden buttons (hover-only)
+- Mobile users couldn't edit/delete
+- No visual indication of actions
+
+**After:**
+- Always-visible, clearly styled buttons
+- Mobile: Icon-only + swipe gestures
+- Desktop: Full labels + hover effects
+- Clear visual hierarchy (blue = edit, red = delete)
+
+---
+
+## 🏥 Medical Tracking & Edit Functionality (2026-03-15)
 
 **Commit:** `77ae792`
 **Status:** ✅ COMPLETE
