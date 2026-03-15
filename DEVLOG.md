@@ -4,6 +4,61 @@
 
 ---
 
+## Session: 2026-03-15 - Build Fix (CSS Syntax Error)
+
+### 🔧 HOTFIX: Vercel Deployment Failure
+
+**Commit:** `4f7292a`
+**Time:** 18:23:12 UTC
+**Status:** ✅ FIXED
+
+**Problem:**
+Vercel deployment failed during build phase with PostCSS error:
+```
+[postcss] /vercel/path0/src/components/onboarding/AddPetStep.vue?vue&type=style&index=0&scoped=43389b5a&lang.css:33:18: Missed semicolon
+error during build:
+[vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] src/components/onboarding/AddPetStep.vue (line 33:17)
+```
+
+**Root Cause:**
+Invalid CSS syntax in `AddPetStep.vue` line 196:
+```css
+.emoji-picker-button {
+  background: white;
+  dark:background: #1f2937;  /* ❌ INVALID - not standard CSS */
+  border: 2px solid #e5e7eb;
+}
+```
+
+The `dark:background` syntax was invalid. It appears to be a leftover from an incomplete refactor or copy-paste error. TailwindCSS uses `dark:` as a variant prefix in utility classes (e.g., `dark:bg-gray-800`), but this doesn't work in regular CSS within `<style scoped>` blocks.
+
+**Correct Approach:**
+Dark mode styling should use the `.dark` class selector:
+```css
+.dark .emoji-picker-button {
+  background: #1f2937;
+}
+```
+
+This selector was already present on lines 203-206, making the invalid line redundant.
+
+**Solution:**
+Removed the invalid `dark:background: #1f2937;` line. Dark mode background is already properly handled by the existing `.dark .emoji-picker-button` selector.
+
+**Files Changed:**
+- `src/components/onboarding/AddPetStep.vue` (1 deletion)
+
+**Learning:**
+- TailwindCSS `dark:` variant ONLY works in utility classes in templates
+- Regular CSS in `<style scoped>` blocks must use `.dark` class selectors
+- Always test builds before pushing to catch syntax errors early
+
+**Build Verification:**
+- ✅ Local build passes
+- ⏳ Pending Vercel deployment test
+
+---
+
 ## Session: 2026-03-15 - Complete Onboarding Redesign
 
 ### ✅ FEATURE: Modern Multi-Step Onboarding Flow
