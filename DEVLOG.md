@@ -1,4 +1,4 @@
-# PetLog Development Log
+# Tailr Development Log
 
 **Purpose:** Track progress, learnings, blockers, and decisions for future reference and potential iOS app development.
 

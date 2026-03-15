@@ -20,7 +20,7 @@ git push origin main
 5. Vercel will auto-detect the configuration from `vercel.json`
 6. Click **"Deploy"**
 7. Wait ~30 seconds
-8. Done! 🎉 You'll get a URL like `petlog.vercel.app`
+8. Done! 🎉 You'll get a URL like `tailr.vercel.app`
 
 **Option B: Deploy via Vercel CLI**
 ```bash
@@ -38,7 +38,7 @@ vercel
 # - Setup new project? Yes
 # - Which scope? (your account)
 # - Link to existing project? No
-# - Project name? petlog (or your choice)
+# - Project name? tailr (or your choice)
 # - Directory to deploy? ./ (current directory)
 # - Override settings? No
 
@@ -54,7 +54,7 @@ vercel --prod
 
 **Custom Domain:**
 1. Go to Project Settings → Domains
-2. Add your domain (e.g., `petlog.com`)
+2. Add your domain (e.g., `tailr.app`)
 3. Follow DNS configuration instructions
 4. Vercel provides automatic HTTPS
 
@@ -132,14 +132,14 @@ Once connected to GitHub:
 git checkout -b feature/new-button
 git push origin feature/new-button
 
-# Vercel creates preview: feature-new-button-petlog.vercel.app
+# Vercel creates preview: feature-new-button-tailr.vercel.app
 
 # Merge to main
 git checkout main
 git merge feature/new-button
 git push origin main
 
-# Vercel auto-deploys to: petlog.vercel.app
+# Vercel auto-deploys to: tailr.vercel.app
 ```
 
 ---

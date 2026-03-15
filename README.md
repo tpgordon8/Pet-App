@@ -1,4 +1,4 @@
-# PetLog - Pet Activity Logger
+# Tailr - Pet Activity Logger
 
 Track your pet's daily activities with a modern, feature-rich web app. Real-time sync, medical records, and powerful data management tools.
 

@@ -1,4 +1,4 @@
-# PetLog Roadmap 🐾
+# Tailr Roadmap 🐾
 
 ## ✅ Phase 1: Core Enhancements (COMPLETED)
 - [x] Daily statistics dashboard

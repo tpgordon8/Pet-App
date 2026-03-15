@@ -6,14 +6,14 @@
 
 ## Project Overview
 
-**Project Name:** PetLog - Pet Activity Logger
+**Project Name:** Tailr - Pet Activity Logger
 **Repository:** tpgordon8/Pet-App
 **Current Branch:** `claude/pet-activity-logger-Etaqb`
 **Working Directory:** `/home/user/Pet-App`
 
-### What is PetLog?
+### What is Tailr?
 
-PetLog is a modern web-based pet activity tracking application with real-time sync across devices. It allows pet parents (primarily Tara and Meag) to track daily activities (poop, pee, food, sleep, meds) and medical records (vet visits, vaccinations, weight) for multiple pets.
+Tailr is a modern web-based pet activity tracking application with real-time sync across devices. It allows pet parents (primarily Tara and Meag) to track daily activities (poop, pee, food, sleep, meds) and medical records (vet visits, vaccinations, weight) for multiple pets.
 
 **Key Characteristics:**
 - Single-file web application (index.html contains HTML + CSS + JavaScript)
@@ -36,7 +36,7 @@ PetLog is a modern web-based pet activity tracking application with real-time sy
 **Backend:**
 - Firebase Realtime Database (real-time sync)
 - Firebase Storage (future for photos)
-- Firebase project ID: `petlog-c4c1e`
+- Firebase project ID: `petlog-c4c1e` (kept unchanged for backwards compatibility; internal ID doesn't affect user experience)
 - Database URL: `https://petlog-c4c1e-default-rtdb.firebaseio.com`
 
 **Deployment:**

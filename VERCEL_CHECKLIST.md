@@ -54,7 +54,7 @@
 
 ## Your Vercel URL
 Once deployed, you'll get a URL like:
-- **Auto-generated:** `petlog-xyz123.vercel.app`
+- **Auto-generated:** `tailr-xyz123.vercel.app`
 - **Custom (optional):** `yourdomain.com`
 
 Add it to your README! 🎉
