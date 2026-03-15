@@ -2,7 +2,9 @@ name: Deploy Firebase Rules
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'claude/**'
     paths:
       - 'firebase-rules.json'
       - 'firebase.json'

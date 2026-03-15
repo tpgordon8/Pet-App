@@ -1,5 +1,10 @@
 {
   "rules": {
+    "households": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["code", "createdAt"]
+    },
     "pets": {
       ".read": true,
       ".write": true,
