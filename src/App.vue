@@ -1,25 +1,33 @@
 <template>
   <div id="app" :class="{ 'dark': isDarkMode }">
     <RouterView />
+    <ToastContainer />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import ToastContainer from './components/ToastContainer.vue'
 
 // Dark mode state (can be moved to a store later)
 const isDarkMode = ref(false)
 
 onMounted(() => {
-  // Check system preference
-  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  isDarkMode.value = darkModeMediaQuery.matches
+  // Check localStorage first
+  const savedTheme = localStorage.getItem('theme')
+  if (savedTheme) {
+    isDarkMode.value = savedTheme === 'dark'
+  } else {
+    // Check system preference
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    isDarkMode.value = darkModeMediaQuery.matches
 
-  // Listen for changes
-  darkModeMediaQuery.addEventListener('change', (e) => {
-    isDarkMode.value = e.matches
-  })
+    // Listen for changes
+    darkModeMediaQuery.addEventListener('change', (e) => {
+      isDarkMode.value = e.matches
+    })
+  }
 })
 </script>
 
