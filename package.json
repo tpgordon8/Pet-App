@@ -13,6 +13,7 @@
     "test:firebase-rules": "firebase emulators:exec --only database 'npm run test:unit -- tests/firebase-rules.test.js'",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
+    "doc-sync": "bash scripts/doc-sync.sh",
     "deploy:rules": "firebase deploy --only database",
     "deploy:hosting": "firebase deploy --only hosting",
     "deploy:all": "firebase deploy"
