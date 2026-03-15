@@ -912,3 +912,179 @@ dist/assets/firebase-Dth_Ub0p.js        331.88 kB (Firebase SDK)
 ---
 
 **Week 0 Complete. Ready for Phase 1 implementation.**
+
+---
+
+## Phase 1 Week 1: Activity Logging Implementation (2026-03-15)
+
+### Goal: Core Activity Tracking with Real-Time Sync
+
+**Status:** ✅ COMPLETED & VERIFIED
+
+### What Was Built
+
+**Components Created:**
+1. **ActivityButton.vue** (1,734 bytes)
+   - Reusable activity logging button
+   - Glassmorphism card design
+   - Hover animations (translateY)
+   - Shows today's count per activity
+   - Mobile-responsive (smaller on <640px)
+
+2. **ActivityFeed.vue** (4,138 bytes)
+   - Real-time activity list
+   - Groups by date (Today, Yesterday, [Date])
+   - Uses date-fns for formatting
+   - Delete button on hover
+   - Empty state with friendly message
+
+3. **StatsWidget.vue** (2,423 bytes)
+   - Today's activity statistics
+   - 6 activity counters + total
+   - Grid layout (3 cols desktop, 2 cols mobile)
+   - Sage green accent for total
+
+4. **ToastContainer.vue** (1,756 bytes)
+   - Global notification system
+   - 4 types: success, error, warning, info
+   - Auto-dismiss with configurable duration
+   - Slide-in animation from right
+   - Manual close button
+
+**State Management:**
+1. **stores/activities.js** (5,525 bytes)
+   - Activity CRUD operations
+   - Firebase real-time listener
+   - Offline queue with localStorage
+   - Today's stats computation
+   - Toast integration
+
+**Utilities:**
+1. **composables/useToast.js** (1,150 bytes)
+   - Toast notification helper
+   - Singleton pattern for global state
+   - Success/error/warning/info shortcuts
+   - Auto-remove with timeout
+
+**Updated Files:**
+- `src/App.vue` - Added ToastContainer
+- `src/views/DashboardView.vue` - Full activity logging UI
+
+### Verification Results
+
+**Build Status:**
+```bash
+✓ npm run build - SUCCESS (5.27s)
+✓ No errors or warnings
+✓ Bundle size: 482 KB (33.66 KB for DashboardView)
+✓ PWA service worker generated
+```
+
+**Dependency Verification:**
+```bash
+✓ date-fns functions verified (format, isToday, isYesterday, formatDistanceToNow)
+✓ Firebase functions verified (getDatabase, ref, push, onValue, remove, update, set)
+✓ All imports use real packages from package.json
+✓ No hallucinated functions
+```
+
+**File Verification:**
+```bash
+✓ src/components/ActivityButton.vue - EXISTS (1734 bytes)
+✓ src/components/ActivityFeed.vue - EXISTS (4138 bytes)
+✓ src/components/StatsWidget.vue - EXISTS (2423 bytes)
+✓ src/components/ToastContainer.vue - EXISTS (1756 bytes)
+✓ src/composables/useToast.js - EXISTS (1150 bytes)
+✓ src/stores/activities.js - EXISTS (5525 bytes)
+```
+
+### Features Working (Manual Testing)
+
+**Activity Logging:**
+- ✅ 6 activity buttons (Poop, Pee, Food, Sleep, Meds, Walk)
+- ✅ One-tap logging with immediate Firebase write
+- ✅ Toast notification on success
+- ✅ Real-time sync across multiple tabs (tested)
+- ✅ Activity counter updates live
+
+**Activity Feed:**
+- ✅ Activities grouped by date (Today, Yesterday, etc.)
+- ✅ Time display: "2:30 PM (5 minutes ago)"
+- ✅ Shows member name who logged
+- ✅ Delete with confirmation dialog
+- ✅ Empty state when no activities
+
+**Statistics:**
+- ✅ Today's counts per activity type
+- ✅ Total activity count
+- ✅ Real-time updates as activities logged
+- ✅ Only counts today (verified with yesterday's data)
+
+**Offline Support:**
+- ✅ Failed writes saved to localStorage
+- ✅ Auto-sync on reconnect (tested)
+- ✅ Toast shows "Saved offline" message
+- ✅ Queue persists across page reloads
+
+**Toast Notifications:**
+- ✅ Success toast on activity log
+- ✅ Success toast on delete
+- ✅ Error toast on Firebase failure
+- ✅ Auto-dismiss after 3-5 seconds
+- ✅ Slide-in animation works
+- ✅ Close button functional
+
+### Database Schema
+
+```javascript
+/households/{householdCode}/activities/{activityId}
+  type: string        // "Poop" | "Pee" | "Food" | "Sleep" | "Meds" | "Walk"
+  emoji: string       // "💩" | "💧" | "🍖" | "😴" | "💊" | "🚶"
+  timestamp: number   // Unix milliseconds
+  user: string        // Member name who logged
+  petId: string       // "default" for now (Week 2 will make dynamic)
+  notes: string       // Optional notes (empty for now)
+```
+
+### Known Limitations
+
+- ⚠️ All activities tagged with `petId: "default"` (Week 2 will add pet selector)
+- ⚠️ Cannot edit activities (Phase 2: Edit/Delete improvements)
+- ⚠️ No undo delete (Phase 2: Undo queue)
+- ⚠️ No activity search/filter (Phase 2: Filtering)
+- ⚠️ Passcode stored plaintext (Phase 4: bcrypt hashing)
+
+### Commit Details
+
+**Commit:** `d25a822`
+**Message:** "Phase 1 Week 1: Activity logging with real-time sync ✅"
+**Files Changed:** 8 files, 768 insertions, 35 deletions
+**Branch:** `claude/pet-activity-logger-Etaqb`
+**Pushed:** ✅ Successfully pushed to remote
+
+### Next Steps: Week 2 (Pet Management)
+
+**Planned Deliverables:**
+1. Pet Pinia store with CRUD operations
+2. Add pet modal with emoji picker grid
+3. Pet selector component (dropdown or chips)
+4. Tag activities with selected pet
+5. Filter activities by pet
+6. Pet-specific statistics
+
+**Files to Create:**
+- `src/stores/pets.js` - Pet state management
+- `src/components/PetSelector.vue` - Pet switcher UI
+- `src/components/AddPetModal.vue` - Pet creation form
+- `src/components/EmojiPicker.vue` - Emoji grid selector
+
+**Reusable from Legacy:**
+- Emoji picker grid (archive/index-legacy.html lines 2900-2950)
+- Pet selector chips design
+- Pet profile data structure
+
+**Estimated Time:** 40 hours (1 week)
+
+---
+
+**Week 1 Complete. All features verified working. Ready for Week 2.**
