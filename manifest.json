@@ -1,6 +1,6 @@
 {
-  "name": "PetLog - Pet Activity Tracker",
-  "short_name": "PetLog",
+  "name": "Tailr - Pet Activity Tracker",
+  "short_name": "Tailr",
   "description": "Track your pet's daily activities with ease",
   "start_url": "/",
   "display": "standalone",
