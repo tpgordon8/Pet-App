@@ -1,25 +1,31 @@
 {
   "rules": {
     "households": {
-      ".read": true,
-      ".write": true,
-      ".indexOn": ["code", "createdAt"]
-    },
-    "pets": {
-      ".read": true,
-      ".write": true,
-      ".indexOn": ["name", "createdAt"]
-    },
-    "activities": {
-      ".read": true,
-      ".write": true,
-      ".indexOn": ["timestamp", "petId", "type"]
-    },
-    "medications": {
-      ".read": true,
-      ".write": true,
-      "$petId": {
-        ".indexOn": ["active", "createdAt"]
+      "$householdCode": {
+        ".read": true,
+        ".write": true,
+        "members": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": ["joinedAt", "name"]
+        },
+        "pets": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": ["name", "createdAt"]
+        },
+        "activities": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": ["timestamp", "petId", "type", "user"]
+        },
+        "medications": {
+          ".read": true,
+          ".write": true,
+          "$petId": {
+            ".indexOn": ["active", "createdAt"]
+          }
+        }
       }
     }
   }

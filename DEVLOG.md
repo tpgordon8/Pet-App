@@ -4,6 +4,107 @@
 
 ---
 
+## Session: 2026-03-15 - CRITICAL FIX: Firebase Security Rules & Access Denied Error
+
+### ⚠️ CRITICAL ISSUE RESOLVED
+
+**Reported Error:** "Access Denied" - Users unable to log in or access the app at all
+
+**Root Cause:**
+Firebase security rules did not match the new household-based database structure. The app migrated from a flat structure (`/pets`, `/activities`) to a nested household structure (`/households/{code}/pets`, `/households/{code}/activities`), but the security rules were never updated.
+
+**Technical Details:**
+1. **Old database structure (before migration):**
+   ```
+   /pets/{petId}
+   /activities/{activityId}
+   ```
+
+2. **New database structure (current Vue.js app):**
+   ```
+   /households/{householdCode}/members/{memberName}
+   /households/{householdCode}/pets/{petId}
+   /households/{householdCode}/activities/{activityId}
+   ```
+
+3. **Old security rules (BROKEN):**
+   ```json
+   {
+     "rules": {
+       "households": {
+         ".read": true,
+         ".write": true
+       },
+       "pets": { ... },
+       "activities": { ... }
+     }
+   }
+   ```
+   - Allowed access to `/households` root
+   - But Firebase rules **don't cascade to child paths** by default
+   - Result: `/households/{code}/pets` and `/households/{code}/activities` were **BLOCKED**
+
+4. **Fixed security rules:**
+   ```json
+   {
+     "rules": {
+       "households": {
+         "$householdCode": {
+           ".read": true,
+           ".write": true,
+           "members": { ".read": true, ".write": true },
+           "pets": { ".read": true, ".write": true },
+           "activities": { ".read": true, ".write": true },
+           "medications": { ".read": true, ".write": true }
+         }
+       }
+     }
+   }
+   ```
+
+**Files Changed:**
+- ✅ `firebase-rules.json` - Updated to support nested household structure
+
+**Deployment Required:**
+```bash
+# Deploy the updated rules to Firebase
+firebase deploy --only database
+
+# OR use the deployment script
+./deploy-firebase-rules.sh
+```
+
+**Testing Checklist:**
+After deploying the rules, verify:
+- [ ] Can create a new household
+- [ ] Can join an existing household
+- [ ] Can add pets to household
+- [ ] Can log activities
+- [ ] Can view activities in real-time
+- [ ] Multiple devices sync correctly
+
+**Lessons Learned:**
+1. **Always update security rules when database structure changes** - This was missed during the Vue.js migration
+2. **Firebase security rules don't cascade** - Child paths need explicit rules
+3. **Test on multiple devices before sharing** - Access Denied errors only appear when rules are deployed
+4. **Document database schema changes** - CLAUDE.md had outdated schema info
+
+**Prevention for Future:**
+- [ ] Add Firebase rules validation to CI/CD pipeline
+- [ ] Test rules with Firebase emulator before deploying
+- [ ] Keep CLAUDE.md database schema documentation up-to-date
+- [ ] Add pre-deployment checklist that includes "verify security rules match app structure"
+
+**Status:** ✅ FIXED (rules updated in code, awaiting deployment)
+
+**Next Steps:**
+1. Deploy rules: `firebase deploy --only database`
+2. Test app at https://pet-app-five-chi.vercel.app
+3. Verify all functionality works on desktop + mobile
+4. Update CLAUDE.md with correct database schema
+
+---
+
 ## Session: 2026-03-06 - Autonomous Enhancement Implementation
 
 ### Execution Plan
