@@ -19,13 +19,30 @@
         </button>
       </div>
 
+      <!-- Pet Selector -->
+      <div class="card">
+        <PetSelector
+          :pets="petsStore.pets"
+          :selected-pet-id="petsStore.selectedPetId"
+          :has-pets="petsStore.hasPets"
+          @select="petsStore.selectPet"
+          @add-pet="showAddPetModal = true"
+        />
+      </div>
+
       <!-- Stats Widget -->
-      <StatsWidget :stats="activitiesStore.stats" />
+      <StatsWidget
+        :stats="activitiesStore.stats"
+        :pet-name="petsStore.selectedPet?.name"
+      />
 
       <!-- Activity Logging Buttons -->
       <div class="card">
         <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
           Quick Log
+          <span v-if="petsStore.selectedPet" class="text-sage-600 dark:text-sage-400">
+            for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
+          </span>
         </h3>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           <ActivityButton
@@ -66,6 +83,7 @@
           <ActivityButton
             emoji="🚶"
             label="Walk"
+            :count="activitiesStore.stats.walk"
             @click="logActivity('Walk', '🚶')"
             :disabled="activitiesStore.loading"
           />
@@ -76,29 +94,44 @@
       <div class="card">
         <ActivityFeed
           :activities="activitiesStore.sortedActivities"
+          :pets="petsStore.pets"
+          :show-pet-names="petsStore.selectedPetId === 'all'"
           @delete="handleDelete"
         />
       </div>
     </div>
+
+    <!-- Add Pet Modal -->
+    <AddPetModal
+      :show="showAddPetModal"
+      @close="showAddPetModal = false"
+    />
   </div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
+import { usePetsStore } from '@/stores/pets'
 import ActivityButton from '@/components/ActivityButton.vue'
 import ActivityFeed from '@/components/ActivityFeed.vue'
 import StatsWidget from '@/components/StatsWidget.vue'
+import PetSelector from '@/components/PetSelector.vue'
+import AddPetModal from '@/components/AddPetModal.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
 const activitiesStore = useActivitiesStore()
+const petsStore = usePetsStore()
+
+const showAddPetModal = ref(false)
 
 onMounted(() => {
-  // Start Firebase listener for real-time sync
+  // Start Firebase listeners for real-time sync
   activitiesStore.startListener()
+  petsStore.startListener()
 
   // Load offline queue
   activitiesStore.loadOfflineQueue()
@@ -110,8 +143,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  // Stop listener when leaving dashboard
+  // Stop listeners when leaving dashboard
   activitiesStore.stopListener()
+  petsStore.stopListener()
 
   // Save offline queue
   activitiesStore.saveOfflineQueue()
@@ -119,6 +153,7 @@ onUnmounted(() => {
 
 function handleLogout() {
   activitiesStore.stopListener()
+  petsStore.stopListener()
   householdStore.logout()
   router.push('/')
 }

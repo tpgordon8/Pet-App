@@ -47,10 +47,13 @@
 
           <!-- Details -->
           <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2">
+            <div class="flex items-baseline gap-2 flex-wrap">
               <h4 class="font-semibold text-gray-900 dark:text-white">
                 {{ activity.type }}
               </h4>
+              <span v-if="showPetNames && getPetName(activity.petId)" class="text-xs text-sage-600 dark:text-sage-400">
+                {{ getPetEmoji(activity.petId) }} {{ getPetName(activity.petId) }}
+              </span>
               <span class="text-xs text-gray-500 dark:text-gray-400">
                 by {{ activity.user }}
               </span>
@@ -87,6 +90,14 @@ const props = defineProps({
   activities: {
     type: Array,
     required: true
+  },
+  pets: {
+    type: Array,
+    default: () => []
+  },
+  showPetNames: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -128,6 +139,16 @@ function formatTime(timestamp) {
   const time = format(date, 'h:mm a')
   const relative = formatDistanceToNow(date, { addSuffix: true })
   return `${time} (${relative})`
+}
+
+function getPetName(petId) {
+  const pet = props.pets.find(p => p.id === petId)
+  return pet?.name || ''
+}
+
+function getPetEmoji(petId) {
+  const pet = props.pets.find(p => p.id === petId)
+  return pet?.emoji || ''
 }
 </script>
 

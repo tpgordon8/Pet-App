@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { database } from '@/firebase/config'
 import { ref as dbRef, push, onValue, remove, update, set } from 'firebase/database'
 import { useHouseholdStore } from './household'
+import { usePetsStore } from './pets'
 import { useToast } from '@/composables/useToast'
 
 export const useActivitiesStore = defineStore('activities', () => {
@@ -15,9 +16,19 @@ export const useActivitiesStore = defineStore('activities', () => {
   const listener = ref(null)
   const offlineQueue = ref([])
 
-  // Computed
+  // Computed - filtered by selected pet
+  const filteredActivities = computed(() => {
+    const petsStore = usePetsStore()
+
+    if (petsStore.selectedPetId === 'all') {
+      return activities.value
+    }
+
+    return activities.value.filter(a => a.petId === petsStore.selectedPetId)
+  })
+
   const sortedActivities = computed(() => {
-    return [...activities.value].sort((a, b) => b.timestamp - a.timestamp)
+    return [...filteredActivities.value].sort((a, b) => b.timestamp - a.timestamp)
   })
 
   const todayActivities = computed(() => {
@@ -36,6 +47,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       food: today.filter(a => a.type === 'Food').length,
       sleep: today.filter(a => a.type === 'Sleep').length,
       meds: today.filter(a => a.type === 'Meds').length,
+      walk: today.filter(a => a.type === 'Walk').length,
       total: today.length
     }
   })
@@ -79,12 +91,20 @@ export const useActivitiesStore = defineStore('activities', () => {
       return false
     }
 
+    const petsStore = usePetsStore()
+
+    // Require pet selection if pets exist
+    if (petsStore.hasPets && petsStore.selectedPetId === 'all') {
+      toast.warning('Please select a specific pet first')
+      return false
+    }
+
     const activity = {
       type,
       emoji,
       timestamp: Date.now(),
       user: householdStore.memberName,
-      petId: 'default', // Will be updated in Week 2 with pet selector
+      petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
       notes
     }
 

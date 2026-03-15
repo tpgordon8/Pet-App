@@ -2,6 +2,9 @@
   <div class="stats-widget card">
     <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
       Today's Activity
+      <span v-if="petName" class="text-sage-600 dark:text-sage-400 font-normal">
+        - {{ petName }}
+      </span>
     </h3>
 
     <div class="grid grid-cols-3 gap-4">
@@ -63,8 +66,13 @@ defineProps({
       food: 0,
       sleep: 0,
       meds: 0,
+      walk: 0,
       total: 0
     })
+  },
+  petName: {
+    type: String,
+    default: ''
   }
 })
 </script>
