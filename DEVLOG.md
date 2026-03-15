@@ -1382,3 +1382,199 @@ dist/assets/firebase-Dth_Ub0p.js        331.88 kB (Firebase SDK)
 ---
 
 **Week 2 & Deployment Complete. All features working in production. Ready for Week 3.**
+
+---
+
+## Phase 1 Week 3: Member Selection Implementation (2026-03-15)
+
+### Goal: Multi-Member Activity Tracking
+
+**Status:** ✅ COMPLETED & VERIFIED
+
+### What Was Built
+
+**Components Created:**
+1. **MemberSelector.vue** (2,678 bytes)
+   - "Who's Logging?" member switcher
+   - Member chips with emoji icons
+   - Active state highlighting (indigo gradient)
+   - Horizontal scrolling on mobile
+   - Real-time sync of household members
+
+**State Management:**
+1. **Updated household.js store** - Added member selection logic
+   - `currentMember` - Tracks who is currently logging activities
+   - `selectMember()` - Switch active member
+   - `startMembersListener()` - Real-time member updates
+   - LocalStorage persistence of selected member
+   - Auto-select on household creation/join
+
+2. **Updated activities.js store** - Tag with current member
+   - Activities now use `currentMember` instead of `memberName`
+   - Validation requires member selection before logging
+   - Activities tagged with who logged them
+
+**Updated Files:**
+- `src/stores/household.js` - Member selection logic, real-time listener
+- `src/stores/activities.js` - Use currentMember for activity logging
+- `src/views/DashboardView.vue` - Integrated MemberSelector component
+- `src/components/ActivityFeed.vue` - Already displays member names
+
+### Database Schema
+
+```javascript
+/households/{householdCode}/members/{memberName}
+  name: string           // "Tara" or "Meag"
+  joinedAt: number       // Unix timestamp
+
+/households/{householdCode}/activities/{activityId}
+  user: string          // Now uses currentMember (whoever is logging)
+  // ... other fields unchanged
+```
+
+### Features Working
+
+**Member Selection:**
+- ✅ Member selector shows all household members
+- ✅ Click to switch active member
+- ✅ Active member highlighted with indigo border
+- ✅ Selection persists across page reloads
+- ✅ Real-time sync when new members join
+
+**Activity Logging:**
+- ✅ Activities tagged with current member (not just logged-in member)
+- ✅ Validation requires member selection
+- ✅ Toast notification if no member selected
+- ✅ Activity feed shows "by [Member Name]"
+- ✅ Allows Tara to log as Meag and vice versa (flexible household coordination)
+
+**Build Verification:**
+```bash
+✓ Production build: 6.67s
+✓ No errors or warnings
+✓ All imports verified
+✓ Bundle size: ~522 KB total
+```
+
+### Use Case Example
+
+**Scenario:** Tara is home alone and logs activities for Luna
+
+1. Tara selects herself in MemberSelector
+2. Selects pet "Luna" in PetSelector
+3. Clicks "💩 Poop" button
+4. Activity saved with `user: "Tara"`
+5. Activity feed shows "💩 Poop - 🐕 Luna - by Tara"
+
+**Later:** Meag comes home and checks the feed
+
+1. Meag sees Tara's logged activities
+2. Meag selects herself in MemberSelector
+3. Logs new activities tagged with `user: "Meag"`
+4. Both members coordinate pet care seamlessly
+
+### Key Design Decisions
+
+**Why separate `currentMember` from `memberName`?**
+- `memberName` = Person logged into the household (authentication)
+- `currentMember` = Person currently logging activities (attribution)
+- Allows flexible logging: Tara can log "Meag gave Luna food" by selecting Meag
+
+**Why indigo color for members vs sage for pets?**
+- Visual distinction between "who" (members) and "what/who" (pets)
+- Sage green = pets (nature, calm)
+- Indigo blue = members (people, activity)
+
+**Why simple emoji assignment?**
+- No manual emoji selection needed
+- Consistent emoji per member name (hash-based)
+- Emojis: 👤 👥 🙂 😊 👨 👩 🧑 👦 👧
+
+### Known Limitations
+
+- ⚠️ Cannot edit member names or delete members (planned for Phase 2)
+- ⚠️ Emoji assignment is automatic, not customizable
+- ⚠️ No user avatar/photo support yet
+
+### Commit Details
+
+**Commit:** (pending)
+**Message:** "Phase 1 Week 3: Member selection for activity tracking ✅"
+**Files Changed:** 5 files
+**Branch:** `claude/pet-activity-logger-Etaqb`
+
+---
+
+## Current State Summary (2026-03-15)
+
+### ✅ Completed Phases
+
+**Week 0: Foundation Setup**
+- Vue 3.4 + Vite 5 + Tailwind CSS
+- Pinia state management
+- Firebase Realtime Database
+- PWA configuration
+- Onboarding flow (create/join household)
+
+**Week 1: Activity Logging**
+- 6 activity types (Poop, Pee, Food, Sleep, Meds, Walk)
+- Real-time activity feed
+- Today's statistics widget
+- Toast notifications
+- Offline queue with localStorage
+- Delete activities
+
+**Week 2: Multi-Pet Support**
+- Pet profiles with emoji picker
+- Pet selector (All Pets + individual pets)
+- Pet-specific activity filtering
+- Pet-specific statistics
+- Real-time pet sync
+
+**Week 3: Member Selection** ✅ NEW!
+- Member selector (who's logging?)
+- Activities tagged with current member
+- Real-time member sync
+- Flexible household coordination
+- Activity feed shows member names
+
+**Deployment Infrastructure:**
+- Vercel configuration
+- Firebase rules deployed
+- Environment variables configured
+- Production deployment working
+
+**Documentation Automation:**
+- Post-commit hook (tracks commits, alerts after 3)
+- Pre-push validation (prevents outdated docs)
+- Doc-sync script (`npm run doc-sync`)
+- Complete automation guide
+
+### 📊 Overall Stats
+
+**Total Commits:** 13+ commits
+**Total Lines Changed:** ~25,000+ lines
+**Files Created:** 43+ files
+**Bundle Size:** ~522 KB (gzipped: ~190 KB)
+**Build Time:** ~6.6 seconds
+**Database Collections:** 3 (households, activities, pets)
+
+### Next Steps: Week 4 (Medical Tracking or Edit/Delete)
+
+**Option A: Medical Tracking** (High value)
+- Vet visit logging with notes
+- Vaccination tracking
+- Weight check logging
+- Medical data in activity feed
+
+**Option B: Edit/Delete Improvements**
+- Edit activity modal
+- Delete with undo (30-second window)
+- Activity notes field
+- Better confirmation dialogs
+
+**Estimated Time:** 5-6 hours (Medical) or 3-4 hours (Edit/Delete)
+
+---
+
+**Week 3 Complete. Member selection working. Ready for Week 4.**

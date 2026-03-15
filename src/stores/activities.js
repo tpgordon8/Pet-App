@@ -99,11 +99,17 @@ export const useActivitiesStore = defineStore('activities', () => {
       return false
     }
 
+    // Require member selection
+    if (!householdStore.currentMember) {
+      toast.warning('Please select who is logging this activity')
+      return false
+    }
+
     const activity = {
       type,
       emoji,
       timestamp: Date.now(),
-      user: householdStore.memberName,
+      user: householdStore.currentMember, // Use current member, not logged-in member
       petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
       notes
     }

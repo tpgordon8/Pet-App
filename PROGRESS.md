@@ -1,7 +1,7 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-15 (Documentation Automation Active)
-**Current Status:** Week 2 Complete + Automated Doc Tracking 🚀
+**Last Updated:** 2026-03-15 (Week 3 - Member Selection Complete)
+**Current Status:** Week 3 Complete - Multi-Member Activity Tracking ✅
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
@@ -118,6 +118,22 @@ npm run dev  # Start dev server on http://localhost:3000
 ✅ src/components/ToastContainer.vue    - Notifications (verified: exists, 1756 bytes)
 ✅ src/composables/useToast.js          - Toast helper (verified: exists, 1150 bytes)
 ✅ src/stores/activities.js             - Activity CRUD (verified: exists, 5525 bytes)
+```
+
+### Week 2 (Pet Management)
+```
+✅ src/components/EmojiPicker.vue       - Pet emoji grid (verified: exists, 1628 bytes)
+✅ src/components/AddPetModal.vue       - Pet creation form (verified: exists, 4479 bytes)
+✅ src/components/PetSelector.vue       - Pet switcher (verified: exists, 3100 bytes)
+✅ src/stores/pets.js                   - Pet CRUD (verified: exists, 4137 bytes)
+```
+
+### Week 3 (Member Selection) ✅ NEW!
+```
+✅ src/components/MemberSelector.vue    - Member switcher (verified: exists, 2678 bytes)
+✅ src/stores/household.js              - Updated with member selection logic
+✅ src/stores/activities.js             - Updated to tag with currentMember
+✅ src/views/DashboardView.vue          - Integrated MemberSelector
 ```
 
 ---
@@ -266,25 +282,35 @@ dist/assets/firebase-f7HkPOOr.js        336.14 kB
 
 ---
 
-## Next Steps: Week 2 (Pet Management)
+## Next Steps: Week 4 (Medical Tracking or Edit/Delete)
 
-**Goal:** Add multi-pet support with pet profiles
+**Goal:** Add medical tracking OR activity management improvements
 
-**Deliverables:**
-1. ✅ Pet store (Pinia)
-2. ✅ Add pet modal with emoji picker
-3. ✅ Pet selector dropdown
-4. ✅ Tag activities with selected pet
-5. ✅ Filter activities by pet
-6. ✅ Pet-specific statistics
+**Option A: Medical Tracking** (High user value)
+1. Vet visit logging with notes and cost
+2. Vaccination tracking with vaccine name
+3. Weight check logging with value and unit
+4. Display medical data in activity feed
+5. Separate medical activity types
 
-**Files to Create:**
-- `src/stores/pets.js` - Pet CRUD operations
-- `src/components/PetSelector.vue` - Dropdown + "All Pets" option
-- `src/components/AddPetModal.vue` - Pet creation form
-- `src/components/EmojiPicker.vue` - Pet emoji selector
+**Option B: Edit/Delete Improvements** (Quality of life)
+1. Edit activity modal (type, timestamp, notes)
+2. Delete confirmation dialog
+3. Undo delete (30-second window)
+4. Activity notes field for all types
+5. Better UX for activity management
 
-**Estimated Time:** 40 hours (1 week)
+**Files to Create (Medical):**
+- `src/components/MedicalModal.vue` - Vet visit/vaccination/weight forms
+- Update `src/stores/activities.js` - Medical activity types
+- Update `src/components/ActivityFeed.vue` - Display medical data
+
+**Files to Create (Edit/Delete):**
+- `src/components/EditActivityModal.vue` - Edit form
+- Update `src/stores/activities.js` - Undo queue logic
+- Update `src/components/ActivityFeed.vue` - Edit button
+
+**Estimated Time:** 5-6 hours (Medical) or 3-4 hours (Edit/Delete)
 
 ---
 

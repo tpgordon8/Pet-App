@@ -19,6 +19,16 @@
         </button>
       </div>
 
+      <!-- Member Selector -->
+      <div class="card">
+        <MemberSelector
+          :members="householdStore.members"
+          :current-member="householdStore.currentMember"
+          :has-members="householdStore.members.length > 0"
+          @select="householdStore.selectMember"
+        />
+      </div>
+
       <!-- Pet Selector -->
       <div class="card">
         <PetSelector
@@ -119,6 +129,7 @@ import ActivityButton from '@/components/ActivityButton.vue'
 import ActivityFeed from '@/components/ActivityFeed.vue'
 import StatsWidget from '@/components/StatsWidget.vue'
 import PetSelector from '@/components/PetSelector.vue'
+import MemberSelector from '@/components/MemberSelector.vue'
 import AddPetModal from '@/components/AddPetModal.vue'
 
 const router = useRouter()
