@@ -4,6 +4,47 @@
 
 ---
 
+## Session: 2026-03-15 - Workflow Simplification: Removed Auto-Deployment
+
+### 🔧 DECISION: Remove GitHub Actions Auto-Deployment for Firebase Rules
+
+**Commit:** `7662325`
+**Files Changed:** Deleted `.github/workflows/deploy-firebase-rules.yml`
+**Impact:** Simplified deployment workflow
+
+**Context:**
+User working entirely from mobile device requested solution for Firebase authentication in GitHub Actions. The workflow required a Firebase CI token (`FIREBASE_TOKEN` secret) that could only be generated from a computer using `firebase login:ci`.
+
+**Options Considered:**
+1. **Workload Identity Federation (OIDC)** - Modern, secure, but requires one-time Google Cloud Console setup
+2. **Service Account Key** - Still requires downloading JSON from Firebase Console
+3. **Manual Deployment** - Simple, no auth complexity
+4. **Remove workflow entirely** - Simplest solution ✅ CHOSEN
+
+**Decision Rationale:**
+- Firebase rules change infrequently (maybe once per month)
+- Auto-deployment adds complexity: token management, workflow debugging, secret rotation
+- Manual deployment is simple: `firebase deploy --only database`
+- User working from mobile - minimal computer access
+- Removed workflow = removed maintenance burden
+
+**Alternative Considered:**
+Initially attempted to set up Workload Identity Federation to allow GitHub Actions to authenticate without tokens. However, this still requires initial setup through Google Cloud Console, which is difficult on mobile.
+
+**Deployment Process (Going Forward):**
+```bash
+# When rules change, deploy manually:
+firebase deploy --only database --project petlog-c4c1e
+```
+
+**Lessons Learned:**
+- Not everything needs to be automated
+- CI/CD should add value, not complexity
+- For infrequent changes, manual processes can be better
+- Mobile-first development requires rethinking traditional DevOps
+
+---
+
 ## Session: 2026-03-15 - CRITICAL FIX: Firebase Security Rules & Access Denied Error
 
 ### ⚠️ CRITICAL ISSUE RESOLVED

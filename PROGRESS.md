@@ -1,9 +1,31 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-15 (CRITICAL FIX - Firebase Security Rules)
-**Current Status:** Firebase Rules Fixed - App Now Accessible ✅
+**Last Updated:** 2026-03-15 (Removed Auto-Deployment Workflow)
+**Current Status:** Simplified deployment - Manual deployment only ✅
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
+
+---
+
+## 🔧 WORKFLOW SIMPLIFICATION: Removed Auto-Deployment (2026-03-15)
+
+**Commit:** `7662325`
+**Status:** ✅ COMPLETE
+
+**Change:**
+Removed GitHub Actions workflow for auto-deploying Firebase rules. Manual deployment is simpler and more reliable for infrequent rule changes.
+
+**Reason:**
+- Firebase CI token authentication required computer access
+- Rules rarely change (maybe once per month)
+- Auto-deployment added complexity without much benefit
+- Manual deployment is simple: `firebase deploy --only database`
+
+**Benefits:**
+- No authentication token management
+- No workflow failures to debug
+- Simpler codebase
+- Deploy rules only when actually needed
 
 ---
 
