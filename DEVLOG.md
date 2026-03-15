@@ -136,13 +136,21 @@ After deploying the rules, verify:
 - [ ] Keep CLAUDE.md database schema documentation up-to-date
 - [ ] Add pre-deployment checklist that includes "verify security rules match app structure"
 
-**Status:** ✅ FIXED (rules updated in code, awaiting deployment)
+**Status:** ✅ FULLY RESOLVED & DEPLOYED
 
-**Next Steps:**
-1. Deploy rules: `firebase deploy --only database`
-2. Test app at https://pet-app-five-chi.vercel.app
-3. Verify all functionality works on desktop + mobile
-4. Update CLAUDE.md with correct database schema
+**Deployment Completed:** 2026-03-15
+- Rules were deployed manually via Firebase Console (https://console.firebase.google.com/project/petlog-c4c1e/database/petlog-c4c1e-default-rtdb/rules)
+- User confirmed app is working correctly
+- No more "Permission Denied" errors
+
+**Mobile Deployment Workflow:**
+Since user works primarily from mobile, Firebase CLI deployment isn't practical. Instead:
+1. Open Firebase Console on mobile browser
+2. Navigate to Database > Rules
+3. Copy/paste rules from `firebase-rules.json`
+4. Click "Publish"
+
+This approach works perfectly for infrequent rule changes.
 
 ---
 
