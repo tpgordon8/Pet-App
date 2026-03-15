@@ -133,12 +133,36 @@
         </div>
       </div>
 
+      <!-- Search Bar -->
+      <div class="card">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span class="text-gray-400 text-lg">🔍</span>
+          </div>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search activities..."
+            class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+          />
+          <button
+            v-if="searchQuery"
+            @click="searchQuery = ''"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Clear search"
+          >
+            <span class="text-xl">✕</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Activity Feed -->
       <div class="card">
         <ActivityFeed
           :activities="activitiesStore.sortedActivities"
           :pets="petsStore.pets"
           :show-pet-names="petsStore.selectedPetId === 'all'"
+          :search-query="searchQuery"
           @delete="handleDelete"
           @edit="handleEdit"
         />
@@ -207,6 +231,7 @@ const showEditModal = ref(false)
 const pendingActivity = ref({ type: '', emoji: '' })
 const pendingMedical = ref({ type: '', emoji: '' })
 const editingActivity = ref(null)
+const searchQuery = ref('')
 
 onMounted(() => {
   // Start Firebase listeners for real-time sync

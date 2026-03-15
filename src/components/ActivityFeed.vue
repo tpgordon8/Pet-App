@@ -6,18 +6,28 @@
         Recent Activity
       </h3>
       <span class="text-sm text-gray-500 dark:text-gray-400">
-        {{ activities.length }} total
+        <template v-if="searchQuery">
+          Showing {{ filteredActivities.length }} of {{ activities.length }}
+        </template>
+        <template v-else>
+          {{ activities.length }} total
+        </template>
       </span>
     </div>
 
     <!-- Empty state -->
     <div
-      v-if="activities.length === 0"
+      v-if="filteredActivities.length === 0"
       class="card text-center py-12"
     >
       <span class="text-6xl mb-4 block">🐾</span>
       <p class="text-gray-600 dark:text-gray-400">
-        No activities yet. Log your first activity above!
+        <template v-if="searchQuery">
+          No activities match "{{ searchQuery }}"
+        </template>
+        <template v-else>
+          No activities yet. Log your first activity above!
+        </template>
       </p>
     </div>
 
@@ -171,6 +181,10 @@ const props = defineProps({
   showPetNames: {
     type: Boolean,
     default: false
+  },
+  searchQuery: {
+    type: String,
+    default: ''
   }
 })
 
@@ -250,11 +264,51 @@ function onTouchEnd(event, activityId) {
   }
 }
 
+// Filter activities based on search query
+const filteredActivities = computed(() => {
+  if (!props.searchQuery || props.searchQuery.trim() === '') {
+    return props.activities
+  }
+
+  const query = props.searchQuery.toLowerCase().trim()
+
+  return props.activities.filter(activity => {
+    // Search in activity type
+    if (activity.type.toLowerCase().includes(query)) return true
+
+    // Search in notes
+    if (activity.notes && activity.notes.toLowerCase().includes(query)) return true
+
+    // Search in user name
+    if (activity.user && activity.user.toLowerCase().includes(query)) return true
+
+    // Search in pet name
+    const petName = getPetName(activity.petId)
+    if (petName && petName.toLowerCase().includes(query)) return true
+
+    // Search in medical data
+    if (activity.medicalData) {
+      // Vet Visit notes and cost
+      if (activity.medicalData.notes && activity.medicalData.notes.toLowerCase().includes(query)) return true
+      if (activity.medicalData.cost && activity.medicalData.cost.toString().includes(query)) return true
+
+      // Vaccination vaccine name
+      if (activity.medicalData.vaccineName && activity.medicalData.vaccineName.toLowerCase().includes(query)) return true
+
+      // Weight Check weight and unit
+      if (activity.medicalData.weight && activity.medicalData.weight.toString().includes(query)) return true
+      if (activity.medicalData.unit && activity.medicalData.unit.toLowerCase().includes(query)) return true
+    }
+
+    return false
+  })
+})
+
 // Group activities by date
 const groupedActivities = computed(() => {
   const groups = {}
 
-  props.activities.forEach(activity => {
+  filteredActivities.value.forEach(activity => {
     const date = new Date(activity.timestamp)
     const dateKey = format(date, 'yyyy-MM-dd')
 

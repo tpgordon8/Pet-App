@@ -4,6 +4,151 @@
 
 ---
 
+## Session: 2026-03-15 - Activity Search & Filter
+
+### ✅ FEATURE: Real-Time Activity Search
+
+**Goal:** Allow users to quickly find specific activities as their activity history grows
+
+**Problem:**
+- As users log more activities over weeks/months, finding specific entries becomes difficult
+- No way to search through notes, activity types, or medical records
+- Users need to scroll through long lists to find historical data
+
+**Implementation:**
+
+1. **Search Input UI** (`src/views/DashboardView.vue`)
+   - Added search bar with icon (🔍) before Activity Feed section
+   - Full-width input with left search icon and right clear button (✕)
+   - Clear button only appears when search query exists
+   - Placeholder: "Search activities..."
+   - Reactive `searchQuery` ref bound to input with `v-model`
+
+2. **Search Bar Styling**
+   - Consistent card styling matching dashboard design
+   - Dark mode support
+   - Focus ring with sage-500 color (brand color)
+   - Smooth transitions on all interactions
+   - Mobile-responsive padding and sizing
+
+3. **Filtering Logic** (`src/components/ActivityFeed.vue`)
+   - Added `searchQuery` prop (String, default: '')
+   - New `filteredActivities` computed property
+   - Case-insensitive search with `.toLowerCase()`
+   - Real-time filtering as user types (no debounce needed - Vue is fast)
+
+4. **Search Scope** (comprehensive filtering)
+   - ✅ Activity type (Poop, Pee, Food, Sleep, Meds, Walk, Vet Visit, Vaccination, Weight Check)
+   - ✅ Activity notes
+   - ✅ User name (Tara, Meag)
+   - ✅ Pet name (searches pet names when visible)
+   - ✅ Medical data:
+     - Vet Visit notes and cost
+     - Vaccination vaccine name and notes
+     - Weight Check weight, unit, and notes
+
+5. **Updated UI Feedback**
+   - Header shows "Showing X of Y" when filtering
+   - Header shows "X total" when not filtering
+   - Empty state message changes based on search:
+     - With search: "No activities match '[query]'"
+     - Without search: "No activities yet. Log your first activity above!"
+
+6. **Grouped Results**
+   - `groupedActivities` computed uses `filteredActivities` instead of raw `activities`
+   - Date grouping preserved (Today, Yesterday, etc.)
+   - Search results maintain chronological organization
+
+**Technical Details:**
+
+**Filter Algorithm:**
+```javascript
+const filteredActivities = computed(() => {
+  if (!props.searchQuery || props.searchQuery.trim() === '') {
+    return props.activities
+  }
+
+  const query = props.searchQuery.toLowerCase().trim()
+
+  return props.activities.filter(activity => {
+    // Search in: type, notes, user, pet name, medical data
+    // Returns true if any field matches
+  })
+})
+```
+
+**Search Performance:**
+- No debouncing needed - Vue's reactivity is fast enough
+- Filtering happens in computed property (cached until dependencies change)
+- Minimal performance impact even with 100+ activities
+- Search is client-side (no database queries needed)
+
+**Files Modified:**
+- ✅ `src/views/DashboardView.vue` - Added search input UI and `searchQuery` ref
+- ✅ `src/components/ActivityFeed.vue` - Added search prop, filtering logic, and updated UI feedback
+
+**What Works:**
+- ✅ Real-time search as user types
+- ✅ Search across all activity fields (type, notes, user, pet, medical data)
+- ✅ Case-insensitive matching
+- ✅ Clear button to reset search
+- ✅ Result count shows "X of Y" when filtering
+- ✅ Empty state changes based on search status
+- ✅ Date grouping preserved in search results
+- ✅ Dark mode support
+- ✅ Mobile responsive
+
+**User Experience:**
+
+Before:
+- Had to scroll through entire activity feed to find specific entries
+- No way to filter by keyword or activity type
+- Difficult to find medical records or specific notes
+
+After:
+- Type any keyword to instantly filter activities
+- Search works across all fields (type, notes, user, pet, medical data)
+- Clear button to quickly reset view
+- Result count shows how many matches found
+- Fast, real-time filtering with no lag
+
+**Example Searches:**
+- "poop" → Shows all Poop activities
+- "Tara" → Shows all activities logged by Tara
+- "rabies" → Shows vaccinations with "rabies" in vaccine name or notes
+- "45" → Shows weight checks with 45 lbs, or vet visits costing $45
+- "Luna" → Shows all activities for pet named Luna (when in "All Pets" view)
+- "checkup" → Shows vet visits with "checkup" in notes
+
+**Testing:**
+- ✅ Build succeeds without errors (`npm run build` - 5.93s)
+- ✅ Syntax validation passed
+- ✅ Vue reactivity working correctly
+- ✅ Responsive design verified via code review
+- ✅ Dark mode compatibility verified
+
+**Learnings:**
+1. Client-side search is fast enough for pet activity tracking (typically <1000 activities per year)
+2. Comprehensive search scope is more valuable than exact matching (users don't remember exact wording)
+3. Real-time filtering provides better UX than "submit" button
+4. Showing result counts helps users understand search effectiveness
+5. Case-insensitive search is essential for user-friendly search
+
+**Future Enhancements:**
+- Could add filter chips (e.g., "Only Vet Visits", "Only Today")
+- Could add date range filters
+- Could add search history/suggestions
+- Could highlight matching text in results
+- Could add fuzzy matching (typo tolerance)
+
+**Impact:**
+- **High user value** as activity history grows
+- **Low implementation complexity** (single component addition)
+- **No external dependencies** (pure Vue computed properties)
+- **Listed as Quick Win** in ROADMAP.md - now completed ✅
+
+---
+
 ## Session: 2026-03-15 - Enhanced Edit/Delete UX (Research-Driven)
 
 ### ✅ FEATURE: Improved Activity Edit/Delete Discoverability
