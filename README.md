@@ -151,4 +151,5 @@ MIT License - feel free to use and modify
 
 ---
 
-**Built with ❤️ for pet parents everywhere** 🐾
+**Built with ❤️ for pet parents everywhere** 🐾<!-- Test comment -->
+<!-- Test comment 2 -->

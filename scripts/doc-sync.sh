@@ -38,7 +38,7 @@ echo ""
 # Display commits
 echo "Undocumented commits:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-while IFS='|' read -r hash timestamp message; do
+while IFS=$'\t' read -r hash timestamp message; do
   SHORT_HASH=$(echo "$hash" | cut -c1-7)
   echo -e "${BLUE}$SHORT_HASH${NC} - $message"
   echo "  Date: $timestamp"
