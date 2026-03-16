@@ -4,6 +4,402 @@
 
 ---
 
+## Session: 2026-03-16 - Health Analytics & Insights
+
+### 🎯 FEATURE: Weight Trends, PDF Export, and Activity Insights
+
+**Commit:** `d977f45`
+**Duration:** ~4 hours
+**Status:** ✅ COMPLETE
+
+**Goal:** Add data-driven health monitoring features to help pet parents track trends and make informed decisions about their pet's health.
+
+---
+
+### Feature 1: Weight Trend Chart
+
+**Problem:**
+- Users logging weight checks but no visualization
+- Hard to spot gradual weight changes
+- Need to track health trends over time
+
+**Solution:**
+Interactive line chart showing weight history with unit conversion.
+
+**Implementation:**
+
+**Dependencies Added:**
+```json
+"chart.js": "^4.4.1",         // ~47KB - Chart rendering
+"chartjs-adapter-date-fns": "^3.0.0"  // ~4KB - Date axis
+```
+
+**Component Structure:**
+```vue
+WeightTrendChart.vue
+├── Props: activities (Array)
+├── Computed: weightData, chartData, latestWeight, weightChange
+├── Chart.js integration with TimeScale
+└── Unit toggle (lbs/kg) with conversion
+```
+
+**Key Technical Decisions:**
+
+1. **Chart.js over native SVG**
+   - Justified: Standard library, well-maintained
+   - Bundle impact: 47KB acceptable for value provided
+   - Alternative considered: Native SVG (more work, less features)
+
+2. **Time Scale Axis**
+   - Uses Chart.js TimeScale with date-fns adapter
+   - Automatic date formatting ("MMM d")
+   - Handles irregular intervals correctly
+
+3. **Unit Conversion**
+   - Client-side conversion (lbs ↔ kg)
+   - Formula: 1 kg = 2.20462 lbs
+   - Preserves original data in Firebase
+   - Reactive to toggle changes
+
+4. **Dark Mode Integration**
+   - MutationObserver watches `<html class="dark">`
+   - Re-renders chart with new colors
+   - Colors: sage-500 primary, adaptive backgrounds
+
+**Chart Configuration:**
+```javascript
+{
+  type: 'line',
+  options: {
+    scales: {
+      x: { type: 'time', time: { unit: 'day' } },
+      y: { beginAtZero: false }  // Don't force 0 for weight
+    },
+    plugins: {
+      tooltip: { callbacks: custom formatting }
+    }
+  }
+}
+```
+
+**Learnings:**
+- Chart.js requires explicit component registration (tree-shaking)
+- TimeScale needs separate adapter package
+- Canvas height must be set with `!important` for responsive containers
+
+---
+
+### Feature 2: PDF Export for Medical History
+
+**Problem:**
+- Need to share medical history with vets
+- No easy way to export data
+- Manual note-taking error-prone
+
+**Solution:**
+One-click PDF generation with professional formatting.
+
+**Implementation:**
+
+**Composable Pattern:**
+```javascript
+usePdfExport.js
+├── generateMedicalPdf(pet, activities, household)
+│   ├── Header (branded, sage green)
+│   ├── Pet Info section
+│   ├── Vet Visits (with pagination)
+│   ├── Vaccinations
+│   ├── Weight History (table format)
+│   └── Summary with calculations
+└── generateQuickSummary() // Future use
+```
+
+**jsPDF Usage:**
+```javascript
+const doc = new jsPDF('p', 'mm', 'a4')  // Portrait, millimeters, A4
+doc.setFillColor(16, 185, 129)  // Sage green hex
+doc.rect(0, 0, width, height, 'F')  // Filled rectangle
+doc.text('Text', x, y, { align: 'center' })
+doc.save('filename.pdf')
+```
+
+**Key Technical Decisions:**
+
+1. **Composable over Component**
+   - Reusable across different views
+   - No UI state management needed
+   - Pure function approach
+
+2. **Pagination Logic**
+   - `checkNewPage(neededHeight)` before each section
+   - Tracks `yPos` across pages
+   - Auto-adds pages when content exceeds
+
+3. **Text Wrapping**
+   - `doc.splitTextToSize(text, width)` for long notes
+   - Returns array of lines
+   - Ensures no overflow
+
+4. **Weight Conversion for Summary**
+   - Normalizes all weights to lbs for change calculation
+   - Displays in user's preferred unit in table
+
+**Formatting Standards:**
+```
+Header: 24pt white on sage background
+Section Titles: 14pt bold, gray-900
+Body Text: 10pt, gray-600
+Boxes: Light gray background, 3mm rounded corners
+Table: Alternating row colors for readability
+```
+
+**Learnings:**
+- jsPDF coordinates are top-left origin
+- Must manually track Y position for content flow
+- Footer must be added per-page in loop after content
+- File size stays reasonable (<100KB for typical history)
+
+---
+
+### Feature 3: Activity Pattern Insights
+
+**Problem:**
+- Users collect lots of data but no analysis
+- Hard to spot behavioral changes manually
+- Need proactive health monitoring
+
+**Solution:**
+Automated pattern detection with actionable insights.
+
+**Implementation:**
+
+**Component Architecture:**
+```vue
+ActivityInsights.vue
+├── Props: activities, petName
+├── Computed: insights (complex analysis)
+├── Insight Types:
+│   ├── Poop patterns (frequency changes)
+│   ├── Food patterns (eating changes)
+│   ├── Pee patterns (bathroom breaks)
+│   ├── Weight trends (gain/loss alerts)
+│   ├── Medication compliance
+│   └── Activity level (walks, total)
+└── Visual: Color-coded cards with severity
+```
+
+**Analysis Logic:**
+
+**Time Periods:**
+```javascript
+const today = startOfDay(new Date())
+const yesterday = subDays(today, 1)
+const weekAgo = subDays(today, 7)
+
+// Filter activities by period
+todayActivities = filter(>= today)
+lastWeekActivities = filter(>= weekAgo)
+```
+
+**Pattern Detection:**
+```javascript
+// Calculate daily average
+avgPoop = countByType(lastWeek, 'Poop') / 7
+
+// Compare to today
+if (avgPoop >= 2 && todayPoop === 0) {
+  insights.push({
+    type: 'alert',
+    severity: 'warning',
+    message: 'No poop logged today',
+    detail: `Usually ${avgPoop.toFixed(1)} times per day`
+  })
+}
+```
+
+**Severity Levels:**
+- **warning** - Important health concerns (missing meals, no meds)
+- **low** - Minor observations (slight changes)
+- **positive** - Celebrations (very active day)
+
+**Thresholds:**
+- Poop: 0.5x average = concern, 1.5x = note
+- Food: 0.5x average = concern
+- Pee: 1.5x average = note
+- Weight: 5% change = note, 10% = warning
+- Activity: 0.3x average = concern, 1.5x = positive
+
+**Key Technical Decisions:**
+
+1. **7-Day Minimum Data Requirement**
+   - Prevents false positives from insufficient data
+   - Weekly patterns more reliable than daily
+   - Clear empty state explains requirement
+
+2. **Computed Property for Analysis**
+   - Reactive to new activities (real-time updates)
+   - No manual refresh needed
+   - Efficient - only recalculates when activities change
+
+3. **Weight Normalization**
+   - Convert all to lbs for comparison
+   - Percentage change more meaningful than absolute
+   - Accounts for kg vs lbs differences
+
+4. **Sorting by Severity**
+   - Warnings shown first (most important)
+   - Positive insights last (celebrations)
+   - Helps users prioritize actions
+
+**Visual Design:**
+```css
+.insight-alert {
+  border-left: 3px solid red;
+  background: rgba(red, 0.05);
+}
+
+.insight-info {
+  border-left: 3px solid blue;
+  background: rgba(blue, 0.05);
+}
+
+.insight-positive {
+  border-left: 3px solid green;
+  background: rgba(green, 0.05);
+}
+```
+
+**Learnings:**
+- Need sufficient historical data for meaningful patterns
+- Thresholds require balancing sensitivity (not too noisy)
+- Users prefer actionable insights over raw statistics
+- Color coding helps quick scanning
+- Empty states should educate (explain 7-day requirement)
+
+---
+
+### Integration: DashboardView.vue
+
+**Layout Order:**
+```
+1. Header (Logout)
+2. Member Selector
+3. Pet Selector
+4. Stats Widget
+5. Activity Insights ← NEW
+6. Quick Log Buttons
+7. Medical Tracking (with PDF export button) ← UPDATED
+8. Weight Trend Chart ← NEW
+9. Search Bar
+10. Activity Feed
+```
+
+**Rationale:**
+- Insights placed early (high visibility, actionable)
+- Weight chart near medical tracking (related context)
+- PDF export button in medical section (logical grouping)
+
+---
+
+### Build Performance
+
+**Before (Previous Build):**
+- DashboardView: 253KB
+- Total bundle: ~800KB
+
+**After (With New Features):**
+- DashboardView: 622KB (+369KB)
+- Total bundle: ~1.5MB
+- Increase due to: Chart.js (200KB), jsPDF (150KB), html2canvas dependency
+
+**Analysis:**
+- Acceptable trade-off for value provided
+- Features are user-requested and high-impact
+- Bundle size still reasonable for modern web app
+- Could lazy-load Chart.js in future if needed
+
+**Warning from Vite:**
+```
+(!) Some chunks are larger than 500 kB after minification.
+Consider: dynamic import() to code-split
+```
+
+**Response:**
+- Acceptable for now (all features on dashboard)
+- Future optimization: Lazy-load chart components
+- PDF generation could be code-split
+- Not critical until performance issues reported
+
+---
+
+### Testing Notes
+
+**Manual Testing Required:**
+1. Weight chart with 0 data points (empty state)
+2. Weight chart with 1 data point (single point shown)
+3. Weight chart with 10+ points (pagination, responsiveness)
+4. PDF export with minimal data
+5. PDF export with lots of data (10+ of each type)
+6. Insights with < 7 days data (empty state)
+7. Insights with 7+ days (all patterns trigger)
+8. Real-time insight updates when logging new activity
+9. Dark mode toggle (all three components)
+10. Mobile responsiveness (all three components)
+
+**Automated Testing (Future):**
+- Unit tests for insight detection logic
+- Unit tests for weight conversion
+- Snapshot tests for PDF output
+- E2E tests for user workflows
+
+---
+
+### Known Limitations
+
+1. **Chart Performance**
+   - Could lag with 1000+ weight checks
+   - Unlikely scenario (most pets checked monthly)
+   - Could add limit to last 50 checks if needed
+
+2. **PDF File Size**
+   - Large with many activities (could be MBs)
+   - No image compression (if photos added later)
+   - jsPDF handles up to ~100 pages fine
+
+3. **Insight Accuracy**
+   - Requires consistent logging for accuracy
+   - Doesn't account for one-time events (travel, illness)
+   - Thresholds may need tuning based on user feedback
+
+4. **Browser Compatibility**
+   - Chart.js requires modern browsers (ES6+)
+   - jsPDF works IE11+ but untested
+   - Assumes canvas support
+
+---
+
+### Future Enhancements
+
+**Weight Chart:**
+- [ ] Add goal weight line
+- [ ] Mark important events on timeline
+- [ ] Export chart as image
+- [ ] Compare multiple pets
+
+**PDF Export:**
+- [ ] Add photos to PDF
+- [ ] Custom date range selection
+- [ ] Email PDF directly to vet
+- [ ] Include activity patterns in report
+
+**Insights:**
+- [ ] Customizable thresholds
+- [ ] Weekly summary emails
+- [ ] Correlate multiple patterns (e.g., weight + activity)
+- [ ] Machine learning for personalized baselines
+
+---
+
 ## Session: 2026-03-15 - Build Fix (CSS Syntax Error)
 
 ### 🔧 HOTFIX: Vercel Deployment Failure
