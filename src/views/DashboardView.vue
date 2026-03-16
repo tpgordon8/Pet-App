@@ -46,6 +46,12 @@
         :pet-name="petsStore.selectedPet?.name"
       />
 
+      <!-- Activity Insights -->
+      <ActivityInsights
+        :activities="activitiesStore.filteredActivities"
+        :pet-name="petsStore.selectedPet?.name"
+      />
+
       <!-- Activity Logging Buttons -->
       <div class="card">
         <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
@@ -102,12 +108,23 @@
 
       <!-- Medical Tracking Section -->
       <div class="card">
-        <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
-          Medical Tracking
-          <span v-if="petsStore.selectedPet" class="text-sage-600 dark:text-sage-400">
-            for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
-          </span>
-        </h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-md font-semibold text-gray-900 dark:text-white">
+            Medical Tracking
+            <span v-if="petsStore.selectedPet" class="text-sage-600 dark:text-sage-400">
+              for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
+            </span>
+          </h3>
+          <button
+            v-if="petsStore.selectedPet && petsStore.selectedPetId !== 'all'"
+            @click="exportMedicalPdf"
+            class="btn-export"
+            title="Export medical history as PDF"
+          >
+            <span class="text-lg">📄</span>
+            <span class="export-label">Export PDF</span>
+          </button>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <ActivityButton
             emoji="🏥"
@@ -132,6 +149,9 @@
           />
         </div>
       </div>
+
+      <!-- Weight Trend Chart -->
+      <WeightTrendChart :activities="activitiesStore.filteredActivities" />
 
       <!-- Search Bar -->
       <div class="card">
@@ -209,6 +229,8 @@ import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
+import { useToast } from '@/composables/useToast'
+import { usePdfExport } from '@/composables/usePdfExport'
 import ActivityButton from '@/components/ActivityButton.vue'
 import ActivityFeed from '@/components/ActivityFeed.vue'
 import StatsWidget from '@/components/StatsWidget.vue'
@@ -218,11 +240,15 @@ import AddPetModal from '@/components/AddPetModal.vue'
 import ActivityNotesModal from '@/components/ActivityNotesModal.vue'
 import MedicalModal from '@/components/MedicalModal.vue'
 import EditActivityModal from '@/components/EditActivityModal.vue'
+import WeightTrendChart from '@/components/WeightTrendChart.vue'
+import ActivityInsights from '@/components/ActivityInsights.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
 const activitiesStore = useActivitiesStore()
 const petsStore = usePetsStore()
+const toast = useToast()
+const { generateMedicalPdf } = usePdfExport()
 
 const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
@@ -308,4 +334,69 @@ async function handleSaveEdit(updates) {
     await activitiesStore.updateActivity(editingActivity.value.id, updates)
   }
 }
+
+function exportMedicalPdf() {
+  if (!petsStore.selectedPet || petsStore.selectedPetId === 'all') {
+    toast.error('Please select a specific pet to export medical history')
+    return
+  }
+
+  const result = generateMedicalPdf(
+    petsStore.selectedPet,
+    activitiesStore.filteredActivities,
+    { memberName: householdStore.memberName }
+  )
+
+  if (result.success) {
+    toast.success(`PDF exported: ${result.filename}`)
+  } else {
+    toast.error(`Failed to export PDF: ${result.error}`)
+  }
+}
 </script>
+
+<style scoped>
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+}
+
+.dark .btn-export {
+  background: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+.btn-export:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.dark .btn-export:hover {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.export-label {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .export-label {
+    display: inline;
+  }
+}
+</style>
