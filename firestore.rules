@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Mail templates - allow reads, temporarily allow writes for setup
+    match /mail_templates/{template} {
+      allow read: if true;
+      allow write: if true;  // Temporary - will lock down after setup
+    }
+
+    // Mail collection for email trigger extension
+    match /mail/{mailId} {
+      allow write: if true;  // Allow creating email queue items
+      allow read: if false;  // Users shouldn't read email queue
+    }
+
+    // Household invites
+    match /invites/{inviteId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
