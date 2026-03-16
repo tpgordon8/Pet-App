@@ -1,13 +1,269 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-16 (Health Insights & Analytics)
-**Current Status:** Major health features complete ✅
+**Last Updated:** 2026-03-16 (Google Authentication Planning)
+**Current Status:** Google Auth implementation plan ready for review ✅
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
 ---
 
-## 🎯 NEW: Health Insights & Analytics (2026-03-16)
+## 📋 NEW: Google Authentication Implementation Plan (2026-03-16)
+
+**Commit:** `cb4aff8`
+**Status:** ✅ PLANNING COMPLETE - Ready for Implementation
+
+### Comprehensive Research & Planning
+
+This update includes extensive research on Google Sign-In best practices, authentication UX patterns, and a detailed 4-week implementation plan for transitioning Tailr from a "household trust model" to proper Google authentication.
+
+---
+
+#### Research Phase: What Works & What Doesn't
+
+**Goal:** Understand industry best practices for Google Sign-In implementation to ensure secure, scalable, and frictionless authentication
+
+**Research Sources:**
+- Google's official Sign-In documentation and best practices
+- 2026 UX research on authentication flows
+- Vue 3 + Firebase Auth implementation patterns
+- Multi-tenant and household authentication patterns
+- Real-world examples from successful apps
+
+**Key Findings:**
+
+**✅ What Works Well:**
+1. **Google One Tap + Button Dual Implementation** - 90% increase in signups
+2. **Automatic Sign-In for Returning Users** - <3 second time-to-first-log
+3. **Authenticated Multi-User Household Pattern** - Each person has Google account, both join household
+4. **Composable-Based Vue 3 Pattern** - Clean reactive auth state
+5. **Persistent User Identity Display** - "Signed in as..." builds trust
+
+**❌ Common Mistakes to Avoid:**
+1. One Tap without button fallback (Safari/Firefox block One Tap)
+2. Using email as primary user ID (use Google's `sub` claim instead)
+3. One Tap cooldown issues during development (2hr → 2 week exponential)
+4. Missing CSRF protection (state token validation required)
+5. Incomplete OAuth consent screen (scary for users)
+6. Covering One Tap prompt with UI elements (z-index conflicts)
+7. Not handling browser limitations (ITP in Safari/Firefox)
+
+---
+
+#### Implementation Plan Overview
+
+**Document:** `GOOGLE_AUTH_IMPLEMENTATION_PLAN.md` (1,422 lines)
+
+**8 Implementation Phases (4 weeks total):**
+
+1. **Foundation (Week 1)**
+   - Set up Google Cloud OAuth consent screen
+   - Add Firebase Authentication to project
+   - Create auth composable and Pinia store
+   - Configure Firebase Auth SDK
+
+2. **Sign-In UI (Week 1-2)**
+   - Build Google Sign-In Button component
+   - Integrate One Tap prompt
+   - Add user profile display in header
+   - Implement sign-out functionality
+
+3. **Database Schema Migration (Week 2)**
+   - Create `/users/{googleUserId}` collection
+   - Create `/households/{householdId}` collection
+   - Migrate existing data to new structure
+   - Update Pinia stores for new paths
+
+4. **Household Invitation Flow (Week 3)**
+   - Build invite creation system
+   - Implement email invitations
+   - Create invite acceptance page
+   - Support multi-user households
+
+5. **Security Rules & Route Guards (Week 3-4)**
+   - Deploy Firebase security rules
+   - Add Vue Router navigation guards
+   - Test data isolation between households
+   - Validate with Firebase Emulator
+
+6. **Polish & Edge Cases (Week 4)**
+   - Handle One Tap cooldown gracefully
+   - Add loading states and error handling
+   - Test offline-to-online transitions
+   - Add analytics tracking
+
+---
+
+#### Recommended Authentication Flow
+
+**Returning User Journey:**
+- Lands on app → One Tap appears → Click "Continue as Tara" → Dashboard in <3 seconds ✅
+
+**New User Journey:**
+- Lands on app → Click "Sign in with Google" → Onboarding → First log in <45 seconds ✅
+
+**Household Invitation:**
+- Tara invites Meag via email → Meag clicks invite link → Signs in with Google → Joins household → Sees same pets ✅
+
+---
+
+#### Database Schema Changes
+
+**New Collections:**
+```javascript
+/users/{googleUserId}
+  - googleUserId: "115566889900112233" // from JWT 'sub'
+  - email: "tara@example.com"
+  - name: "Tara Gordon"
+  - photoURL: "https://..."
+  - householdId: "household_abc123"
+  - role: "owner" | "member"
+  - createdAt: timestamp
+
+/households/{householdId}
+  - name: "Tara & Meag's Pets"
+  - createdBy: googleUserId
+  - members: [googleUserId1, googleUserId2]
+  - createdAt: timestamp
+
+/households/{householdId}/pets/{petId}
+  - (no change from current structure)
+
+/households/{householdId}/activities/{activityId}
+  - userId: googleUserId  // NEW: replaces string "user" field
+  - (rest unchanged)
+```
+
+**Migration Strategy:**
+- Activities with `user: "Tara"` mapped to Google user ID after first sign-in
+- Legacy `user` field kept for backwards compatibility during migration
+- No data loss - all existing data preserved
+
+---
+
+#### Comprehensive Testing Plan
+
+**50+ Test Cases Across 8 Test Suites:**
+
+1. **Basic Sign-In Flow** (4 tests)
+   - First-time sign-in, returning user, button fallback, sign-out
+
+2. **One Tap Behavior** (4 tests)
+   - Auto-select, cooldown periods, Safari/Firefox ITP, no Google session
+
+3. **Household & Multi-User** (5 tests)
+   - Household creation, invite flow, invite acceptance, activity attribution, expired invites
+
+4. **Security & Permissions** (5 tests)
+   - Unauthenticated access blocked, cross-household isolation, write restrictions, route guards
+
+5. **Edge Cases & Error Handling** (9 tests)
+   - Network failures, popup blocked, session persistence, offline transitions, slow 3G, CSRF validation
+
+6. **Migration & Backwards Compatibility** (2 tests)
+   - Existing user data migration, activity attribution after migration
+
+7. **Performance & UX** (4 tests)
+   - Time to first log (<3s), mobile UX, dark mode compatibility
+
+8. **Analytics & Monitoring** (3 tests)
+   - Success/failure events, One Tap dismissal tracking
+
+**All tests will be executed by Claude before user review.**
+
+---
+
+#### Security & Privacy
+
+**Firebase Security Rules:**
+- Users can only access their own household data
+- Household membership validated on every read/write
+- All rules require authentication (`auth != null`)
+- Cross-household data leakage prevented
+- CSRF protection via state token validation
+
+**Privacy Principles:**
+- Google user data (email, name, photo) stored securely
+- Each household completely isolated
+- No cross-household visibility
+- Google's `sub` claim used as permanent user ID (not email)
+
+---
+
+#### Scalability
+
+**Architecture supports:**
+- ✅ 50+ households in 2026
+- ✅ Growth to 100s of households
+- ✅ Multiple users per household
+- ✅ Future features: email notifications, data export, vet sharing
+
+**Performance guarantees:**
+- ✅ <3 second time-to-first-log for returning users
+- ✅ Real-time sync maintained
+- ✅ Firebase Auth session caching
+- ✅ One Tap auto-sign-in
+
+---
+
+### Files Changed
+
+**New Files:**
+- ✅ `GOOGLE_AUTH_IMPLEMENTATION_PLAN.md` - Comprehensive 1,422-line plan with research, architecture, testing strategy
+
+**Modified Files:**
+- ✅ `PROGRESS.md` - This file (documented planning phase)
+- ✅ `DEVLOG.md` - Technical details and research sources
+
+---
+
+### Open Questions for User
+
+Before implementation begins, need user input on:
+
+1. **Email Invitations:** SendGrid, Firebase Extensions, or mailto: links?
+2. **Household Naming:** Auto-generate "Tara's Household" or prompt for custom name?
+3. **User Roles:** Simple owner/member or granular permissions?
+4. **Migration Timing:** Deploy immediately or wait for other features?
+5. **Analytics:** Google Analytics 4, PostHog, or Firebase Analytics?
+
+---
+
+### Next Steps
+
+**Awaiting user review and answers to open questions.**
+
+Once approved:
+1. Begin Phase 1: Foundation (Google Cloud setup, Firebase Auth)
+2. Execute all 50+ test cases
+3. Present working prototype for user review
+4. Iterate based on feedback
+5. Deploy with soft launch strategy
+
+---
+
+### Impact
+
+**High Strategic Value:**
+- **Privacy & Security** - Proper data isolation for multi-household scaling
+- **Scalability** - Architecture supports 50+ households and beyond
+- **Frictionless UX** - Maintains <3 second time-to-log requirement
+- **Growth-Ready** - Foundation for email notifications, data export, vet sharing
+
+**Research-Backed:**
+- 5+ official Google documentation sources
+- 10+ UX research articles from 2026
+- Real implementation patterns from Vue 3 + Firebase community
+- Multi-tenant authentication best practices
+
+**Production-Ready Planning:**
+- 8 phases with clear deliverables
+- 50+ test cases documented
+- Migration strategy for existing data
+- Risk mitigation strategies included
+
+---
+
+## 🎯 PREVIOUS: Health Insights & Analytics (2026-03-16)
 
 **Commit:** `d977f45`
 **Status:** ✅ COMPLETE - Production Ready

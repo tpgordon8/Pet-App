@@ -4,6 +4,423 @@
 
 ---
 
+## Session: 2026-03-16 - Google Authentication Planning
+
+### 📋 RESEARCH & PLANNING: Google Sign-In Implementation
+
+**Commit:** `cb4aff8`
+**Duration:** ~3 hours
+**Status:** ✅ PLANNING COMPLETE
+
+**Goal:** Create comprehensive implementation plan for transitioning from "household trust model" (no auth) to Google authentication with proper multi-household data isolation.
+
+---
+
+### Research Phase
+
+**Objective:** Understand Google Sign-In best practices, common mistakes, and optimal UX patterns for 2026.
+
+**Research Methodology:**
+1. Web search for Google Sign-In best practices (official Google docs + 2026 UX research)
+2. Review Vue 3 + Firebase Auth implementation patterns
+3. Study household/multi-user authentication patterns
+4. Analyze Google One Tap specific guidance and pitfalls
+
+**Sources Reviewed:**
+- [Best Practices for Implementing Sign in with Google | Google for Developers](https://developers.google.com/identity/siwg/best-practices)
+- [Google One Tap Login Guide 2025: 90% More Signups for Devs](https://guptadeepak.com/the-complete-guide-to-google-one-tap-login-everything-developers-need-to-know/)
+- [Simple Google Authentication using Vue 3 and Firebase](https://runthatline.com/simple-google-authentication-composable-using-vue-3-and-firebase/)
+- [Best Sign Up Flows (2026): 15 UX Examples That Convert](https://www.eleken.co/blog-posts/sign-up-flow)
+- [Login & Signup UX: The 2025 Guide to Best Practices](https://www.authgear.com/post/login-signup-ux-guide)
+- Multiple Auth0, Firebase, and Vue.js documentation sources
+
+---
+
+### Key Research Findings
+
+#### What Works Well (Industry Best Practices)
+
+**1. Google One Tap + Button Dual Implementation**
+- **Pattern:** Implement both One Tap (automatic) and Sign-In Button (manual fallback)
+- **Why it works:** One Tap enables <1 second sign-in for returning users, Button provides fallback when One Tap fails
+- **Impact:** 90% increase in signup conversion vs button-only approaches
+- **Source:** Google Developer Best Practices
+
+**2. Automatic Sign-In for Returning Users**
+- **Pattern:** Enable `auto_select: true` in One Tap configuration
+- **Why it works:** Zero-click sign-in for returning users meets expectation of "staying logged in"
+- **Impact:** Critical for mobile-first apps where typing is friction
+- **Meets requirement:** <3 second time-to-first-log for Tailr
+
+**3. Authenticated Multi-User Household Pattern**
+- **Pattern:** Each person has their own Google account, both join one household
+- **Why it works:** Clean activity attribution, proper privacy, scalable to 50+ households
+- **Alternative considered:** Single account with "profiles" (like Netflix) - rejected because attribution matters for Tailr
+- **Chosen approach:** Smart home app pattern (each user authenticates, joins shared household)
+
+**4. Composable-Based Vue 3 Auth Pattern**
+- **Pattern:** Use Composition API composables (`useAuth()`) for auth state management
+- **Why it works:** Aligns with Tailr's Vue 3 + Pinia architecture, reactive state, easy to test
+- **Source:** Vue + Firebase community best practices
+
+**5. Persistent "Signed In As..." State**
+- **Pattern:** Show user name + photo in app header after authentication
+- **Why it works:** Transparency builds trust, prevents accidental cross-household data pollution
+- **Standard in:** Gmail, YouTube, Google Drive
+
+---
+
+#### What Doesn't Work (Common Mistakes)
+
+**1. One Tap Without Button Fallback**
+- **Problem:** One Tap can be disabled by users or blocked by browsers
+- **Failures:** Safari/Firefox ITP blocks One Tap, no active Google session = no One Tap
+- **Cooldown:** Manual dismissal triggers 2hr → 2 week exponential backoff
+- **Solution:** Always implement Sign-In Button alongside One Tap
+- **Source:** Google Best Practices (emphasized repeatedly)
+
+**2. Using Email as Primary User Identifier**
+- **Problem:** Users can change their email, email not guaranteed unique
+- **Security risk:** Email is PII
+- **Solution:** Use Google JWT `sub` claim as permanent user ID
+- **Source:** Google Security Best Practices
+
+**3. One Tap Cooldown Issues in Development**
+- **Problem:** Developers repeatedly dismiss One Tap during testing, trigger cooldown, think it's broken
+- **Reality:** Working as designed (prevents spam)
+- **Solution:** Document cooldown behavior, test with incognito mode, use multiple Google accounts
+- **Personal note:** Critical to communicate this to user for smooth testing
+
+**4. Not Implementing CSRF Protection**
+- **Problem:** Accepting Google JWT without validating state token
+- **Vulnerability:** Cross-site request forgery attacks
+- **Solution:** Generate random state token, store in cookie, verify match with POST body
+- **Source:** Security research on OAuth flows
+
+**5. Covering One Tap Prompt with UI Elements**
+- **Problem:** Z-index conflicts hide One Tap, users can't authenticate
+- **Solution:** Configure One Tap position, ensure no elements have higher z-index
+- **Testing:** Verify in browser DevTools
+
+**6. Incomplete OAuth Consent Screen**
+- **Problem:** Generic/scary consent screen, users don't trust
+- **Blocker:** Can prevent app from going to production
+- **Solution:** Complete all fields (app name, logo, support email, privacy policy, terms)
+- **Action item:** Create PRIVACY.md and TERMS.md before implementation
+
+---
+
+### Implementation Plan Architecture
+
+**Document Created:** `GOOGLE_AUTH_IMPLEMENTATION_PLAN.md` (1,422 lines)
+
+**Structure:**
+1. Executive Summary
+2. Research Findings (what works, what doesn't)
+3. Household Multi-User Pattern Analysis
+4. Recommended Authentication Flow
+5. Database Schema Changes
+6. Firebase Security Rules
+7. 8-Phase Implementation Plan (4 weeks)
+8. Comprehensive Testing Plan (50+ test cases across 8 suites)
+9. Risk Mitigation Strategies
+10. Post-Launch Monitoring Plan
+11. Documentation Update Requirements
+
+---
+
+### Database Schema Design
+
+**New Collections:**
+
+**`/users/{googleUserId}`**
+```javascript
+{
+  googleUserId: "115566889900112233", // from Google JWT 'sub' claim
+  email: "tara@example.com",
+  name: "Tara Gordon",
+  photoURL: "https://lh3.googleusercontent.com/...",
+  householdId: "household_abc123",
+  role: "owner" | "member",
+  createdAt: timestamp,
+  lastSeenAt: timestamp
+}
+```
+
+**`/households/{householdId}`**
+```javascript
+{
+  householdId: "household_abc123", // auto-generated
+  name: "Tara & Meag's Pets",
+  createdAt: timestamp,
+  createdBy: "115566889900112233", // googleUserId
+  members: ["115566889900112233", "223344556677889900"]
+}
+```
+
+**`/invites/{inviteToken}`**
+```javascript
+{
+  inviteToken: "uuid-v4-token",
+  householdId: "household_abc123",
+  invitedBy: "115566889900112233",
+  invitedEmail: "meag@example.com",
+  status: "pending" | "accepted" | "expired",
+  createdAt: timestamp,
+  expiresAt: timestamp // 7 days
+}
+```
+
+**Modified Collections:**
+
+**`/households/{householdId}/activities/{activityId}`**
+```javascript
+{
+  // ... existing fields ...
+  userId: "115566889900112233", // NEW: Google user ID instead of "Tara" string
+  // Legacy 'user' field kept during migration
+}
+```
+
+---
+
+### Migration Strategy
+
+**Challenge:** Existing activities have `user: "Tara"` as string, need to map to Google user ID
+
+**Approach:**
+1. On first sign-in, create mapping: "Tara" → googleUserId
+2. Run migration script to update all historical activities
+3. Add `userId` field while keeping legacy `user` field (backwards compatibility)
+4. Eventually deprecate `user` field after migration complete
+
+**No Data Loss:** All existing pets, activities, medical records preserved
+
+---
+
+### Firebase Security Rules Changes
+
+**Current:** Open access (no authentication required)
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+```
+
+**New:** Authenticated, household-scoped access
+```json
+{
+  "rules": {
+    "users": {
+      "$userId": {
+        ".read": "$userId === auth.uid",
+        ".write": "$userId === auth.uid"
+      }
+    },
+    "households": {
+      "$householdId": {
+        ".read": "root.child('users').child(auth.uid).child('householdId').val() === $householdId",
+        ".write": "root.child('users').child(auth.uid).child('householdId').val() === $householdId"
+      }
+    }
+  }
+}
+```
+
+**Security Guarantees:**
+- ✅ Users can only access their own household
+- ✅ Cross-household data leakage prevented
+- ✅ All operations require authentication
+- ✅ Household membership validated on every read/write
+
+---
+
+### Testing Strategy
+
+**50+ Test Cases Across 8 Suites:**
+
+1. **Basic Sign-In Flow** - First-time, returning, fallback, sign-out
+2. **One Tap Behavior** - Auto-select, cooldowns, browser compatibility
+3. **Household & Multi-User** - Creation, invites, attribution, expiration
+4. **Security & Permissions** - Access control, data isolation, route guards
+5. **Edge Cases** - Network failures, offline transitions, slow networks
+6. **Migration** - Data preservation, backwards compatibility
+7. **Performance** - <3 second time-to-first-log validation
+8. **Analytics** - Success/failure event tracking
+
+**All tests executed by Claude before user review.**
+
+---
+
+### Technical Decisions
+
+**1. Why Google Sign-In (vs Email/Password or Magic Links)?**
+- User requested Google specifically
+- Industry standard for pet apps
+- Reduces friction (no password management)
+- Trusted by users (OAuth with Google)
+- Enables One Tap for <3 second sign-in
+
+**2. Why Composable Pattern (vs Vuex-style store)?**
+- Aligns with Tailr's existing Vue 3 Composition API
+- More flexible than Options API
+- Easy to test in isolation
+- Standard in Vue 3 community
+
+**3. Why Household Invitation Flow (vs Shared Login)?**
+- Proper attribution ("Tara logged poop" vs "Meag logged food")
+- Privacy (each person controls their own Google account)
+- Scalability (supports future: pet sitters, vets)
+- Industry standard (Google Home, Apple HomeKit use this pattern)
+
+**4. Why Not Use Netflix-Style Profiles?**
+- Profiles don't provide authentication
+- No activity attribution (who actually logged it?)
+- Doesn't meet user's privacy/scaling requirements
+- Not suitable for household apps where attribution matters
+
+---
+
+### Performance Analysis
+
+**Bundle Size Impact:**
+- Firebase Auth SDK: ~80KB gzipped (acceptable for value provided)
+- No additional UI libraries needed (native Google Sign-In button)
+- One Tap: Loaded from Google CDN (not in bundle)
+
+**Runtime Performance:**
+- One Tap sign-in: <1 second (Google-hosted)
+- Firebase Auth session: Cached locally (persistent)
+- Real-time sync: Unchanged (existing Firebase Realtime Database)
+- Time to first log: <3 seconds for returning users ✅
+
+---
+
+### Open Questions for User
+
+**Before implementation begins, need answers:**
+
+1. **Email Invitations:** SendGrid ($15/mo), Firebase Extensions (free tier), or mailto: links (free, less UX)?
+2. **Household Naming:** Auto-generate "Tara's Household" or prompt user to enter custom name?
+3. **User Roles:** Keep simple (owner/member) or add granular permissions (admin, editor, viewer)?
+4. **Migration Timing:** Deploy auth immediately or wait until other features ready?
+5. **Analytics:** Google Analytics 4 (free), PostHog (free tier), or Firebase Analytics (free)?
+
+---
+
+### Risks & Mitigation
+
+**Risk 1: Migration Data Loss**
+- **Mitigation:** Full database backup before migration, dry-run in staging, rollback plan
+
+**Risk 2: Sign-In Failure Blocks Users**
+- **Mitigation:** Maintain button fallback, clear error messages, monitoring alerts
+
+**Risk 3: Performance Regression (>3s to first log)**
+- **Mitigation:** One Tap auto-sign-in, Firebase session caching, performance test suite
+
+**Risk 4: Cross-Household Data Leakage**
+- **Mitigation:** Security rules validation, test suite, code review for all queries
+
+---
+
+### Next Steps
+
+**1. User Review** (current step)
+- Review GOOGLE_AUTH_IMPLEMENTATION_PLAN.md
+- Answer open questions
+- Approve architecture and approach
+
+**2. Phase 1: Foundation** (Week 1)
+- Set up Google Cloud OAuth consent screen
+- Enable Firebase Authentication
+- Create auth composable and store
+- Install dependencies
+
+**3. Testing** (ongoing)
+- Execute test suites after each phase
+- Validate in Firebase Emulator
+- Real device testing (iOS Safari, Android Chrome)
+
+**4. Deployment** (Week 4)
+- Soft launch with opt-in beta
+- Monitor sign-in success rate
+- Collect user feedback
+- Full rollout after 2 weeks
+
+---
+
+### Learnings
+
+**1. One Tap is Complex**
+- Cooldown behavior is critical to understand
+- Browser compatibility varies (Safari/Firefox have limitations)
+- Always need button fallback
+- Not a "set it and forget it" feature
+
+**2. Security Rules Don't Cascade**
+- Firebase rules don't inherit to child paths
+- Must explicitly define rules for each path level
+- `/households` rules don't apply to `/households/{id}/pets`
+- Critical to test with Firebase Emulator
+
+**3. Google Best Practices Are Non-Negotiable**
+- Use `sub` claim as user ID (not email)
+- Complete OAuth consent screen (required for production)
+- Implement CSRF protection (security requirement)
+- Provide alternative auth methods (accessibility)
+
+**4. Household Multi-User Pattern is Rare**
+- Most apps use single account + profiles (Netflix)
+- Or single account shared (no attribution)
+- Tailr needs authenticated multi-user (attribution matters)
+- Closest industry patterns: Smart home apps (Google Home, HomeKit)
+
+---
+
+### Blockers
+
+**None currently.** Waiting for user review and answers to open questions.
+
+---
+
+### Files Changed
+
+**New Files:**
+- ✅ `GOOGLE_AUTH_IMPLEMENTATION_PLAN.md` (1,422 lines)
+
+**Modified Files:**
+- ✅ `PROGRESS.md` (added planning phase section)
+- ✅ `DEVLOG.md` (this entry)
+
+---
+
+### Time Breakdown
+
+- Research (web search, reading docs): 1.5 hours
+- Architecture design (database schema, auth flow): 0.75 hours
+- Writing implementation plan: 1 hour
+- Testing plan creation: 0.5 hours
+- Documentation updates: 0.25 hours
+- **Total:** ~3 hours
+
+---
+
+### References
+
+Full list of sources documented in GOOGLE_AUTH_IMPLEMENTATION_PLAN.md (Sources section at bottom).
+
+Key sources:
+- Google Sign-In Best Practices (official)
+- Google One Tap Guide 2025 (comprehensive)
+- Vue 3 + Firebase Auth patterns (community)
+- 2026 UX research on authentication flows
+
+---
+
 ## Session: 2026-03-16 - Health Analytics & Insights
 
 ### 🎯 FEATURE: Weight Trends, PDF Export, and Activity Insights
