@@ -4,6 +4,187 @@
 
 ---
 
+## Session: 2026-03-16 - Email Template Setup & Firestore Rules Configuration
+
+### 🔄 IN PROGRESS: Email Template Infrastructure Setup
+
+**Commit:** `f3c409d` - Add: Email template setup for Firebase Email Trigger extension
+**Duration:** ~45 minutes
+**Status:** 🔄 IN PROGRESS - Scripts created, awaiting manual Firestore setup
+
+**Goal:** Create infrastructure for email template setup including Firestore rules, setup scripts, and manual configuration guides.
+
+---
+
+### Implementation Summary
+
+**Firestore Security Rules:**
+
+1. **Created `firestore.rules`**
+   - Collection: `/mail` - Write-only for email queue (clients can queue emails)
+   - Collection: `/mail_templates` - Temporarily writable for setup (will lock down)
+   - Collection: `/invites` - Full read/write for household invitations
+   - Default deny for all other collections
+
+2. **Updated `firebase.json`**
+   - Added Firestore rules configuration
+   - Configured alongside existing Realtime Database rules
+   - Enables deployment with `firebase deploy --only firestore:rules`
+
+**Email Template Setup Scripts:**
+
+3. **Created Multiple Setup Approaches** (for different authentication scenarios)
+   - `scripts/setup-email-template.js` - Firebase Admin SDK version
+     - Requires service account JSON key or default credentials
+     - Most robust for CI/CD environments
+     - Attempts both service account and default auth
+   - `scripts/setup-email-template-client.js` - Firebase Client SDK version
+     - Uses web API key from `firebase/config.js`
+     - Requires Firestore rules to allow writes
+     - Best for local development if authenticated
+   - `scripts/setup-email-template-rest.js` - Firestore REST API version
+     - Direct HTTP requests to Firestore API
+     - No authentication library needed
+     - Requires deployed Firestore rules
+
+4. **Manual Setup Guide**
+   - Created `email-template-values.txt` with all template content
+   - Provides copy-paste values for Firebase Console
+   - Includes HTML and text email templates
+   - Documents template variables: `{{inviterName}}`, `{{inviteUrl}}`
+
+**Email Template Content:**
+
+5. **Household Invite Email Template**
+   - **Subject:** "You've been invited to join a pet household on Tailr"
+   - **HTML Version:**
+     - Modern, responsive design
+     - Gradient header with Tailr branding (🐾)
+     - Sage green color scheme matching app
+     - Call-to-action button styled to match UI
+     - Mobile-friendly layout
+     - Footer with expiration notice (7 days)
+   - **Text Version:**
+     - Plain text alternative for email clients without HTML support
+     - Same content, readable format
+     - Includes all links and information
+   - **Template Variables:**
+     - `{{inviterName}}` - Name of person sending invite
+     - `{{inviteUrl}}` - Unique invitation link with household code
+
+**Dependencies:**
+
+6. **Added `firebase-admin`**
+   - Installed as dev dependency
+   - Required for Admin SDK setup script
+   - Enables programmatic Firestore access with elevated permissions
+
+---
+
+### Files Created
+
+**New Files:**
+- `firestore.rules` - Firestore security rules
+- `scripts/setup-email-template.js` - Admin SDK setup script
+- `scripts/setup-email-template-client.js` - Client SDK setup script
+- `scripts/setup-email-template-rest.js` - REST API setup script
+- `email-template-values.txt` - Manual setup guide
+
+**Modified Files:**
+- `firebase.json` - Added Firestore rules configuration
+- `package.json` - Added firebase-admin dependency
+- `package-lock.json` - Updated with new dependencies
+
+---
+
+### Challenges & Solutions
+
+**Challenge 1: Authentication Complexity**
+- Problem: Non-interactive environment can't use `firebase login`
+- Solution: Created three different setup approaches (Admin SDK, Client SDK, REST API)
+- Fallback: Provided manual Firebase Console instructions with copy-paste values
+
+**Challenge 2: Firestore Not Initialized**
+- Problem: Firestore may not be enabled in Firebase project yet
+- Solution: Documented Firestore initialization steps in setup guides
+- Note: User must enable Firestore in Firebase Console before deploying rules
+
+**Challenge 3: Firestore vs Realtime Database Rules**
+- Problem: Initially confused Realtime Database rules with Firestore rules
+- Solution: Created separate `firestore.rules` file (not in JSON format like Realtime DB)
+- Learning: Firestore uses rules language syntax, Realtime DB uses JSON
+
+**Challenge 4: Security Rules Deployment**
+- Problem: Can't deploy rules without Firebase authentication
+- Solution: Provided clear manual steps and multiple automation options
+- Recommendation: User should enable Firestore and deploy rules via Firebase Console or CLI
+
+---
+
+### Next Steps (Pending Manual Action)
+
+**User Must Complete:**
+1. ⏭️ Enable Firestore in Firebase Console (if not already done)
+   - Navigate to: https://console.firebase.google.com/project/petlog-c4c1e/firestore
+   - Click "Create database" if needed
+   - Select production mode
+   - Choose region (recommend us-central1 to match existing)
+
+2. ⏭️ Create email template in Firestore:
+   - **Option A (Recommended):** Firebase Console
+     - Use values from `email-template-values.txt`
+     - Collection: `mail_templates`
+     - Document ID: `household-invite`
+     - Add 3 fields: `subject`, `html`, `text`
+   - **Option B:** Run setup script after Firebase login
+     - `firebase login`
+     - `firebase deploy --only firestore:rules`
+     - `node scripts/setup-email-template-rest.js`
+
+3. ⏭️ Lock down Firestore rules (after template is created)
+   - Update `firestore.rules` to set `mail_templates` write: false
+   - Deploy updated rules
+
+4. ⏭️ Test email invitation functionality
+
+---
+
+### Key Learnings
+
+1. **Firestore Rules Syntax**
+   - Firestore uses a rules language (like Firebase Security Rules Language)
+   - Different from Realtime Database JSON format
+   - Version must be specified: `rules_version = '2';`
+   - Service declaration: `service cloud.firestore { ... }`
+
+2. **Firebase Hybrid Database Setup**
+   - Can use both Realtime Database AND Firestore in same project
+   - Each has separate rules files and deployment commands
+   - `firebase.json` can configure both simultaneously
+   - No conflicts between the two systems
+
+3. **Email Template Best Practices**
+   - Always provide both HTML and text versions
+   - Use template variables with `{{variableName}}` syntax
+   - Keep inline CSS for email HTML (no external stylesheets)
+   - Test email rendering in multiple clients
+   - Include clear expiration/action deadlines
+
+4. **Programmatic Firestore Access**
+   - Three main approaches: Admin SDK, Client SDK, REST API
+   - Each has different authentication requirements
+   - Admin SDK most powerful but requires service account
+   - REST API simplest but requires properly deployed rules
+   - Client SDK easiest for web apps but limited by security rules
+
+5. **Non-Interactive Environment Limitations**
+   - Can't use `firebase login` in CI/CD or remote shells
+   - Need to provide manual fallback instructions
+   - Consider multiple setup paths for different user scenarios
+   - Document Firebase Console steps as reliable alternative
+
+---
+
 ## Session: 2026-03-16 - Firebase Email Extension Installation & Firestore Migration
 
 ### ✅ IN PROGRESS: Firebase Trigger Email Extension Setup

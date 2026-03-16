@@ -1,16 +1,16 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-16 (Firebase Email Extension & Firestore Migration)
-**Current Status:** 🔄 IN PROGRESS - Email extension installing, code migrated to Firestore
+**Last Updated:** 2026-03-16 (Email Template Setup & Firestore Configuration)
+**Current Status:** 🔄 IN PROGRESS - Template scripts created, awaiting Firestore setup
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
 ---
 
-## 🔄 IN PROGRESS: Firebase Email Extension & Firestore Migration (2026-03-16)
+## 🔄 IN PROGRESS: Email Template Setup & Firestore Configuration (2026-03-16)
 
-**Commit:** `eac5529` - Feature: Update email invites to use Firestore
-**Status:** 🔄 IN PROGRESS - Extension installing, templates pending
+**Commit:** `f3c409d` - Add: Email template setup for Firebase Email Trigger extension
+**Status:** 🔄 IN PROGRESS - Template scripts created, awaiting manual Firestore setup
 
 ### Implementation Summary
 
@@ -22,9 +22,13 @@ Successfully upgraded to Blaze plan, installed Firebase Trigger Email extension,
 - ✅ Configured Firebase Trigger Email extension with Gmail SMTP
 - ✅ Migrated email invite code from Realtime Database to Firestore
 - ✅ Updated Firebase config with Firestore initialization
-- 🔄 Extension installing (3-5 minutes)
-- ⏭️ Create email template in Firestore
-- ⏭️ Set up Firestore security rules
+- ✅ Extension installation completed
+- ✅ Created Firestore security rules (firestore.rules)
+- ✅ Updated firebase.json with Firestore configuration
+- ✅ Created email template setup scripts (3 different approaches)
+- ✅ Added firebase-admin dependency
+- 🔄 Create email template in Firestore (manual step via Console)
+- ⏭️ Deploy Firestore rules
 - ⏭️ Test email functionality
 
 ---
@@ -60,6 +64,26 @@ Successfully upgraded to Blaze plan, installed Firebase Trigger Email extension,
   - Migrated `sendEmailInvite()` to use Firestore
   - Changed from Realtime Database `set()` to Firestore `addDoc()`
   - Simplified email document structure (extension handles timestamps/status)
+
+**5. Email Template Setup Infrastructure**
+- **Firestore Security Rules:**
+  - Created `firestore.rules` with proper permissions
+  - `/mail` collection: write-only (email queue)
+  - `/mail_templates` collection: read-only for clients
+  - `/invites` collection: full access
+- **Firebase Configuration:**
+  - Updated `firebase.json` to include Firestore rules
+  - Configured Firestore deployment alongside Realtime Database
+- **Setup Scripts (3 approaches):**
+  - `scripts/setup-email-template.js` - Firebase Admin SDK (requires service account)
+  - `scripts/setup-email-template-client.js` - Firebase Client SDK (requires rules access)
+  - `scripts/setup-email-template-rest.js` - Firestore REST API (requires deployed rules)
+- **Manual Setup Guide:**
+  - `email-template-values.txt` - Copy-paste values for Firebase Console
+  - Contains HTML and text email templates with variable placeholders
+  - Template variables: `{{inviterName}}`, `{{inviteUrl}}`
+- **Dependencies:**
+  - Added `firebase-admin` for programmatic Firestore access
 
 ---
 
@@ -99,13 +123,15 @@ Successfully upgraded to Blaze plan, installed Firebase Trigger Email extension,
 
 #### Next Steps
 
-**Immediate (Pending Extension Installation):**
-1. ⏭️ Wait for extension to finish installing
+**Immediate (Manual Steps Required):**
+1. ⏭️ Enable Firestore in Firebase Console (if not already done)
 2. ⏭️ Create email template in Firestore:
+   - Option A: Use Firebase Console with values from `email-template-values.txt`
+   - Option B: Login to Firebase CLI and run setup scripts
    - Collection: `mail_templates`
    - Document: `household-invite`
    - Fields: `subject`, `html`, `text`
-3. ⏭️ Set up Firestore security rules for `/mail` collection
+3. ⏭️ Deploy Firestore security rules: `firebase deploy --only firestore:rules`
 4. ⏭️ Test email invitation flow
 5. ⏭️ Update FIREBASE_EMAIL_SETUP.md documentation
 
