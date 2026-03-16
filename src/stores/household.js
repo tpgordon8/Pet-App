@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { database } from '@/firebase/config'
+import { database, firestore } from '@/firebase/config'
 import { ref as dbRef, set, get, onValue } from 'firebase/database'
+import { collection, addDoc } from 'firebase/firestore'
 import { useAnalytics } from '@/composables/useAnalytics'
 
 export const useHouseholdStore = defineStore('household', () => {
@@ -236,12 +237,11 @@ export const useHouseholdStore = defineStore('household', () => {
     }
 
     try {
-      const inviteId = `invite_${Date.now()}`
       const inviteLink = `${window.location.origin}/join?code=${householdCode.value}`
 
-      // Write to /mail collection (Firebase Extension listens here)
-      const mailRef = dbRef(database, `mail/${inviteId}`)
-      await set(mailRef, {
+      // Write to Firestore /mail collection (Firebase Extension listens here)
+      const mailCollection = collection(firestore, 'mail')
+      const docRef = await addDoc(mailCollection, {
         to: recipientEmail,
         template: {
           name: 'household-invite',
@@ -252,12 +252,10 @@ export const useHouseholdStore = defineStore('household', () => {
             inviteLink: inviteLink,
             householdCode: householdCode.value
           }
-        },
-        createdAt: Date.now(),
-        status: 'pending'
+        }
       })
 
-      return { success: true, inviteId }
+      return { success: true, inviteId: docRef.id }
     } catch (error) {
       console.error('Error sending email invite:', error)
       throw error
