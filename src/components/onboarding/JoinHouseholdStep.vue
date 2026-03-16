@@ -86,8 +86,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import StepContainer from './StepContainer.vue'
+
+const props = defineProps({
+  initialCode: {
+    type: String,
+    default: ''
+  }
+})
 
 const emit = defineEmits(['submit', 'switch-to-create'])
 
@@ -95,6 +102,13 @@ const form = ref({
   name: '',
   householdCode: '',
   passcode: ''
+})
+
+// Pre-fill household code if provided
+onMounted(() => {
+  if (props.initialCode) {
+    form.value.householdCode = props.initialCode.toUpperCase()
+  }
 })
 
 const loading = ref(false)

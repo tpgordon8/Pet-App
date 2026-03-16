@@ -129,6 +129,14 @@ const currentStepProps = computed(() => {
     }
   }
 
+  if (currentStep.value === 'joinHousehold') {
+    // Pass household code from query params if available
+    const code = router.currentRoute.value.query.code || ''
+    return {
+      initialCode: code
+    }
+  }
+
   return {}
 })
 
@@ -284,10 +292,17 @@ function goBack() {
   }
 }
 
-// Check if already authenticated
+// Check if already authenticated or handle invite link
 onMounted(() => {
   if (householdStore.isAuthenticated) {
     router.push('/dashboard')
+    return
+  }
+
+  // If coming from /join route with a code, go directly to join step
+  if (router.currentRoute.value.path === '/join' && router.currentRoute.value.query.code) {
+    flowType.value = FLOW_JOIN
+    currentStep.value = 'joinHousehold'
   }
 })
 </script>

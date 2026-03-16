@@ -17,6 +17,12 @@ const router = createRouter({
       meta: { requiresHousehold: false }
     },
     {
+      path: '/join',
+      name: 'join',
+      component: () => import('@/views/OnboardingView.vue'),
+      meta: { requiresHousehold: false }
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/views/DashboardView.vue'),

@@ -6,10 +6,12 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage
 import { useHouseholdStore } from './household'
 import { usePetsStore } from './pets'
 import { useToast } from '@/composables/useToast'
+import { useAnalytics } from '@/composables/useAnalytics'
 
 export const useActivitiesStore = defineStore('activities', () => {
   const householdStore = useHouseholdStore()
   const toast = useToast()
+  const { trackActivityLogged, trackMedicalActivity } = useAnalytics()
 
   // State
   const activities = ref([])
@@ -156,6 +158,13 @@ export const useActivitiesStore = defineStore('activities', () => {
 
       const activitiesRef = dbRef(database, `households/${householdStore.householdId}/activities`)
       await push(activitiesRef, activity)
+
+      // Track analytics
+      if (medicalData) {
+        trackMedicalActivity(type)
+      } else {
+        trackActivityLogged(type, activity.petId, !!notes, !!photoUrl)
+      }
 
       toast.success(`${emoji} ${type} logged!`)
       return true

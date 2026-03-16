@@ -5,17 +5,19 @@
       <div class="card flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            🐾 Tailr
+            🐾 {{ householdStore.householdName || 'Tailr' }}
           </h1>
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Welcome, {{ householdStore.memberName }}!
           </p>
         </div>
         <button
-          @click="handleLogout"
-          class="btn btn-secondary"
+          @click="showSettingsModal = true"
+          class="btn btn-secondary flex items-center gap-2"
+          title="Household Settings"
         >
-          Logout
+          <span class="text-lg">⚙️</span>
+          <span class="hidden sm:inline">Settings</span>
         </button>
       </div>
 
@@ -220,6 +222,19 @@
       @close="showEditModal = false"
       @save="handleSaveEdit"
     />
+
+    <!-- Household Settings Modal -->
+    <HouseholdSettingsModal
+      :is-open="showSettingsModal"
+      @close="showSettingsModal = false"
+      @open-invite="openInviteModal"
+    />
+
+    <!-- Invite Member Modal -->
+    <InviteMemberModal
+      :is-open="showInviteModal"
+      @close="showInviteModal = false"
+    />
   </div>
 </template>
 
@@ -242,6 +257,8 @@ import MedicalModal from '@/components/MedicalModal.vue'
 import EditActivityModal from '@/components/EditActivityModal.vue'
 import WeightTrendChart from '@/components/WeightTrendChart.vue'
 import ActivityInsights from '@/components/ActivityInsights.vue'
+import HouseholdSettingsModal from '@/components/HouseholdSettingsModal.vue'
+import InviteMemberModal from '@/components/InviteMemberModal.vue'
 
 const router = useRouter()
 const householdStore = useHouseholdStore()
@@ -254,6 +271,8 @@ const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
 const showMedicalModalRef = ref(false)
 const showEditModal = ref(false)
+const showSettingsModal = ref(false)
+const showInviteModal = ref(false)
 const pendingActivity = ref({ type: '', emoji: '' })
 const pendingMedical = ref({ type: '', emoji: '' })
 const editingActivity = ref(null)
@@ -287,6 +306,11 @@ function handleLogout() {
   petsStore.stopListener()
   householdStore.logout()
   router.push('/')
+}
+
+function openInviteModal() {
+  showSettingsModal.value = false
+  showInviteModal.value = true
 }
 
 function showActivityNotes(type, emoji) {

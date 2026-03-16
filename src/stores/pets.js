@@ -4,10 +4,12 @@ import { database } from '@/firebase/config'
 import { ref as dbRef, push, onValue, remove, update, set } from 'firebase/database'
 import { useHouseholdStore } from './household'
 import { useToast } from '@/composables/useToast'
+import { useAnalytics } from '@/composables/useAnalytics'
 
 export const usePetsStore = defineStore('pets', () => {
   const householdStore = useHouseholdStore()
   const toast = useToast()
+  const { trackPetAction } = useAnalytics()
 
   // State
   const pets = ref([])
@@ -85,6 +87,9 @@ export const usePetsStore = defineStore('pets', () => {
 
       const petsRef = dbRef(database, `households/${householdStore.householdId}/pets`)
       const newPetRef = await push(petsRef, pet)
+
+      // Track analytics
+      trackPetAction('added', species || 'unknown')
 
       toast.success(`${emoji} ${name} added!`)
 

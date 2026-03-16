@@ -4,6 +4,306 @@
 
 ---
 
+## Session: 2026-03-16 - Multi-Household Invitations & Analytics
+
+### 🚀 IMPLEMENTED: Household Naming, Roles, Permissions & Email Invitations
+
+**Commit:** (See git log)
+**Duration:** ~2.5 hours
+**Status:** ✅ COMPLETE, READY FOR TESTING
+
+**Goal:** Implement multi-household invitation system with household naming (iOS group chat style), owner/member roles with granular permissions, email invitations via Firebase Extensions, and comprehensive Firebase Analytics tracking.
+
+---
+
+### Implementation Summary
+
+**Major Features Delivered:**
+
+1. **Household Naming System (iOS Group Chat Style)**
+   - Auto-generates household name: "[Creator Name]'s Household"
+   - Editable by owners only via settings modal
+   - Real-time sync across all household members
+   - Displays in dashboard header instead of "Tailr"
+
+2. **Role-Based Permission System**
+   - Two roles: `owner` and `member`
+   - Granular permissions object for future flexibility:
+     - `canEditPets` (both owner/member: true)
+     - `canDeleteActivities` (both owner/member: true)
+     - `canInviteMembers` (owner: true, member: false)
+     - `canManageBilling` (owner: true, member: false)
+     - `canEditHousehold` (owner: true, member: false)
+   - First household creator automatically assigned owner role
+   - All future joiners default to member role
+
+3. **Email Invitation System**
+   - Firebase Extensions integration for Trigger Email
+   - Email invites store data in `/mail` collection
+   - Email template includes: inviter name, household name, invite link
+   - Graceful fallback if Firebase Extensions not configured
+
+4. **Invite Link Sharing**
+   - Generate shareable links: `https://tailr.app/join?code=ABC123`
+   - New `/join` route auto-navigates to join flow
+   - Pre-fills household code from query parameter
+   - Copy to clipboard functionality with toast confirmation
+
+5. **Firebase Analytics Tracking**
+   - Household events: created, joined, name_updated
+   - Activity events: activity_logged (with notes/photo tracking)
+   - Medical events: medical_activity
+   - Pet events: pet_action (added, edited, deleted)
+   - Invitation events: invite_sent (link, email)
+   - User properties: role, household_id
+   - Analytics auto-initialized with isSupported() check
+
+---
+
+### Technical Implementation Details
+
+**New Components:**
+- `HouseholdSettingsModal.vue` - Household management UI
+  - Edit household name (owner only)
+  - View/copy household code
+  - View member list with roles
+  - Leave household button
+  - Open invite modal
+- `InviteMemberModal.vue` - Invitation UI
+  - Two tabs: "Share Link" and "Send Email"
+  - Copy invite link to clipboard
+  - Copy household code
+  - Email form with validation
+  - Graceful error handling
+
+**New Composable:**
+- `useAnalytics.js` - Firebase Analytics helper
+  - `trackEvent()` - Generic event tracking
+  - `trackPageView()` - Page view tracking
+  - `trackActivityLogged()` - Activity with metadata
+  - `trackHouseholdAction()` - Household events
+  - `trackInviteSent()` - Invitation tracking
+  - `trackPetAction()` - Pet management events
+  - `trackMedicalActivity()` - Medical event tracking
+  - `setAnalyticsUserId()` - Set user ID
+  - `setAnalyticsUserProperties()` - User properties
+
+**Store Updates:**
+
+*household.js:*
+- Added `householdName` state (synced to localStorage)
+- Added `memberPermissions` map (name → {role, permissions})
+- Added computed: `isOwner`, `myPermissions`
+- Updated `createHousehold()` - Sets name, owner role, permissions
+- Updated `joinHousehold()` - Sets member role, limited permissions
+- Added `updateHouseholdName()` - Owner-only function
+- Added `generateInviteLink()` - Creates shareable link
+- Added `sendEmailInvite()` - Writes to `/mail` collection
+- Added `startHouseholdListener()` - Real-time name sync
+- Updated `logout()` - Clears name, permissions, stops listeners
+- Analytics tracking: household creation, joining, name updates
+
+*activities.js:*
+- Imported `useAnalytics`
+- Track `activity_logged` after successful log
+- Track `medical_activity` for medical types
+- Metadata: activity_type, pet_id, has_notes, has_photo
+
+*pets.js:*
+- Imported `useAnalytics`
+- Track `pet_action` after pet added
+- Metadata: action (added), species
+
+**Database Schema Changes:**
+
+```javascript
+/households/{code}
+  - name: string              // NEW: "Tara's Household"
+  - code: string
+  - passcode: string
+  - createdAt: timestamp
+  - createdBy: string         // NEW: Creator's name
+  - members: {
+      "{memberName}": {
+        name: string
+        role: string          // NEW: "owner" | "member"
+        permissions: {        // NEW: Granular permissions
+          canEditPets: boolean
+          canDeleteActivities: boolean
+          canInviteMembers: boolean
+          canManageBilling: boolean
+          canEditHousehold: boolean
+        }
+        joinedAt: timestamp
+      }
+    }
+```
+
+**Router Updates:**
+- Added `/join` route → OnboardingView.vue
+- Pre-fills household code from `?code=` query param
+- Auto-navigates to join step if coming from /join route
+
+**Config Updates:**
+- `.env.example` - Added `VITE_FIREBASE_MEASUREMENT_ID`
+- `firebase/config.js` - Initialize Analytics with isSupported() check
+
+**UI/UX Updates:**
+- Dashboard header shows household name instead of "Tailr"
+- "Logout" button replaced with "⚙️ Settings" button
+- Settings modal shows household name, code, members
+- Invite button visible for owners and users with canInviteMembers
+- Owner badge displayed next to owner's name
+- "You" badge displayed next to current user
+
+---
+
+### Backward Compatibility
+
+**Safe for Existing Data:**
+- Old households without `name` field: Auto-generates on first load
+- Old members without `role` field: Defaults to "member"
+- Old members without `permissions`: Gets default member permissions
+- No breaking changes to activities or pets collections
+- All existing functionality preserved
+
+---
+
+### Testing Deliverables
+
+**Created:** `TESTING_CHECKLIST.md`
+- 50+ comprehensive test cases
+- Critical path testing (15 tests)
+- Edge cases (10 tests)
+- Mobile responsiveness (4 tests)
+- Analytics verification (8 tests)
+- Dark mode testing
+- Real-time sync testing
+- Backward compatibility testing
+
+**Test Categories:**
+1. Household creation with new schema
+2. Household settings modal (edit name, copy code)
+3. Invite modal (link sharing, email invites)
+4. Join household via invite link
+5. Role-based permissions enforcement
+6. Real-time sync (name updates, new members)
+7. Firebase Analytics event verification
+8. Edge cases (empty names, special chars, logout/rejoin)
+9. Mobile UI responsiveness
+10. Dark mode compatibility
+11. Backward compatibility with old data
+12. Firebase Extensions email delivery
+
+---
+
+### Known Limitations (By Design)
+
+1. Email invitations require Firebase Extensions setup (not automatic)
+2. Member permissions are currently binary (future: custom role creation)
+3. No household deletion functionality yet (future feature)
+4. No member removal/promotion UI yet (data structure supports it)
+5. Invite links don't expire (future: time-limited invite tokens)
+6. No multi-household switching UI (users can only be in one at a time currently)
+
+---
+
+### User Decisions Implemented
+
+Based on user requirements:
+
+1. **Email Invitations:** ✅ Firebase Extensions (Trigger Email)
+   - Most stable for Firebase stack
+   - Simple configuration via Firebase Console
+   - Auto-handles email delivery queue
+
+2. **Household Naming:** ✅ iOS Group Chat Style
+   - Auto-generate: "[Name]'s Household"
+   - Tap to edit (owner only)
+   - Syncs to all members in real-time
+
+3. **User Roles:** ✅ Simple (owner/member) + Permissions Object
+   - Easy to understand now
+   - Flexible for future granular control
+   - No boxed-in constraints
+
+4. **Migration Timing:** ✅ Deploy after testing
+   - Comprehensive test checklist created
+   - Backward compatible implementation
+   - Ready for immediate testing
+
+5. **Analytics:** ✅ Firebase Analytics
+   - Integrates seamlessly with existing Firebase
+   - Free forever for their traffic level
+   - Easy-to-read charts in Firebase Console
+
+---
+
+### Next Steps for User
+
+**Before Merging to Main:**
+1. [ ] Complete TESTING_CHECKLIST.md (50+ tests)
+2. [ ] Test on mobile devices (iOS Safari, Chrome Android)
+3. [ ] Set up Firebase Extensions (Trigger Email) if email invites desired
+4. [ ] Verify Firebase Analytics in Firebase Console → Analytics → DebugView
+5. [ ] Test with real household (Tara + Meag)
+6. [ ] Verify invite link works end-to-end
+
+**Optional Enhancements (Future):**
+- Time-limited invite tokens (security)
+- Multi-household switching UI
+- Member removal/role promotion UI
+- Custom role creation ("Can log activities but not delete")
+- Household deletion flow
+- Email verification (if moving to email-based auth)
+
+---
+
+### Files Changed
+
+**Modified (9 files):**
+- `.env.example` - Added MEASUREMENT_ID
+- `src/components/onboarding/JoinHouseholdStep.vue` - Pre-fill code prop
+- `src/firebase/config.js` - Initialize Analytics
+- `src/router/index.js` - Added /join route
+- `src/stores/activities.js` - Analytics tracking
+- `src/stores/household.js` - Name, roles, permissions, invites
+- `src/stores/pets.js` - Analytics tracking
+- `src/views/DashboardView.vue` - Settings button, modals
+- `src/views/OnboardingView.vue` - Handle /join route
+
+**Created (4 files):**
+- `TESTING_CHECKLIST.md` - Comprehensive test suite
+- `src/components/HouseholdSettingsModal.vue` - Settings UI
+- `src/components/InviteMemberModal.vue` - Invite UI
+- `src/composables/useAnalytics.js` - Analytics helper
+
+**Total Impact:** 13 files, +1277 lines, -13 lines
+
+---
+
+### Lessons Learned
+
+**What Went Well:**
+- Clean separation of concerns (stores, composables, components)
+- Reusable analytics composable makes tracking easy to add anywhere
+- Permission system is future-proof without being over-engineered
+- iOS group chat pattern is familiar and intuitive
+- Backward compatibility design prevented breaking changes
+
+**What Could Be Improved:**
+- Email invitations depend on external Firebase Extensions setup
+- No invite link expiration (security consideration for future)
+- No multi-household UI (users can't easily switch between households)
+
+**Technical Decisions:**
+- Used Firebase Extensions over custom backend for email (simpler, less maintenance)
+- Chose granular permissions object over hardcoded roles (future flexibility)
+- Auto-initialize Analytics with isSupported() check (prevents SSR errors)
+- Real-time listeners for household name (feels native, instant feedback)
+
+---
+
 ## Session: 2026-03-16 - Google Authentication Planning
 
 ### 📋 RESEARCH & PLANNING: Google Sign-In Implementation
