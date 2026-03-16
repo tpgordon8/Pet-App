@@ -16,8 +16,8 @@
 
       <div class="space-y-3">
         <button
-          @click="$router.push('/onboarding')"
           class="btn btn-primary w-full py-3"
+          @click="$router.push('/onboarding')"
         >
           Get Started
         </button>

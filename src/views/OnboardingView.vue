@@ -4,12 +4,15 @@
       <!-- Progress Indicator (except for welcome and join) -->
       <ProgressIndicator
         v-if="showProgress"
-        :currentStep="currentProgressStep"
-        :totalSteps="totalProgressSteps"
+        :current-step="currentProgressStep"
+        :total-steps="totalProgressSteps"
       />
 
       <!-- Step Components -->
-      <transition name="slide-fade" mode="out-in">
+      <transition
+        name="slide-fade"
+        mode="out-in"
+      >
         <component
           :is="currentStepComponent"
           :key="currentStep"
@@ -31,8 +34,8 @@
       <!-- Back Button (except first step) -->
       <button
         v-if="canGoBack"
-        @click="goBack"
         class="back-button"
+        @click="goBack"
       >
         ← Back
       </button>

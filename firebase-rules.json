@@ -27,6 +27,16 @@
           }
         }
       }
+    },
+    "mail": {
+      "$mailId": {
+        ".write": true,
+        ".read": false
+      }
+    },
+    "mail_templates": {
+      ".read": true,
+      ".write": false
     }
   }
 }

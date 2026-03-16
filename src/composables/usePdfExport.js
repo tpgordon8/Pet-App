@@ -97,7 +97,7 @@ export function usePdfExport() {
         doc.text('🏥 Vet Visits', margin, yPos)
         yPos += 8
 
-        vetVisits.forEach((visit, index) => {
+        vetVisits.forEach((visit) => {
           const boxHeight = 20 + (visit.medicalData?.notes ? 10 : 0)
           checkNewPage(boxHeight + 5)
 
@@ -145,7 +145,7 @@ export function usePdfExport() {
         doc.text('💉 Vaccinations', margin, yPos)
         yPos += 8
 
-        vaccinations.forEach((vacc, index) => {
+        vaccinations.forEach((vacc) => {
           const boxHeight = 20 + (vacc.medicalData?.notes ? 10 : 0)
           checkNewPage(boxHeight + 5)
 

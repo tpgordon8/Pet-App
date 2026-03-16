@@ -1,5 +1,8 @@
 <template>
-  <div id="app" :class="{ 'dark': isDarkMode }">
+  <div
+    id="app"
+    :class="{ 'dark': isDarkMode }"
+  >
     <RouterView />
     <ToastContainer />
   </div>

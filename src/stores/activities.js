@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { database, storage } from '@/firebase/config'
-import { ref as dbRef, push, onValue, remove, update, set } from 'firebase/database'
+import { ref as dbRef, push, onValue, remove, update } from 'firebase/database'
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useHouseholdStore } from './household'
 import { usePetsStore } from './pets'
@@ -91,7 +91,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
-  async function uploadPhoto(file, activityType) {
+  async function uploadPhoto(file) {
     try {
       const timestamp = Date.now()
       const filename = `${timestamp}-${file.name}`

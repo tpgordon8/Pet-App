@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { database } from '@/firebase/config'
-import { ref as dbRef, push, onValue, remove, update, set } from 'firebase/database'
+import { ref as dbRef, push, onValue, remove, update } from 'firebase/database'
 import { useHouseholdStore } from './household'
 import { useToast } from '@/composables/useToast'
 import { useAnalytics } from '@/composables/useAnalytics'

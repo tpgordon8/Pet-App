@@ -12,9 +12,9 @@
           </p>
         </div>
         <button
-          @click="showSettingsModal = true"
           class="btn btn-secondary flex items-center gap-2"
           title="Household Settings"
+          @click="showSettingsModal = true"
         >
           <span class="text-lg">⚙️</span>
           <span class="hidden sm:inline">Settings</span>
@@ -58,7 +58,10 @@
       <div class="card">
         <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
           Quick Log
-          <span v-if="petsStore.selectedPet" class="text-sage-600 dark:text-sage-400">
+          <span
+            v-if="petsStore.selectedPet"
+            class="text-sage-600 dark:text-sage-400"
+          >
             for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
@@ -67,43 +70,43 @@
             emoji="💩"
             label="Poop"
             :count="activitiesStore.stats.poop"
-            @click="showActivityNotes('Poop', '💩')"
             :disabled="activitiesStore.loading"
+            @click="showActivityNotes('Poop', '💩')"
           />
           <ActivityButton
             emoji="💧"
             label="Pee"
             :count="activitiesStore.stats.pee"
-            @click="showActivityNotes('Pee', '💧')"
             :disabled="activitiesStore.loading"
+            @click="showActivityNotes('Pee', '💧')"
           />
           <ActivityButton
             emoji="🍖"
             label="Food"
             :count="activitiesStore.stats.food"
-            @click="showActivityNotes('Food', '🍖')"
             :disabled="activitiesStore.loading"
+            @click="showActivityNotes('Food', '🍖')"
           />
           <ActivityButton
             emoji="😴"
             label="Sleep"
             :count="activitiesStore.stats.sleep"
-            @click="showActivityNotes('Sleep', '😴')"
             :disabled="activitiesStore.loading"
+            @click="showActivityNotes('Sleep', '😴')"
           />
           <ActivityButton
             emoji="💊"
             label="Meds"
             :count="activitiesStore.stats.meds"
-            @click="showActivityNotes('Meds', '💊')"
             :disabled="activitiesStore.loading"
+            @click="showActivityNotes('Meds', '💊')"
           />
           <ActivityButton
             emoji="🚶"
             label="Walk"
             :count="activitiesStore.stats.walk"
-            @click="showActivityNotes('Walk', '🚶')"
             :disabled="activitiesStore.loading"
+            @click="showActivityNotes('Walk', '🚶')"
           />
         </div>
       </div>
@@ -113,15 +116,18 @@
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-md font-semibold text-gray-900 dark:text-white">
             Medical Tracking
-            <span v-if="petsStore.selectedPet" class="text-sage-600 dark:text-sage-400">
+            <span
+              v-if="petsStore.selectedPet"
+              class="text-sage-600 dark:text-sage-400"
+            >
               for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
             </span>
           </h3>
           <button
             v-if="petsStore.selectedPet && petsStore.selectedPetId !== 'all'"
-            @click="exportMedicalPdf"
             class="btn-export"
             title="Export medical history as PDF"
+            @click="exportMedicalPdf"
           >
             <span class="text-lg">📄</span>
             <span class="export-label">Export PDF</span>
@@ -132,22 +138,22 @@
             emoji="🏥"
             label="Vet Visit"
             :count="activitiesStore.stats.vetVisit"
-            @click="showMedicalModal('Vet Visit', '🏥')"
             :disabled="activitiesStore.loading"
+            @click="showMedicalModal('Vet Visit', '🏥')"
           />
           <ActivityButton
             emoji="💉"
             label="Vaccination"
             :count="activitiesStore.stats.vaccination"
-            @click="showMedicalModal('Vaccination', '💉')"
             :disabled="activitiesStore.loading"
+            @click="showMedicalModal('Vaccination', '💉')"
           />
           <ActivityButton
             emoji="⚖️"
             label="Weight Check"
             :count="activitiesStore.stats.weightCheck"
-            @click="showMedicalModal('Weight Check', '⚖️')"
             :disabled="activitiesStore.loading"
+            @click="showMedicalModal('Weight Check', '⚖️')"
           />
         </div>
       </div>
@@ -166,12 +172,12 @@
             type="text"
             placeholder="Search activities..."
             class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
-          />
+          >
           <button
             v-if="searchQuery"
-            @click="searchQuery = ''"
             class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label="Clear search"
+            @click="searchQuery = ''"
           >
             <span class="text-xl">✕</span>
           </button>
@@ -240,7 +246,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
@@ -260,7 +265,6 @@ import ActivityInsights from '@/components/ActivityInsights.vue'
 import HouseholdSettingsModal from '@/components/HouseholdSettingsModal.vue'
 import InviteMemberModal from '@/components/InviteMemberModal.vue'
 
-const router = useRouter()
 const householdStore = useHouseholdStore()
 const activitiesStore = useActivitiesStore()
 const petsStore = usePetsStore()
@@ -300,13 +304,6 @@ onUnmounted(() => {
   // Save offline queue
   activitiesStore.saveOfflineQueue()
 })
-
-function handleLogout() {
-  activitiesStore.stopListener()
-  petsStore.stopListener()
-  householdStore.logout()
-  router.push('/')
-}
 
 function openInviteModal() {
   showSettingsModal.value = false
