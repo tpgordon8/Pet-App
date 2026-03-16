@@ -1,13 +1,123 @@
 # Tailr Vue 3 Rebuild - Progress Tracker
 
-**Last Updated:** 2026-03-16 (Comprehensive Testing & Firebase Email Setup)
-**Current Status:** ✅ PRODUCTION READY - All tests passing, code quality verified
+**Last Updated:** 2026-03-16 (Firebase Email Extension & Firestore Migration)
+**Current Status:** 🔄 IN PROGRESS - Email extension installing, code migrated to Firestore
 **Branch:** `claude/pet-activity-logger-Etaqb`
 **Session:** https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 
 ---
 
-## ✅ NEW: Comprehensive Testing & Firebase Email Setup (2026-03-16)
+## 🔄 IN PROGRESS: Firebase Email Extension & Firestore Migration (2026-03-16)
+
+**Commit:** `eac5529` - Feature: Update email invites to use Firestore
+**Status:** 🔄 IN PROGRESS - Extension installing, templates pending
+
+### Implementation Summary
+
+Successfully upgraded to Blaze plan, installed Firebase Trigger Email extension, and migrated email functionality to Firestore while maintaining existing Realtime Database for core features.
+
+**Progress:**
+- ✅ Upgraded Firebase project to Blaze plan ($300 free credits)
+- ✅ Enabled required Google Cloud services (Secret Manager, Artifact Registry, Compute Engine)
+- ✅ Configured Firebase Trigger Email extension with Gmail SMTP
+- ✅ Migrated email invite code from Realtime Database to Firestore
+- ✅ Updated Firebase config with Firestore initialization
+- 🔄 Extension installing (3-5 minutes)
+- ⏭️ Create email template in Firestore
+- ⏭️ Set up Firestore security rules
+- ⏭️ Test email functionality
+
+---
+
+#### Features Delivered
+
+**1. Firebase Blaze Plan & Billing**
+- Upgraded from Spark (free) to Blaze (pay-as-you-go)
+- Linked Google Cloud billing account with $300 free credits
+- Cost: ~$0.01/month for extension + existing Firebase usage
+- Credits will last years at current usage
+
+**2. Firebase Trigger Email Extension**
+- Extension: `firebase/firestore-send-email@0.2.6`
+- Cloud Functions location: `us-east4`
+- SMTP provider: Gmail (500 emails/day free)
+- Authentication: App Password for tpgordon8@gmail.com
+- Email collection: `mail` (Firestore)
+- Template collection: `mail_templates` (Firestore)
+
+**3. Hybrid Database Architecture**
+- **Realtime Database:** Core app data (households, pets, activities, members)
+- **Firestore:** Email queue and templates only
+- Clean separation of concerns
+- No migration needed for existing features
+- Future flexibility for expansion
+
+**4. Code Migration to Firestore**
+- Updated `src/firebase/config.js`:
+  - Added Firestore import and initialization
+  - Exported `firestore` for use in stores
+- Updated `src/stores/household.js`:
+  - Migrated `sendEmailInvite()` to use Firestore
+  - Changed from Realtime Database `set()` to Firestore `addDoc()`
+  - Simplified email document structure (extension handles timestamps/status)
+
+---
+
+#### Technical Changes
+
+**New Firestore Collections:**
+- `/mail` - Email queue (processed by extension)
+- `/mail_templates` - Email templates (HTML/text)
+
+**Database Structure:**
+```javascript
+// Firestore: /mail/{emailId}
+{
+  to: "recipient@email.com",
+  template: {
+    name: "household-invite",
+    data: {
+      inviterName: "Tara",
+      recipientName: "Friend",
+      householdName: "Tara's Household",
+      inviteLink: "https://tailr.app/join?code=ABC123",
+      householdCode: "ABC123"
+    }
+  }
+  // Extension adds: delivery, state, createdAt
+}
+
+// Firestore: /mail_templates/household-invite
+{
+  subject: "You're invited to join {{householdName}} on Tailr!",
+  html: "...",
+  text: "..."
+}
+```
+
+---
+
+#### Next Steps
+
+**Immediate (Pending Extension Installation):**
+1. ⏭️ Wait for extension to finish installing
+2. ⏭️ Create email template in Firestore:
+   - Collection: `mail_templates`
+   - Document: `household-invite`
+   - Fields: `subject`, `html`, `text`
+3. ⏭️ Set up Firestore security rules for `/mail` collection
+4. ⏭️ Test email invitation flow
+5. ⏭️ Update FIREBASE_EMAIL_SETUP.md documentation
+
+**Testing:**
+- Send test invitation email
+- Verify email delivery and formatting
+- Check extension logs in Firebase Console
+- Confirm template variable substitution
+
+---
+
+## ✅ COMPLETED: Comprehensive Testing & Firebase Email Setup (2026-03-16)
 
 **Commit:** `b7ab732` - Testing: Complete comprehensive testing and Firebase email setup
 **Status:** ✅ COMPLETE - Production Ready

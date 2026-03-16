@@ -4,6 +4,146 @@
 
 ---
 
+## Session: 2026-03-16 - Firebase Email Extension Installation & Firestore Migration
+
+### ✅ IN PROGRESS: Firebase Trigger Email Extension Setup
+
+**Commit:** `eac5529` - Feature: Update email invites to use Firestore
+**Duration:** ~30 minutes
+**Status:** 🔄 IN PROGRESS - Extension Installing
+
+**Goal:** Set up Firebase Trigger Email extension for automated email invitations and migrate email functionality from Realtime Database to Firestore.
+
+---
+
+### Implementation Summary
+
+**Firebase Project Configuration:**
+
+1. **Upgraded to Blaze Plan**
+   - Linked Google Cloud billing account ($300 free credits)
+   - Successfully upgraded from Spark (free) to Blaze (pay-as-you-go)
+   - Cost: ~$0.01/month for email extension usage
+
+2. **Firebase Trigger Email Extension**
+   - Extension: `firebase/firestore-send-email@0.2.6`
+   - Status: Installing (3-5 minutes)
+   - Enabled required services:
+     - Secret Manager (for SMTP credentials)
+     - Artifact Registry (for container images)
+     - Compute Engine (for Cloud Functions)
+   - Configuration:
+     - Cloud Functions location: `us-east4` (Northern Virginia)
+     - Firestore instance: default
+     - Firestore location: `us-central1`
+     - Authentication: Username & Password
+     - SMTP: Gmail with App Password
+
+3. **SMTP Configuration**
+   - Provider: Gmail (free, 500 emails/day)
+   - Created Gmail App Password for `tpgordon8@gmail.com`
+   - SMTP URI: `smtps://tpgordon8@gmail.com:APP_PASSWORD@smtp.gmail.com:465`
+
+**Code Migration - Realtime Database → Firestore:**
+
+4. **Firebase Config Updates** (`src/firebase/config.js`)
+   - Added Firestore import: `getFirestore`
+   - Initialized Firestore instance
+   - Exported `firestore` alongside existing services
+   - Firestore used ONLY for `/mail` collection (emails)
+   - All other data remains in Realtime Database
+
+5. **Household Store Updates** (`src/stores/household.js`)
+   - Updated `sendEmailInvite()` function
+   - Changed from Realtime Database `set()` to Firestore `addDoc()`
+   - Added Firestore imports: `collection`, `addDoc`
+   - Simplified mail document structure:
+     - Removed `createdAt` (extension adds timestamp)
+     - Removed `status` (extension manages status)
+     - Kept `to`, `template.name`, `template.data` fields
+   - Uses Firestore auto-generated document IDs
+
+---
+
+### Architecture Decision: Hybrid Database Approach
+
+**Why use both Realtime Database AND Firestore?**
+
+**Realtime Database:**
+- ✅ Already used for all existing data (households, pets, activities)
+- ✅ Perfect for real-time sync (activity logging, pet tracking)
+- ✅ Simple structure, well-tested
+- ✅ No migration needed for existing functionality
+
+**Firestore:**
+- ✅ Required by Firebase Trigger Email extension
+- ✅ Only used for `/mail` collection (email queue)
+- ✅ Better for document-based email templates
+- ✅ Extension handles automatic email processing
+
+**Trade-offs:**
+- ⚠️ Two database systems (minimal complexity)
+- ✅ Clean separation of concerns (emails vs app data)
+- ✅ No impact on existing features
+- ✅ Future flexibility (can migrate more data to Firestore if needed)
+
+---
+
+### Files Modified
+
+**New Functionality:**
+- `src/firebase/config.js` - Added Firestore initialization
+- `src/stores/household.js` - Migrated email invites to Firestore
+
+**Documentation:**
+- `FIREBASE_EMAIL_SETUP.md` - Comprehensive setup guide (needs update for Firestore)
+
+---
+
+### Next Steps (Pending)
+
+**Immediate:**
+1. ⏳ Wait for extension installation to complete (~5 minutes)
+2. ⏭️ Create Firestore security rules for `/mail` collection
+3. ⏭️ Create email template in Firestore `/mail_templates/household-invite`
+4. ⏭️ Test email invitation functionality
+5. ⏭️ Update FIREBASE_EMAIL_SETUP.md to reflect Firestore usage
+
+**Testing Required:**
+- Send test email invitation
+- Verify email delivery
+- Check extension logs for any errors
+- Confirm email template rendering
+
+---
+
+### Key Learnings
+
+1. **Firebase Extensions require specific databases**
+   - "Trigger Email from Firestore" only works with Firestore
+   - Cannot use Realtime Database for this extension
+   - Hybrid approach (both databases) is valid and recommended
+
+2. **Blaze Plan Setup**
+   - Free $300 Google Cloud credits available
+   - Credits last years at typical usage levels
+   - Extension costs: ~$0.01/month
+   - No surprise charges with proper budget alerts
+
+3. **Gmail App Passwords**
+   - Required for SMTP authentication (not regular password)
+   - Created at: https://myaccount.google.com/apppasswords
+   - 16-character password (spaces removed when used)
+   - Secure alternative to using account password
+
+4. **Firestore vs Realtime Database**
+   - Firestore: Document-based, better for complex queries
+   - Realtime Database: JSON tree, better for simple real-time sync
+   - Can use both in same Firebase project
+   - Choose based on use case, not migration complexity
+
+---
+
 ## Session: 2026-03-16 - Comprehensive Testing & Firebase Email Setup
 
 ### ✅ COMPLETED: Full Testing Suite & Email Configuration
