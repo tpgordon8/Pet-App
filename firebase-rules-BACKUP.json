@@ -1,0 +1,42 @@
+{
+  "rules": {
+    "households": {
+      "$householdCode": {
+        ".read": true,
+        ".write": true,
+        "members": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": ["joinedAt", "name"]
+        },
+        "pets": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": ["name", "createdAt"]
+        },
+        "activities": {
+          ".read": true,
+          ".write": true,
+          ".indexOn": ["timestamp", "petId", "type", "user"]
+        },
+        "medications": {
+          ".read": true,
+          ".write": true,
+          "$petId": {
+            ".indexOn": ["active", "createdAt"]
+          }
+        }
+      }
+    },
+    "mail": {
+      "$mailId": {
+        ".write": true,
+        ".read": false
+      }
+    },
+    "mail_templates": {
+      ".read": true,
+      ".write": false
+    }
+  }
+}

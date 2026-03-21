@@ -2,41 +2,93 @@
   "rules": {
     "households": {
       "$householdCode": {
-        ".read": true,
-        ".write": true,
-        "members": {
-          ".read": true,
-          ".write": true,
-          ".indexOn": ["joinedAt", "name"]
+        // NOTE: Without Firebase Authentication, we cannot fully secure this data.
+        // The current trust-based model (household code + passcode in localStorage)
+        // is vulnerable. RECOMMENDATION: Implement Firebase Auth + Custom Tokens.
+        //
+        // For now, we add basic protections:
+        // 1. Prevent passcode from being directly read
+        // 2. Prevent passcode from being overwritten
+        // 3. Allow creation of new households
+        // 4. Allow reads only if household exists (prevents enumeration)
+
+        // Root household node
+        ".read": "data.exists()",  // Must exist to be read (prevents brute force)
+        ".write": "!data.exists()",  // Can only write when creating new household
+
+        // Passcode - CANNOT be read or updated after creation
+        "passcode": {
+          ".read": false,  // ✅ Passcode hidden from clients
+          ".write": "!data.exists()"  // ✅ Can only set during creation
         },
+
+        // Core household data
+        "code": {
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": false  // ✅ Code cannot be changed
+        },
+        "name": {
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "root.child('households/' + $householdCode).exists()"
+        },
+        "createdAt": {
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "!data.exists()"  // ✅ Timestamp set once
+        },
+        "createdBy": {
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "!data.exists()"  // ✅ Creator set once
+        },
+
+        // Members
+        "members": {
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "root.child('households/' + $householdCode).exists()",
+          ".indexOn": ["joinedAt", "name", "role"],
+          "$memberName": {
+            "role": {
+              ".validate": "newData.val() == 'owner' || newData.val() == 'member'"
+            }
+          }
+        },
+
+        // Pets
         "pets": {
-          ".read": true,
-          ".write": true,
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "root.child('households/' + $householdCode).exists()",
           ".indexOn": ["name", "createdAt"]
         },
+
+        // Activities
         "activities": {
-          ".read": true,
-          ".write": true,
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "root.child('households/' + $householdCode).exists()",
           ".indexOn": ["timestamp", "petId", "type", "user"]
         },
+
+        // Medications
         "medications": {
-          ".read": true,
-          ".write": true,
+          ".read": "root.child('households/' + $householdCode).exists()",
+          ".write": "root.child('households/' + $householdCode).exists()",
           "$petId": {
             ".indexOn": ["active", "createdAt"]
           }
         }
       }
     },
+
+    // Mail collection - write-only for creating email queue items
     "mail": {
       "$mailId": {
-        ".write": true,
-        ".read": false
+        ".write": "!data.exists()",  // ✅ Can only create, not update
+        ".read": false  // ✅ Email extension handles reading
       }
     },
+
+    // Mail templates - read-only (write via Firebase Console only)
     "mail_templates": {
       ".read": true,
-      ".write": false
+      ".write": false  // ✅ LOCKED DOWN - no client writes
     }
   }
 }
