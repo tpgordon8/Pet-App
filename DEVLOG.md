@@ -5829,3 +5829,214 @@ dist/assets/firebase-Dth_Ub0p.js        331.88 kB (Firebase SDK)
 ---
 
 **Week 3 Complete. Member selection working. Ready for Week 4.**
+
+---
+
+## Component Refactoring & Testing Framework (2026-03-21)
+
+**Commit:** `6b24e8d`
+**Status:** ✅ Complete
+**Files Changed:** 11 files (+1457, -723)
+
+### Overview
+
+Completed final 3 items from CODE_AUDIT_FINDINGS.md:
+- Refactored ActivityFeed.vue from 543 to 168 LOC (69% reduction)
+- Refactored ActivityInsights.vue from 468 to 143 LOC (69% reduction)
+- Created Firebase Emulator security testing framework
+- Documented Lighthouse performance baseline
+
+### Component Refactoring Details
+
+**ActivityFeed.vue (543 → 168 LOC)**
+
+Extracted into 4 components following Single Responsibility Principle:
+
+1. **ActivityItem.vue** (372 LOC)
+   - Individual activity card with all display logic
+   - Swipe gesture handling (mobile-only delete swipe)
+   - Edit/delete action buttons
+   - Photo display with modal
+   - Search highlighting
+   - Medical data integration via MedicalDataDisplay component
+
+2. **ActivityGroupHeader.vue** (16 LOC)
+   - Simple date group header (Today, Yesterday, etc.)
+   - Sticky positioning with backdrop blur
+   - Dark mode support
+
+3. **MedicalDataDisplay.vue** (46 LOC)
+   - Displays medical data for Vet Visit, Vaccination, Weight Check
+   - Conditional rendering based on activity type
+   - Formatted display of notes, cost, vaccine name, weight
+
+4. **ActivityFeed.vue** (remaining 168 LOC)
+   - Container component
+   - Search filtering logic (7 searchable fields)
+   - Date grouping logic
+   - Activity sorting
+   - Empty state handling
+
+**Benefits:**
+- Each component <400 LOC (industry standard)
+- Easier to test in isolation
+- Clearer separation of concerns
+- Swipe gesture logic isolated to ActivityItem
+- Medical data logic isolated from main feed
+
+**ActivityInsights.vue (468 → 143 LOC)**
+
+Extracted into composable + component following Vue 3 best practices:
+
+1. **useActivityInsights.js** (201 LOC)
+   - Composable function with all insights calculation logic
+   - Single-pass optimization (reduced from 7+ filters to 1 loop)
+   - Analyzes 9 activity patterns:
+     * Poop frequency (missing, less, more than average)
+     * Food intake (missing meals, eating less)
+     * Bathroom breaks (increased frequency)
+     * Weight trends (5%+ change detection)
+     * Medication compliance (missed doses)
+     * Activity level (walks tracking)
+     * Overall consistency (activity counts)
+   - Returns computed ref with sorted insights (warnings first)
+
+2. **InsightCard.vue** (140 LOC)
+   - Individual insight card display
+   - Type-based styling (alert, info, positive)
+   - Severity badges (warning, low)
+   - Dark mode support
+   - Responsive layout
+
+3. **ActivityInsights.vue** (remaining 143 LOC)
+   - Container component
+   - Header with insight count
+   - Empty state ("Keep logging for 7 days")
+   - Insight list rendering
+
+**Benefits:**
+- Composable can be reused elsewhere
+- Insights logic testable without component
+- Cleaner component template
+- Better TypeScript support potential
+- Performance optimization centralized
+
+### Security Testing Framework
+
+**Files Created:**
+- `tests/security/firebase-rules.test.js` (20 tests)
+- `SECURITY_RULES_TESTING.md` (documentation)
+- `firebase.json` (emulator config added)
+
+**Test Coverage:**
+- 14 Realtime Database rules tests
+- 6 Firestore rules tests
+- Covers household creation, passcode security, data access, invites
+
+**Emulator Configuration:**
+```json
+{
+  "emulators": {
+    "database": { "port": 9000 },
+    "firestore": { "port": 8080 },
+    "ui": { "enabled": true, "port": 4000 }
+  }
+}
+```
+
+**Test Categories:**
+1. Household creation and existence checks
+2. Passcode read/write protection
+3. Household code immutability
+4. Member/pet/activity read/write access
+5. Mail template and email queue security
+6. Invite validation with expiry checks
+
+### Performance Baseline Documentation
+
+**File Created:** `LIGHTHOUSE_BASELINE.md`
+
+**Documented Metrics:**
+- Build time: 9.84s (improved from 12.84s)
+- Total bundle: 1.84 MB (~522 KB gzipped)
+- DashboardView: 406.95 KB (132.31 KB gzipped) - 32% over target
+- PWA cache: 1845 KB (35 files)
+
+**Performance Targets Set:**
+- First Contentful Paint (FCP): <1.8s
+- Largest Contentful Paint (LCP): <2.5s
+- Total Blocking Time (TBT): <200ms
+- Cumulative Layout Shift (CLS): <0.1
+
+**Audit Instructions:**
+- Manual audit via Chrome DevTools
+- CLI audit for CI/CD
+- Accessibility checklist (WCAG 2.1 AA)
+- PWA compliance checklist
+
+### Technical Decisions
+
+**Why Composable over Mixin:**
+- Vue 3 Composition API best practice
+- Better type inference
+- Explicit dependencies
+- Easier to test and reuse
+
+**Why Not Extract More:**
+- ActivityItem is 372 LOC but has cohesive responsibility
+- Further extraction would create excessive prop drilling
+- Swipe gesture logic needs to stay with card display
+- Medical data display is already extracted
+
+**Build Impact:**
+- Slight increase in chunk sizes (+0.2-0.3 KB per component)
+- Better code splitting potential
+- Improved maintainability outweighs minor size increase
+
+### Files Modified
+
+**Modified:**
+- `firebase.json` - Added emulator configuration
+- `src/components/ActivityFeed.vue` - Refactored to 168 LOC
+- `src/components/ActivityInsights.vue` - Refactored to 143 LOC
+
+**Created:**
+- `src/components/ActivityGroupHeader.vue`
+- `src/components/ActivityItem.vue`
+- `src/components/MedicalDataDisplay.vue`
+- `src/components/InsightCard.vue`
+- `src/composables/useActivityInsights.js`
+- `tests/security/firebase-rules.test.js`
+- `LIGHTHOUSE_BASELINE.md`
+- `SECURITY_RULES_TESTING.md`
+
+### Build Verification
+
+```bash
+npm run build
+✓ built in 9.84s
+PWA v0.19.8 - precache 35 entries (1845.12 KiB)
+✅ No errors, no warnings
+```
+
+### Next Steps
+
+**For Security Testing:**
+1. Run `firebase emulators:start`
+2. Run `npm run test:security` (need to add script)
+3. Review test results
+4. Document any failures
+
+**For Lighthouse Audit:**
+1. Run `npm run build && npm run preview`
+2. Open Chrome DevTools → Lighthouse
+3. Run audit with all categories
+4. Document actual scores in LIGHTHOUSE_BASELINE.md
+5. Address any critical issues (score <85)
+
+**For Component Optimization:**
+- DashboardView still 132 KB gzipped (target: <100 KB)
+- Consider extracting more logic to composables
+- Review reactive overhead (ref vs shallowRef)
+
+---
