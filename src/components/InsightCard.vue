@@ -1,11 +1,22 @@
 <template>
-  <div class="insight-card" :class="`insight-${insight.type}`">
-    <div class="insight-icon">{{ insight.emoji }}</div>
+  <div
+    class="insight-card"
+    :class="`insight-${insight.type}`"
+    role="alert"
+    :aria-live="insight.severity === 'warning' ? 'assertive' : 'polite'"
+    :aria-label="`${insight.severity || 'info'} insight: ${insight.message}`"
+  >
+    <div class="insight-icon" aria-hidden="true">{{ insight.emoji }}</div>
     <div class="insight-content">
       <div class="insight-text">{{ insight.message }}</div>
       <div class="insight-meta">{{ insight.detail }}</div>
     </div>
-    <div v-if="insight.severity" class="insight-badge" :class="`badge-${insight.severity}`">
+    <div
+      v-if="insight.severity"
+      class="insight-badge"
+      :class="`badge-${insight.severity}`"
+      :aria-label="`Severity: ${insight.severity}`"
+    >
       {{ insight.severity }}
     </div>
   </div>

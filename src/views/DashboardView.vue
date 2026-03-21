@@ -112,17 +112,15 @@
       </div>
 
       <!-- Medical Tracking Section -->
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-md font-semibold text-gray-900 dark:text-white">
-            Medical Tracking
-            <span
-              v-if="petsStore.selectedPet"
-              class="text-sage-600 dark:text-sage-400"
-            >
-              for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
-            </span>
-          </h3>
+      <CollapsibleSection
+        title="Medical Tracking"
+        :subtitle="petsStore.selectedPet ? `for ${petsStore.selectedPet.emoji} ${petsStore.selectedPet.name}` : ''"
+        icon="🏥"
+        :badge="activitiesStore.stats.vetVisit + activitiesStore.stats.vaccination + activitiesStore.stats.weightCheck"
+        :default-collapsed="false"
+        section-id="medical-tracking"
+      >
+        <div class="flex justify-end mb-4">
           <button
             v-if="petsStore.selectedPet && petsStore.selectedPetId !== 'all'"
             class="btn-export"
@@ -156,10 +154,18 @@
             @click="showMedicalModal('Weight Check', '⚖️')"
           />
         </div>
-      </div>
+      </CollapsibleSection>
 
       <!-- Weight Trend Chart -->
-      <WeightTrendChart :activities="activitiesStore.filteredActivities" />
+      <CollapsibleSection
+        title="Weight Trends"
+        :subtitle="petsStore.selectedPet ? `Track weight changes for ${petsStore.selectedPet.name}` : 'Track weight changes over time'"
+        icon="📊"
+        :default-collapsed="true"
+        section-id="weight-trends"
+      >
+        <WeightTrendChart :activities="activitiesStore.filteredActivities" />
+      </CollapsibleSection>
 
       <!-- Search Bar -->
       <div class="card">
@@ -265,12 +271,15 @@ import PetSelector from '@/components/PetSelector.vue'
 import MemberSelector from '@/components/MemberSelector.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import FloatingActionButton from '@/components/FloatingActionButton.vue'
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
+// Using SkeletonLoader for better perceived performance
 const ActivityFeed = defineAsyncComponent({
   loader: () => import('@/components/ActivityFeed.vue'),
-  loadingComponent: LoadingSpinner,
+  loadingComponent: SkeletonLoader,
   delay: 200, // Show loading after 200ms
   timeout: 10000 // 10 second timeout
 })

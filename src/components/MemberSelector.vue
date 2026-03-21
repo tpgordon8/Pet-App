@@ -25,6 +25,8 @@
         @click="selectMember(member)"
         class="member-chip"
         :class="currentMember === member ? 'active' : ''"
+        :aria-pressed="currentMember === member"
+        :aria-label="`Log activities as ${member}`"
       >
         <span class="text-lg">{{ getMemberEmoji(member) }}</span>
         <span class="text-sm font-medium">{{ member }}</span>

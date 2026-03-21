@@ -8,6 +8,7 @@
       <button
         @click="$emit('add-pet')"
         class="text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300 text-sm font-medium"
+        aria-label="Add a new pet"
       >
         + Add Pet
       </button>
@@ -24,6 +25,7 @@
       <button
         @click="$emit('add-pet')"
         class="btn btn-primary text-sm"
+        aria-label="Add your first pet to get started"
       >
         🐾 Add Your First Pet
       </button>
@@ -36,6 +38,8 @@
         @click="selectPet('all')"
         class="pet-chip"
         :class="selectedPetId === 'all' ? 'active' : ''"
+        :aria-pressed="selectedPetId === 'all'"
+        aria-label="Select all pets"
       >
         <span class="text-lg">🐾</span>
         <span class="text-sm font-medium">All Pets</span>
@@ -49,6 +53,8 @@
         @click="selectPet(pet.id)"
         class="pet-chip"
         :class="selectedPetId === pet.id ? 'active' : ''"
+        :aria-pressed="selectedPetId === pet.id"
+        :aria-label="`Select ${pet.name}, ${pet.species || 'pet'}`"
       >
         <span class="text-lg">{{ pet.emoji }}</span>
         <span class="text-sm font-medium">{{ pet.name }}</span>

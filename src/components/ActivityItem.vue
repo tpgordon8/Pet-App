@@ -192,13 +192,33 @@ function onTouchEnd() {
 }
 
 function openPhoto(url) {
-  window.open(url, '_blank')
+  if (!url) {
+    console.error('Cannot open photo: URL is missing')
+    return
+  }
+
+  try {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+    if (!newWindow) {
+      console.error('Failed to open photo in new window. Pop-up may be blocked.')
+      // Fallback: try to navigate in the same tab
+      window.location.href = url
+    }
+  } catch (error) {
+    console.error('Error opening photo:', error)
+  }
 }
 
 function highlightMatch(text, query) {
   if (!query || !text) return text
-  const regex = new RegExp(`(${escapeRegex(query)})`, 'gi')
-  return text.replace(regex, '<mark class="search-highlight">$1</mark>')
+
+  try {
+    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi')
+    return text.replace(regex, '<mark class="search-highlight">$1</mark>')
+  } catch (error) {
+    console.error('Error highlighting search match:', error)
+    return text
+  }
 }
 
 function escapeRegex(string) {

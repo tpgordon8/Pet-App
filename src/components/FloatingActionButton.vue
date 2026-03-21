@@ -56,8 +56,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useHaptic } from '@/composables/useHaptic'
 
 const emit = defineEmits(['quick-log'])
+const haptic = useHaptic()
 
 const isExpanded = ref(false)
 const fabPressed = ref(false)
@@ -72,12 +74,13 @@ const quickActions = [
 ]
 
 function toggleExpanded() {
-  isExpanded.value = !isExpanded.value
-  if (isExpanded.value) {
-    // Haptic feedback for mobile
-    if (navigator.vibrate) {
-      navigator.vibrate(10)
+  try {
+    isExpanded.value = !isExpanded.value
+    if (isExpanded.value) {
+      haptic.light()
     }
+  } catch (error) {
+    console.error('Error toggling FAB menu:', error)
   }
 }
 
@@ -86,13 +89,19 @@ function closeMenu() {
 }
 
 function handleQuickLog(action) {
-  // Haptic feedback
-  if (navigator.vibrate) {
-    navigator.vibrate(15)
+  if (!action || !action.type || !action.emoji) {
+    console.error('Invalid action data for quick log:', action)
+    return
   }
 
-  emit('quick-log', { type: action.type, emoji: action.emoji })
-  closeMenu()
+  try {
+    haptic.medium()
+    emit('quick-log', { type: action.type, emoji: action.emoji })
+    closeMenu()
+  } catch (error) {
+    console.error('Error handling quick log:', error)
+    closeMenu()
+  }
 }
 </script>
 
