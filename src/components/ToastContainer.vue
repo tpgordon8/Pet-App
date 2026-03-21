@@ -12,6 +12,8 @@
         <button
           @click="remove(toast.id)"
           class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          aria-label="Dismiss notification"
+          title="Dismiss"
         >
           ✕
         </button>

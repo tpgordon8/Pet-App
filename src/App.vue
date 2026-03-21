@@ -9,9 +9,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue'
 import { RouterView } from 'vue-router'
 import ToastContainer from './components/ToastContainer.vue'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
+
+// Global error boundary
+onErrorCaptured((err, instance, info) => {
+  console.error('Component error:', err, info)
+  console.error('Component:', instance?.$options?.name || 'Unknown')
+
+  // Show user-friendly error toast
+  showToast('Something went wrong. Please refresh the page if the issue persists.', 'error')
+
+  // In production, you could report to error tracking service (e.g., Sentry)
+  // reportError(err, { component: instance?.$options?.name, info })
+
+  // Return false to prevent error propagation
+  return false
+})
 
 // Dark mode state (can be moved to a store later)
 const isDarkMode = ref(false)

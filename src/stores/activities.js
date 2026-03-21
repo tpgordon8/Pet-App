@@ -258,6 +258,10 @@ export const useActivitiesStore = defineStore('activities', () => {
         offlineQueue.value = JSON.parse(saved)
       } catch (error) {
         console.error('Failed to load offline queue:', error)
+        // Clear corrupted queue data
+        offlineQueue.value = []
+        localStorage.removeItem('offlineQueue')
+        toast.error('Offline data was corrupted and has been cleared.')
       }
     }
   }

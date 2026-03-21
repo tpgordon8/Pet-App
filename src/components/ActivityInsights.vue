@@ -19,7 +19,7 @@
     <div v-else class="insights-list">
       <div
         v-for="(insight, index) in insights"
-        :key="index"
+        :key="`${insight.message}-${index}`"
         class="insight-card"
         :class="`insight-${insight.type}`"
       >
