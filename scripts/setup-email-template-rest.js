@@ -90,7 +90,7 @@ async function setupEmailTemplate() {
       throw new Error(`HTTP ${response.status}: ${JSON.stringify(error, null, 2)}`)
     }
 
-    const result = await response.json()
+    await response.json()
 
     console.log('✅ Email template created successfully!')
     console.log('\nTemplate details:')
