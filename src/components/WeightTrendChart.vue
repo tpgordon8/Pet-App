@@ -251,6 +251,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (chartInstance.value) {
     chartInstance.value.destroy()
+    chartInstance.value = null
   }
 })
 </script>

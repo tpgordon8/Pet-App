@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useHouseholdStore } from '@/stores/household'
-import { get, set } from 'firebase/database'
+import { get } from 'firebase/database'
 
 // Mock Firebase database functions
 vi.mock('firebase/database', () => ({

@@ -59,34 +59,50 @@ const insights = computed(() => {
   const yesterday = subDays(today, 1)
   const weekAgo = subDays(today, 7)
 
-  // Filter activities by time periods
-  const todayActivities = props.activities.filter(a => a.timestamp >= today.getTime())
-  const yesterdayActivities = props.activities.filter(
-    a => a.timestamp >= yesterday.getTime() && a.timestamp < today.getTime()
-  )
-  const lastWeekActivities = props.activities.filter(a => a.timestamp >= weekAgo.getTime())
-  const olderActivities = props.activities.filter(a => a.timestamp < weekAgo.getTime())
+  // Optimization: Single pass through activities to categorize by time period and type
+  const todayActivities = []
+  const yesterdayActivities = []
+  const lastWeekActivities = []
+  const todayCounts = {}
+  const weekCounts = {}
+
+  const todayTime = today.getTime()
+  const yesterdayTime = yesterday.getTime()
+  const weekAgoTime = weekAgo.getTime()
+
+  for (const activity of props.activities) {
+    const timestamp = activity.timestamp
+    const type = activity.type
+
+    // Categorize by time period
+    if (timestamp >= todayTime) {
+      todayActivities.push(activity)
+      todayCounts[type] = (todayCounts[type] || 0) + 1
+    }
+    if (timestamp >= yesterdayTime && timestamp < todayTime) {
+      yesterdayActivities.push(activity)
+    }
+    if (timestamp >= weekAgoTime) {
+      lastWeekActivities.push(activity)
+      weekCounts[type] = (weekCounts[type] || 0) + 1
+    }
+  }
 
   // Need at least 7 days of data for meaningful insights
   if (lastWeekActivities.length < 5) {
     return results
   }
 
-  // Helper: Get activity counts by type
-  const getCountByType = (activities, type) => {
-    return activities.filter(a => a.type === type).length
-  }
-
   // Helper: Calculate daily average for a type
-  const getDailyAverage = (activities, type) => {
-    const count = getCountByType(activities, type)
-    const days = differenceInDays(now, weekAgo.getTime())
+  const getDailyAverage = (type) => {
+    const count = weekCounts[type] || 0
+    const days = differenceInDays(now, weekAgoTime)
     return count / Math.max(days, 1)
   }
 
   // ===== POOP PATTERNS =====
-  const todayPoop = getCountByType(todayActivities, 'Poop')
-  const avgPoop = getDailyAverage(lastWeekActivities, 'Poop')
+  const todayPoop = todayCounts['Poop'] || 0
+  const avgPoop = getDailyAverage('Poop')
 
   if (avgPoop >= 2 && todayPoop === 0) {
     results.push({
@@ -115,8 +131,8 @@ const insights = computed(() => {
   }
 
   // ===== FOOD PATTERNS =====
-  const todayFood = getCountByType(todayActivities, 'Food')
-  const avgFood = getDailyAverage(lastWeekActivities, 'Food')
+  const todayFood = todayCounts['Food'] || 0
+  const avgFood = getDailyAverage('Food')
 
   if (avgFood >= 2 && todayFood === 0) {
     results.push({
@@ -137,8 +153,8 @@ const insights = computed(() => {
   }
 
   // ===== PEE PATTERNS =====
-  const todayPee = getCountByType(todayActivities, 'Pee')
-  const avgPee = getDailyAverage(lastWeekActivities, 'Pee')
+  const todayPee = todayCounts['Pee'] || 0
+  const avgPee = getDailyAverage('Pee')
 
   if (avgPee >= 3 && todayPee > avgPee * 1.5) {
     results.push({
@@ -185,8 +201,8 @@ const insights = computed(() => {
   }
 
   // ===== MEDICATION COMPLIANCE =====
-  const todayMeds = getCountByType(todayActivities, 'Meds')
-  const avgMeds = getDailyAverage(lastWeekActivities, 'Meds')
+  const todayMeds = todayCounts['Meds'] || 0
+  const avgMeds = getDailyAverage('Meds')
 
   if (avgMeds >= 1 && todayMeds === 0) {
     results.push({
@@ -199,8 +215,8 @@ const insights = computed(() => {
   }
 
   // ===== ACTIVITY LEVEL =====
-  const todayWalks = getCountByType(todayActivities, 'Walk')
-  const avgWalks = getDailyAverage(lastWeekActivities, 'Walk')
+  const todayWalks = todayCounts['Walk'] || 0
+  const avgWalks = getDailyAverage('Walk')
 
   if (avgWalks >= 1 && todayWalks === 0) {
     results.push({
