@@ -193,20 +193,56 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
-  async function deleteActivity(activityId) {
+  async function deleteActivity(activityId, options = {}) {
     if (!householdStore.householdId) {
       toast.error('Please sign in first')
       return false
     }
 
     try {
+      // Find the activity to delete (for undo functionality)
+      const activityToDelete = activities.value.find(a => a.id === activityId)
+
       const activityRef = dbRef(database, `households/${householdStore.householdId}/activities/${activityId}`)
       await remove(activityRef)
-      toast.success('Activity deleted')
+
+      // If undo is enabled, show undo toast
+      if (options.enableUndo && activityToDelete) {
+        toast.undo(
+          `${activityToDelete.emoji} ${activityToDelete.type} deleted`,
+          async () => {
+            await restoreActivity(activityId, activityToDelete)
+          }
+        )
+      } else {
+        toast.success('Activity deleted')
+      }
+
       return true
     } catch (error) {
       console.error('Error deleting activity:', error)
       toast.error('Failed to delete activity')
+      return false
+    }
+  }
+
+  async function restoreActivity(activityId, activityData) {
+    if (!householdStore.householdId) {
+      toast.error('Please sign in first')
+      return false
+    }
+
+    try {
+      // Restore with the same ID
+      const activityRef = dbRef(database, `households/${householdStore.householdId}/activities/${activityId}`)
+      const { id, ...dataWithoutId } = activityData
+      await update(activityRef, dataWithoutId)
+
+      toast.success(`${activityData.emoji} ${activityData.type} restored`)
+      return true
+    } catch (error) {
+      console.error('Error restoring activity:', error)
+      toast.error('Failed to restore activity')
       return false
     }
   }
@@ -278,6 +314,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     offlineQueue,
 
     // Computed
+    filteredActivities,
     sortedActivities,
     todayActivities,
     stats,
@@ -287,6 +324,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     stopListener,
     logActivity,
     deleteActivity,
+    restoreActivity,
     updateActivity,
     syncOfflineQueue,
     loadOfflineQueue,

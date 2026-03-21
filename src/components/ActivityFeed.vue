@@ -16,20 +16,14 @@
     </div>
 
     <!-- Empty state -->
-    <div
+    <EmptyState
       v-if="filteredActivities.length === 0"
-      class="card text-center py-12"
-    >
-      <span class="text-6xl mb-4 block">🐾</span>
-      <p class="text-gray-600 dark:text-gray-400">
-        <template v-if="searchQuery">
-          No activities match "{{ searchQuery }}"
-        </template>
-        <template v-else>
-          No activities yet. Log your first activity above!
-        </template>
-      </p>
-    </div>
+      :icon="searchQuery ? '🔍' : '🐾'"
+      :title="searchQuery ? 'No matches found' : 'No activities yet'"
+      :description="searchQuery ? `No activities match '${searchQuery}'. Try a different search term.` : 'Start tracking your pet\'s activities using the quick log buttons above!'"
+      :show-decorations="!searchQuery"
+      :pulse="!searchQuery"
+    />
 
     <!-- Activity list -->
     <div v-else class="space-y-3">
@@ -78,20 +72,21 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-baseline gap-2 flex-wrap">
               <h4 class="font-semibold text-gray-900 dark:text-white">
-                {{ activity.type }}
+                <span v-html="highlightMatch(activity.type, searchQuery)"></span>
               </h4>
               <span v-if="showPetNames && getPetName(activity.petId)" class="text-xs text-sage-600 dark:text-sage-400">
-                {{ getPetEmoji(activity.petId) }} {{ getPetName(activity.petId) }}
+                {{ getPetEmoji(activity.petId) }}
+                <span v-html="highlightMatch(getPetName(activity.petId), searchQuery)"></span>
               </span>
               <span class="text-xs text-gray-500 dark:text-gray-400">
-                by {{ activity.user }}
+                by <span v-html="highlightMatch(activity.user, searchQuery)"></span>
               </span>
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400">
               {{ formatTime(activity.timestamp) }}
             </p>
             <p v-if="activity.notes" class="text-sm text-gray-700 dark:text-gray-300 mt-1">
-              {{ activity.notes }}
+              <span v-html="highlightMatch(activity.notes, searchQuery)"></span>
             </p>
 
             <!-- Medical Data Display -->
@@ -168,6 +163,7 @@
 <script setup>
 import { computed, reactive, defineProps, defineEmits } from 'vue'
 import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns'
+import EmptyState from './EmptyState.vue'
 
 const props = defineProps({
   activities: {
@@ -361,6 +357,17 @@ function canEdit(activity) {
   const medicalTypes = ['Vet Visit', 'Vaccination', 'Weight Check']
   return !medicalTypes.includes(activity.type)
 }
+
+function highlightMatch(text, query) {
+  if (!query || !text) return text
+
+  const regex = new RegExp(`(${escapeRegex(query)})`, 'gi')
+  return text.replace(regex, '<mark class="search-highlight">$1</mark>')
+}
+
+function escapeRegex(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 </script>
 
 <style scoped>
@@ -519,5 +526,18 @@ function canEdit(activity) {
   .action-btn {
     padding: 0.375rem 0.5rem;
   }
+}
+
+/* Search highlighting */
+:deep(.search-highlight) {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3) 0%, rgba(245, 158, 11, 0.2) 100%);
+  color: inherit;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
+.dark :deep(.search-highlight) {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.3) 100%);
 }
 </style>

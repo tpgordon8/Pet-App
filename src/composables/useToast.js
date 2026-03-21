@@ -5,22 +5,24 @@ const toasts = ref([])
 let toastId = 0
 
 export function useToast() {
-  function show(message, type = 'info', duration = 3000) {
+  function show(message, type = 'info', duration = 3000, action = null) {
     const id = toastId++
     const toast = {
       id,
       message,
       type, // 'info', 'success', 'error', 'warning'
-      duration
+      duration,
+      action // { label: 'Undo', handler: () => {} }
     }
 
     toasts.value.push(toast)
 
-    // Auto-remove after duration
-    if (duration > 0) {
+    // Auto-remove after duration (unless action is present, then longer duration)
+    const autoRemoveDuration = action ? Math.max(duration, 5000) : duration
+    if (autoRemoveDuration > 0) {
       setTimeout(() => {
         remove(id)
-      }, duration)
+      }, autoRemoveDuration)
     }
 
     return id
@@ -49,6 +51,13 @@ export function useToast() {
     return show(message, 'info', duration)
   }
 
+  function undo(message, undoHandler, duration = 5000) {
+    return show(message, 'info', duration, {
+      label: 'Undo',
+      handler: undoHandler
+    })
+  }
+
   return {
     toasts,
     show,
@@ -56,6 +65,7 @@ export function useToast() {
     success,
     error,
     warning,
-    info
+    info,
+    undo
   }
 }

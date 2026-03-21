@@ -241,6 +241,11 @@
       :is-open="showInviteModal"
       @close="showInviteModal = false"
     />
+
+    <!-- Floating Action Button -->
+    <FloatingActionButton
+      @quick-log="handleQuickLog"
+    />
   </div>
 </template>
 
@@ -251,6 +256,7 @@ import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
 import { useToast } from '@/composables/useToast'
 import { usePdfExport } from '@/composables/usePdfExport'
+import { useHaptic } from '@/composables/useHaptic'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
@@ -258,6 +264,7 @@ import StatsWidget from '@/components/StatsWidget.vue'
 import PetSelector from '@/components/PetSelector.vue'
 import MemberSelector from '@/components/MemberSelector.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import FloatingActionButton from '@/components/FloatingActionButton.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
@@ -308,6 +315,7 @@ const activitiesStore = useActivitiesStore()
 const petsStore = usePetsStore()
 const toast = useToast()
 const { generateMedicalPdf } = usePdfExport()
+const haptic = useHaptic()
 
 const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
@@ -363,9 +371,9 @@ async function handleSaveActivity(data) {
 }
 
 async function handleDelete(activityId) {
-  if (confirm('Are you sure you want to delete this activity?')) {
-    await activitiesStore.deleteActivity(activityId)
-  }
+  // Use undo functionality instead of confirmation dialog
+  haptic.medium()
+  await activitiesStore.deleteActivity(activityId, { enableUndo: true })
 }
 
 function showMedicalModal(type, emoji) {
@@ -411,6 +419,24 @@ function exportMedicalPdf() {
   } else {
     toast.error(`Failed to export PDF: ${result.error}`)
   }
+}
+
+async function handleQuickLog({ type, emoji }) {
+  // Check if pet is selected
+  if (!petsStore.selectedPet || petsStore.selectedPetId === 'all') {
+    haptic.error()
+    toast.error('Please select a specific pet first')
+    return
+  }
+
+  // Haptic feedback for successful action
+  haptic.success()
+
+  // Log activity immediately without modal (quick mode)
+  await activitiesStore.logActivity(type, emoji, '', null)
+
+  // Success feedback
+  toast.success(`${emoji} ${type} logged!`)
 }
 </script>
 

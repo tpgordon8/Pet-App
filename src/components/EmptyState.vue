@@ -1,0 +1,180 @@
+<template>
+  <div class="empty-state animate-fade-in">
+    <div class="empty-state-content">
+      <!-- Animated icon -->
+      <div class="empty-icon-wrapper">
+        <span class="empty-icon" :class="{ 'empty-icon-pulse': pulse }">
+          {{ icon }}
+        </span>
+        <div v-if="showDecorations" class="decoration-circle decoration-1"></div>
+        <div v-if="showDecorations" class="decoration-circle decoration-2"></div>
+        <div v-if="showDecorations" class="decoration-circle decoration-3"></div>
+      </div>
+
+      <!-- Title -->
+      <h3 class="empty-title">{{ title }}</h3>
+
+      <!-- Description -->
+      <p class="empty-description">{{ description }}</p>
+
+      <!-- Action button -->
+      <button
+        v-if="actionLabel"
+        @click="$emit('action')"
+        class="btn btn-primary mt-4"
+      >
+        {{ actionLabel }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { defineProps, defineEmits } from 'vue'
+
+defineProps({
+  icon: {
+    type: String,
+    default: '🐾'
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  actionLabel: {
+    type: String,
+    default: ''
+  },
+  pulse: {
+    type: Boolean,
+    default: true
+  },
+  showDecorations: {
+    type: Boolean,
+    default: true
+  }
+})
+
+defineEmits(['action'])
+</script>
+
+<style scoped>
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 3rem 1.5rem;
+}
+
+.empty-state-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.empty-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.empty-icon {
+  font-size: 5rem;
+  display: inline-block;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+.empty-icon-pulse {
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 154, 125, 0.2) 0%, transparent 70%);
+  animation: float 3s ease-in-out infinite;
+}
+
+.decoration-1 {
+  width: 60px;
+  height: 60px;
+  top: -10px;
+  left: -20px;
+  animation-delay: 0s;
+}
+
+.decoration-2 {
+  width: 40px;
+  height: 40px;
+  top: 20px;
+  right: -10px;
+  animation-delay: 0.5s;
+}
+
+.decoration-3 {
+  width: 50px;
+  height: 50px;
+  bottom: -5px;
+  left: 50%;
+  animation-delay: 1s;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+
+.dark .empty-title {
+  color: #f9fafb;
+}
+
+.empty-description {
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.dark .empty-description {
+  color: #9ca3af;
+}
+
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-15px) scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 640px) {
+  .empty-icon {
+    font-size: 4rem;
+  }
+
+  .empty-title {
+    font-size: 1.25rem;
+  }
+
+  .empty-description {
+    font-size: 0.875rem;
+  }
+}
+</style>

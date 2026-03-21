@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Playful luxury theme inspired by current sage green
+        // Enhanced playful luxury theme with better contrast
         sage: {
           50: '#f6f7f4',
           100: '#e8ebe3',
@@ -20,6 +20,14 @@ export default {
           700: '#44503d',
           800: '#384234',
           900: '#2f372d',
+        },
+        // Vibrant accent colors for personality
+        accent: {
+          purple: '#a78bfa',
+          pink: '#f472b6',
+          orange: '#fb923c',
+          teal: '#2dd4bf',
+          blue: '#60a5fa',
         },
         navy: {
           50: '#f0f4f8',
@@ -44,6 +52,22 @@ export default {
           700: '#b45309',
           800: '#92400e',
           900: '#78350f',
+        },
+        // Success/warning/error colors with better contrast
+        success: {
+          light: '#d1fae5',
+          DEFAULT: '#10b981',
+          dark: '#059669',
+        },
+        warning: {
+          light: '#fef3c7',
+          DEFAULT: '#f59e0b',
+          dark: '#d97706',
+        },
+        danger: {
+          light: '#fee2e2',
+          DEFAULT: '#ef4444',
+          dark: '#dc2626',
         }
       },
       fontFamily: {

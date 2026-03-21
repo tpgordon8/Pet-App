@@ -4,14 +4,23 @@
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        class="toast glass-strong rounded-lg shadow-lg p-4 flex items-start gap-3"
+        class="toast glass-strong rounded-xl shadow-xl p-4 flex items-start gap-3 animate-in"
         :class="toastClass(toast.type)"
       >
-        <span class="text-2xl">{{ toastIcon(toast.type) }}</span>
-        <p class="flex-1 text-sm font-medium">{{ toast.message }}</p>
+        <span class="text-2xl flex-shrink-0">{{ toastIcon(toast.type) }}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium">{{ toast.message }}</p>
+          <button
+            v-if="toast.action"
+            @click="handleAction(toast)"
+            class="mt-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/30 rounded-lg text-xs font-semibold transition-all touch-target"
+          >
+            {{ toast.action.label }}
+          </button>
+        </div>
         <button
           @click="remove(toast.id)"
-          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors flex-shrink-0 touch-target"
           aria-label="Dismiss notification"
           title="Dismiss"
         >
@@ -26,6 +35,13 @@
 import { useToast } from '@/composables/useToast'
 
 const { toasts, remove } = useToast()
+
+function handleAction(toast) {
+  if (toast.action && toast.action.handler) {
+    toast.action.handler()
+    remove(toast.id)
+  }
+}
 
 function toastClass(type) {
   const classes = {
