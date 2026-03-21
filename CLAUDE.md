@@ -552,10 +552,25 @@ const storeNameStore = useStoreNameStore()
 
 ## Deployment Process
 
-### Vercel (Primary)
+### GitHub Actions CI/CD (Primary)
+**Enhanced deployment with quality gates**
+
 1. Push to branch: `claude/pet-activity-logger-Etaqb`
-2. Vercel auto-builds and deploys
-3. Preview URL provided in git commit status
+2. GitHub Actions workflow automatically:
+   - Runs ESLint (code quality check)
+   - Runs unit tests (catches bugs)
+   - Builds application (catches compilation errors)
+   - Deploys to Vercel (only if all checks pass)
+3. Deployment status visible in GitHub Actions tab
+4. Preview URL provided after successful deployment
+
+**Important:** Vercel automatic deployment is **disabled** (`vercel.json` → `"github": { "enabled": false }`). GitHub Actions controls all deployments to ensure quality gates are enforced.
+
+**Workflow file:** `.github/workflows/deploy.yml`
+
+**Required GitHub Secrets:** 12 total (see `GITHUB_SECRETS_SETUP.md`)
+- 9 Firebase environment variables
+- 3 Vercel credentials (TOKEN, ORG_ID, PROJECT_ID)
 
 ### Firebase Hosting (Backup)
 ```bash

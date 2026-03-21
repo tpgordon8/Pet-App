@@ -4,6 +4,9 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": null,
+  "github": {
+    "enabled": false
+  },
   "rewrites": [
     {
       "source": "/(.*)",
