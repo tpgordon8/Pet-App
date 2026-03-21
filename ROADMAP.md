@@ -1,6 +1,15 @@
 # Tailr Roadmap 🐾
 
-## ✅ Phase 1: Core Enhancements (COMPLETED)
+## ✅ Completed Features
+
+### Architecture & Foundation
+- [x] **Vue 3 Migration** (March 2026) - Migrated from vanilla JS to Vue 3 + Vite
+- [x] Pinia state management
+- [x] Vue Router for client-side routing
+- [x] TailwindCSS utility-first styling
+- [x] Component-based architecture with SFCs
+
+### Core Features (Phase 1)
 - [x] Daily statistics dashboard
 - [x] Toast notifications for feedback
 - [x] Activity grouping by date (Today/Yesterday)
@@ -9,187 +18,254 @@
 - [x] Beautiful gradient UI with animations
 - [x] Loading states and error handling
 
----
+### Multi-Pet Support (Phase 2.1) ✅ COMPLETED
+- [x] Pet profiles (name, emoji, species)
+- [x] Pet selector ("All Pets" vs individual pet filtering)
+- [x] Individual stats per pet + household totals
+- [x] Filter activities by pet
+- [x] Pet edit/delete functionality in stores
 
-## 🚀 Phase 2: Multi-Pet & User Management (RECOMMENDED NEXT)
-
-### 2.1 Multi-Pet Support
-**Why:** Most pet parents have 2+ pets and need to track them separately
-- [ ] Add pet profiles (name, photo, species, breed)
-- [ ] Pet selector on activity buttons
-- [ ] Color-coded activities per pet
-- [ ] Individual stats per pet + household totals
-- [ ] Filter activities by pet
-
-**Estimated Impact:** HIGH - Critical for households with multiple pets
-
-### 2.2 User Authentication
-**Why:** Coordinate care between Tom + Meag
-- [ ] Simple login (Google, Email, or passcode)
+### User Management (Phase 2.2) ⚠️ PARTIALLY COMPLETED
+- [x] Household member management (multiple users per household)
+- [x] Show who logged each activity
+- [x] Member selector for tracking
+- [ ] Authentication system (currently trust-based, no login required)
 - [ ] User profiles with avatars
-- [ ] Show who logged each activity
-- [ ] Activity history per user
-- [ ] Share access with family members
+- [ ] Share access with external family members
 
-**Estimated Impact:** HIGH - Essential for multi-caregiver households
-
----
-
-## 📊 Phase 3: Health & Medical Tracking
-
-### 3.1 Medical Records
-**Why:** #1 requested feature in pet apps
-- [ ] Vet visit logging with notes
-- [ ] Vaccination tracker with reminders
-- [ ] Medication schedules with alerts
-- [ ] Weight tracking over time
-- [ ] Lab results storage
-
-**Estimated Impact:** HIGH - Prevents missed vet appointments & meds
-
-### 3.2 Health Insights
-**Why:** Early detection of issues saves lives
-- [ ] Activity pattern analysis (e.g., "3 fewer bathroom breaks this week")
-- [ ] Weight trends and alerts
-- [ ] Eating pattern changes
-- [ ] Sleep quality tracking
-- [ ] Export health summary for vet visits
-
-**Estimated Impact:** MEDIUM-HIGH - Proactive health monitoring
-
----
-
-## 📸 Phase 4: Rich Content & Sharing
-
-### 4.1 Photo Attachments
-**Why:** Memory keeping + monitoring physical changes
-- [x] Add photos to activities ✅ COMPLETED 2026-03-15
-- [ ] Photo gallery view
-- [ ] Before/after comparisons
-- [ ] Automatic timeline of pet's life
-
-**Estimated Impact:** MEDIUM - High user satisfaction
-
-### 4.2 Sharing & Collaboration
-**Why:** Coordinate with pet sitters, walkers, family
-- [ ] Share pet profile with others
-- [ ] Generate shareable reports
-- [ ] Pet sitter mode (read-only or limited access)
-- [ ] Export to PDF for vet visits
-
-**Estimated Impact:** MEDIUM - Great for extended care teams
-
----
-
-## ✏️ Phase 5: Activity Management
-
-### 5.1 Edit & Delete
-**Why:** Mistakes happen, timestamps need adjustment
-- [ ] Edit activity details
-- [ ] Change timestamp/date
-- [ ] Delete activities
+### Activity Management (Phase 5)
+- [x] Edit activity details (type, timestamp, notes) for regular activities
+- [x] Delete activities with confirmation
+- [x] Add notes to activities (200 char limit)
 - [ ] Undo delete (trash bin)
-
-**Estimated Impact:** MEDIUM - Quality of life improvement
-
-### 5.2 Advanced Logging
-**Why:** More detailed tracking
-- [x] Add notes to activities ✅ COMPLETED 2026-03-15
 - [ ] Custom activity types
 - [ ] Duration tracking (e.g., 30-min walk)
 - [ ] Location tagging
 - [ ] Quantity tracking (e.g., cups of water)
 
-**Estimated Impact:** MEDIUM - Power users
+### Rich Content (Phase 4.1)
+- [x] Photo attachments with Firebase Storage
+- [x] Inline photo display in activity feed
+- [ ] Photo gallery view
+- [ ] Before/after comparisons
+- [ ] Automatic timeline of pet's life
 
----
+### Medical Tracking (Phase 3.1) ⚠️ PARTIALLY COMPLETED
+- [x] Vet visit logging (notes, cost)
+- [x] Vaccination tracker (vaccine name, notes)
+- [x] Weight tracking (weight, unit, notes)
+- [x] Medical data displays inline in activity feed
+- [ ] Medication schedules with alerts
+- [ ] Lab results storage
+- [ ] Vaccination due date reminders
 
-## 📅 Phase 6: Smart Features & Automation
-
-### 6.1 Reminders & Notifications
-**Why:** Never forget meals, meds, or walks
-- [ ] Custom recurring reminders
-- [ ] Smart suggestions (e.g., "It's been 8 hours since last meal")
-- [ ] Push notifications
-- [ ] Daily/weekly summary emails
-
-**Estimated Impact:** HIGH - Reduces mental load
-
-### 6.2 AI Insights
-**Why:** Modern pet parents want data-driven care
-- [ ] Pattern recognition (e.g., "Usually poops 2x/day, only 1x today")
-- [ ] Predictive alerts (e.g., "Mealtimes vary too much")
-- [ ] Health risk detection
-- [ ] Personalized recommendations
-
-**Estimated Impact:** MEDIUM - Differentiator feature
-
----
-
-## 📱 Phase 7: Advanced Views & Reports
-
-### 7.1 Calendar & Timeline View
-**Why:** Visual patterns over time
-- [ ] Month/week calendar view
-- [ ] Interactive timeline
-- [ ] Heat maps (most active times)
-- [ ] Streak tracking (e.g., "10 days of meds!")
-
-**Estimated Impact:** LOW-MEDIUM - Nice to have
-
-### 7.2 Reports & Analytics
-**Why:** Share with vets, track long-term health
-- [ ] Weekly/monthly summary reports
-- [ ] Custom date range reports
-- [ ] CSV export for Excel analysis
-- [ ] Printable vet visit summaries
-
-**Estimated Impact:** MEDIUM - Professional use case
-
----
-
-## 🎯 Quick Wins (Can Build Anytime)
-
-These don't require major architecture changes:
-- [ ] Dark mode toggle
+### Quick Wins
+- [x] Dark mode toggle (auto-detect + manual)
 - [ ] Custom color themes per pet
 - [ ] Sound effects on button press (optional)
 - [ ] Haptic feedback
 - [ ] Swipe to delete activities
-- [ ] Quick action shortcuts (most common activities at top)
-- [ ] Search/filter activities
+- [ ] Quick action shortcuts
+- [ ] Search/filter activities by keyword
 - [ ] Relative time display (e.g., "2 hours ago")
 
 ---
 
-## 🏗️ Technical Improvements
+## 🚀 What's Next? (Prioritized)
 
-- [ ] Add Firebase Authentication
-- [ ] Database security rules
-- [ ] Cloud Functions for notifications
-- [ ] Image storage with Firebase Storage
-- [ ] Service worker for true offline mode
-- [ ] Performance optimization
-- [ ] Automated testing
-- [ ] Analytics (privacy-focused)
+### High Impact - Recommended Next
+
+**📊 Health Insights & Visualization**
+- [ ] Weight trend chart visualization (chart.js or similar)
+- [ ] Activity pattern analysis (e.g., "3 fewer bathroom breaks this week")
+- [ ] Eating pattern changes detection
+- [ ] Sleep quality tracking
+- [ ] Export health summary for vet visits (PDF)
+
+**Estimated Impact:** HIGH - Proactive health monitoring, leverages existing medical data
+
+**📅 Smart Reminders**
+- [ ] Vaccination due date reminders (Web Notifications API)
+- [ ] Medication schedules with alerts
+- [ ] Custom recurring reminders
+- [ ] Smart suggestions (e.g., "It's been 8 hours since last meal")
+- [ ] Push notifications
+
+**Estimated Impact:** HIGH - Prevents missed vet appointments & meds
+
+**📋 Search & Export**
+- [ ] Activity search/filter by keyword
+- [ ] CSV export with all filters
+- [ ] PDF reports for vet visits
+- [ ] Custom date range reports
+
+**Estimated Impact:** HIGH - Requested by users, easy to implement
 
 ---
 
-## 📋 What's Next?
+### Medium Impact - Quality of Life
 
-**Recommendation:** Start with **Phase 2** (Multi-Pet + User Auth)
+**📸 Photo Gallery & Timeline**
+- [ ] Photo gallery view (all pet photos)
+- [ ] Before/after comparisons
+- [ ] Automatic timeline of pet's life
+- [ ] Photo thumbnails in activity cards
 
-This unlocks the most value for multi-pet households and multi-caregiver coordination, which are the top pain points for pet parents.
+**Estimated Impact:** MEDIUM - High user satisfaction, memory keeping
 
-**How to proceed:**
-1. Review this roadmap
-2. Tell me which phase/features you want next
-3. I'll build them in priority order!
+**🔐 Authentication & Sharing**
+- [ ] Simple authentication (Google, Email, or passcode)
+- [ ] User profiles with avatars
+- [ ] Share pet profile with others (pet sitters, walkers)
+- [ ] Generate shareable reports
+- [ ] Pet sitter mode (read-only or limited access)
+- [ ] Share access with external family members
 
-**Questions to help prioritize:**
-- Do you have multiple pets? → Phase 2.1 first
-- Does Meag also track activities? → Phase 2.2 first
-- Need vet appointment reminders? → Phase 3.1 first
-- Want to track patterns/changes? → Phase 3.2 first
+**Estimated Impact:** MEDIUM - Great for extended care teams
 
-Let me know what sounds most valuable to you! 🚀
+**✏️ Advanced Activity Management**
+- [ ] Undo delete (trash bin with 30-day retention)
+- [ ] Custom activity types (user-defined)
+- [ ] Duration tracking (e.g., 30-min walk)
+- [ ] Location tagging (GPS coordinates)
+- [ ] Quantity tracking (e.g., cups of water, oz of food)
+- [ ] Bulk operations (delete multiple activities)
+
+**Estimated Impact:** MEDIUM - Power users
+
+**📊 Medical Tracking Extensions**
+- [ ] Medication schedules with dosage tracking
+- [ ] Lab results storage (upload PDFs)
+- [ ] Appointment reminders with calendar integration
+- [ ] Vet contact information storage
+
+**Estimated Impact:** MEDIUM - Completes medical tracking suite
+
+---
+
+### Lower Priority - Future Enhancements
+
+**📱 Advanced Views**
+- [ ] Month/week calendar view
+- [ ] Interactive timeline visualization
+- [ ] Heat maps (most active times of day)
+- [ ] Streak tracking (e.g., "10 days of meds!")
+
+**Estimated Impact:** LOW-MEDIUM - Nice to have, visual appeal
+
+**🤖 AI-Powered Insights**
+- [ ] Pattern recognition (e.g., "Usually poops 2x/day, only 1x today")
+- [ ] Predictive alerts (e.g., "Mealtimes vary too much")
+- [ ] Health risk detection based on activity changes
+- [ ] Personalized care recommendations
+- [ ] Daily/weekly summary emails
+
+**Estimated Impact:** MEDIUM - Differentiator feature, requires significant development
+
+**🎨 UI Polish (Quick Wins)**
+- [ ] Custom color themes per pet
+- [ ] Sound effects on button press (optional)
+- [ ] Haptic feedback for mobile
+- [ ] Swipe to delete activities
+- [ ] Quick action shortcuts (most common activities at top)
+- [ ] Activity type icons with animation
+- [ ] Improved loading skeletons
+
+**Estimated Impact:** LOW - Polish and delight
+
+**🔧 Pet Management**
+- [ ] Edit pet details (currently can only add/delete)
+- [ ] Pet photo uploads
+- [ ] Pet breed selection
+- [ ] Pet birthday tracking
+- [ ] Pet health conditions tags
+
+**Estimated Impact:** MEDIUM - Completes pet profile management
+
+---
+
+## 🏗️ Technical Improvements & Infrastructure
+
+**Completed:**
+- [x] Firebase Realtime Database integration
+- [x] Image storage with Firebase Storage
+- [x] Service worker for offline mode (PWA)
+- [x] Vite build optimization
+- [x] TailwindCSS for performant styling
+
+**TODO:**
+- [ ] Firebase Authentication (currently trust-based household model)
+- [ ] Enhanced database security rules (currently basic rules)
+- [ ] Cloud Functions for push notifications
+- [ ] Automated testing (Vitest + Playwright configured but minimal coverage)
+- [ ] Performance monitoring and optimization
+- [ ] Analytics (privacy-focused, opt-in)
+- [ ] Error tracking (Sentry or similar)
+- [ ] Database indexes for query optimization
+
+---
+
+## 📋 Current State & Recommendations (Updated March 2026)
+
+### ✅ What's Working Well
+- Multi-pet tracking with real-time sync
+- Basic medical records (vet visits, vaccinations, weight)
+- Photo attachments and activity notes
+- Offline support with auto-sync
+- Dark mode and PWA capabilities
+- Household member tracking
+
+### 🎯 Recommended Next Steps
+
+**Option 1: Enhance Medical Tracking (High Impact)**
+Build on existing medical features:
+1. Weight trend chart visualization (leverage existing weight data)
+2. Vaccination reminder system (due dates based on logged vaccines)
+3. PDF export for vet visits (combine medical history into shareable reports)
+
+**Why:** You already have medical data being tracked. Visualizing trends and adding reminders makes this data actionable.
+
+**Option 2: Search & Data Export (Quick Wins)**
+Make existing data more accessible:
+1. Activity search/filter by keyword
+2. CSV export for all activities
+3. Custom date range filtering
+
+**Why:** Easy to implement, high user value, works with all existing data.
+
+**Option 3: Authentication & Sharing (Extended Use)**
+Open up the app to external users:
+1. Simple authentication (Google/Email)
+2. Share pet profiles with pet sitters
+3. Read-only guest access
+
+**Why:** Unlocks use cases beyond immediate household (vets, sitters, family).
+
+### 🤔 How to Decide
+
+**If you want to:**
+- Make better health decisions → **Option 1** (Health Insights)
+- Find specific activities quickly → **Option 2** (Search & Export)
+- Share with vets/sitters → **Option 3** (Auth & Sharing)
+
+**My recommendation:** Start with **Option 2** (Search & Export) as a quick win, then move to **Option 1** (Health Insights) for high impact.
+
+---
+
+## 📊 Feature Status Summary
+
+| Category | Completed | In Progress | Planned |
+|----------|-----------|-------------|---------|
+| Core Activity Tracking | ✅ 100% | - | - |
+| Multi-Pet Support | ✅ 100% | - | - |
+| Medical Tracking | ✅ 60% | - | Reminders, Charts |
+| Photo & Notes | ✅ 100% | - | Gallery View |
+| User Management | ⚠️ 50% | - | Authentication |
+| Search & Export | ❌ 0% | - | Search, CSV, PDF |
+| Health Insights | ❌ 0% | - | Charts, Patterns |
+| Sharing | ❌ 0% | - | Auth, Guest Access |
+
+---
+
+**Last Updated:** 2026-03-21
+**Next Review:** After next major feature release
