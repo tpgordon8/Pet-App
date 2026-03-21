@@ -3,22 +3,37 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Mail templates - allow reads, temporarily allow writes for setup
+    // Mail templates - read-only (managed via Firebase Console)
     match /mail_templates/{template} {
       allow read: if true;
-      allow write: if true;  // Temporary - will lock down after setup
+      allow write: if false;  // ✅ LOCKED DOWN - no client writes
     }
 
     // Mail collection for email trigger extension
     match /mail/{mailId} {
-      allow write: if true;  // Allow creating email queue items
-      allow read: if false;  // Users shouldn't read email queue
+      allow create: if true;  // ✅ Allow creating email queue items
+      allow update, delete: if false;  // ✅ Cannot modify after creation
+      allow read: if false;  // ✅ Users shouldn't read email queue
     }
 
     // Household invites
+    // NOTE: Without authentication, we can only do basic validation
     match /invites/{inviteId} {
-      allow read: if true;
-      allow write: if true;
+      // Allow reading invites (needed to verify invite codes)
+      allow read: if true;  // TODO: Add auth-based restrictions
+
+      // Allow creating invites with validation
+      allow create: if request.resource.data.keys().hasAll(['householdId', 'inviterName', 'createdAt', 'expiresAt']) &&
+                       request.resource.data.expiresAt is timestamp &&
+                       request.resource.data.createdAt is timestamp &&
+                       request.resource.data.expiresAt > request.time;
+
+      // Allow updating only if not expired
+      allow update: if resource.data.expiresAt > request.time &&
+                       request.resource.data.expiresAt > request.time;
+
+      // Allow deleting invites (cleanup)
+      allow delete: if true;  // TODO: Restrict to household members
     }
 
     // Default deny all other collections
