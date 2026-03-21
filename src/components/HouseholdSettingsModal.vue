@@ -201,13 +201,18 @@ async function saveName() {
   }
 }
 
-function copyCode() {
-  navigator.clipboard.writeText(householdStore.householdCode)
-  codeCopied.value = true
-  showToast('Household code copied!', 'success')
-  setTimeout(() => {
-    codeCopied.value = false
-  }, 2000)
+async function copyCode() {
+  try {
+    await navigator.clipboard.writeText(householdStore.householdCode)
+    codeCopied.value = true
+    showToast('Household code copied!', 'success')
+    setTimeout(() => {
+      codeCopied.value = false
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to copy code:', error)
+    showToast('Failed to copy code. Please try again.', 'error')
+  }
 }
 
 function openInviteModal() {

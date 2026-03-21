@@ -8,6 +8,45 @@ import { useAnalytics } from '@/composables/useAnalytics'
 export const useHouseholdStore = defineStore('household', () => {
   const { trackHouseholdAction, setAnalyticsUserId, setAnalyticsUserProperties } = useAnalytics()
 
+  // Validation functions
+  function validateHouseholdCode(code) {
+    const codeRegex = /^[a-zA-Z0-9-]{4,20}$/
+    if (!code) {
+      throw new Error('Household code is required')
+    }
+    if (!codeRegex.test(code)) {
+      throw new Error('Household code must be 4-20 characters long and contain only letters, numbers, and hyphens')
+    }
+    return true
+  }
+
+  function validateMemberName(name) {
+    const nameRegex = /^[a-zA-Z0-9\s]{1,50}$/
+    if (!name) {
+      throw new Error('Member name is required')
+    }
+    if (!nameRegex.test(name)) {
+      throw new Error('Member name must be 1-50 characters long and contain only letters, numbers, and spaces')
+    }
+    if (name.trim() !== name) {
+      throw new Error('Member name cannot start or end with spaces')
+    }
+    return true
+  }
+
+  function validatePasscode(passcodeValue) {
+    if (!passcodeValue) {
+      throw new Error('Passcode is required')
+    }
+    if (passcodeValue.length < 4) {
+      throw new Error('Passcode must be at least 4 characters long')
+    }
+    if (passcodeValue.length > 50) {
+      throw new Error('Passcode must be less than 50 characters')
+    }
+    return true
+  }
+
   // State
   const householdId = ref(localStorage.getItem('householdId') || null)
   const householdCode = ref(localStorage.getItem('householdCode') || null)
@@ -33,6 +72,11 @@ export const useHouseholdStore = defineStore('household', () => {
   // Actions
   async function createHousehold(code, passcodeValue, firstMemberName) {
     try {
+      // Validate inputs
+      validateHouseholdCode(code)
+      validatePasscode(passcodeValue)
+      validateMemberName(firstMemberName)
+
       const newHouseholdRef = dbRef(database, `households/${code}`)
 
       // Check if household already exists
@@ -112,6 +156,11 @@ export const useHouseholdStore = defineStore('household', () => {
 
   async function joinHousehold(code, passcodeValue, newMemberName) {
     try {
+      // Validate inputs
+      validateHouseholdCode(code)
+      validatePasscode(passcodeValue)
+      validateMemberName(newMemberName)
+
       const householdRef = dbRef(database, `households/${code}`)
       const snapshot = await get(householdRef)
 

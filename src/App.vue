@@ -9,12 +9,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 import ToastContainer from './components/ToastContainer.vue'
 
 // Dark mode state (can be moved to a store later)
 const isDarkMode = ref(false)
+let darkModeMediaQuery = null
+let darkModeListener = null
 
 onMounted(() => {
   // Check localStorage first
@@ -23,13 +25,21 @@ onMounted(() => {
     isDarkMode.value = savedTheme === 'dark'
   } else {
     // Check system preference
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     isDarkMode.value = darkModeMediaQuery.matches
 
     // Listen for changes
-    darkModeMediaQuery.addEventListener('change', (e) => {
+    darkModeListener = (e) => {
       isDarkMode.value = e.matches
-    })
+    }
+    darkModeMediaQuery.addEventListener('change', darkModeListener)
+  }
+})
+
+onUnmounted(() => {
+  // Clean up event listener to prevent memory leak
+  if (darkModeMediaQuery && darkModeListener) {
+    darkModeMediaQuery.removeEventListener('change', darkModeListener)
   }
 })
 </script>

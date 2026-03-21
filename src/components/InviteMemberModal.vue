@@ -192,23 +192,33 @@ function closeModal() {
   emit('close')
 }
 
-function copyLink() {
-  navigator.clipboard.writeText(inviteLink.value)
-  linkCopied.value = true
-  showToast('Invite link copied!', 'success')
-  trackInviteSent('link')
-  setTimeout(() => {
-    linkCopied.value = false
-  }, 2000)
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(inviteLink.value)
+    linkCopied.value = true
+    showToast('Invite link copied!', 'success')
+    trackInviteSent('link')
+    setTimeout(() => {
+      linkCopied.value = false
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to copy link:', error)
+    showToast('Failed to copy link. Please try again.', 'error')
+  }
 }
 
-function copyCode() {
-  navigator.clipboard.writeText(householdStore.householdCode)
-  codeCopied.value = true
-  showToast('Household code copied!', 'success')
-  setTimeout(() => {
-    codeCopied.value = false
-  }, 2000)
+async function copyCode() {
+  try {
+    await navigator.clipboard.writeText(householdStore.householdCode)
+    codeCopied.value = true
+    showToast('Household code copied!', 'success')
+    setTimeout(() => {
+      codeCopied.value = false
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to copy code:', error)
+    showToast('Failed to copy code. Please try again.', 'error')
+  }
 }
 
 async function sendEmail() {

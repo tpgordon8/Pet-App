@@ -97,6 +97,9 @@
 
 <script setup>
 import { ref, watch, defineProps, defineEmits } from 'vue'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 
 const props = defineProps({
   show: {
@@ -135,14 +138,14 @@ function handlePhotoSelect(event) {
 
   // Validate file type
   if (!file.type.startsWith('image/')) {
-    alert('Please select an image file')
+    showToast('Please select an image file', 'error')
     event.target.value = ''
     return
   }
 
   // Check file size (max 5MB)
   if (file.size > 5 * 1024 * 1024) {
-    alert('Photo must be less than 5MB')
+    showToast('Photo must be less than 5MB', 'error')
     event.target.value = ''
     return
   }
@@ -155,7 +158,7 @@ function handlePhotoSelect(event) {
     photoPreview.value = e.target.result
   }
   reader.onerror = () => {
-    alert('Failed to read image file')
+    showToast('Failed to read image file', 'error')
     photoFile.value = null
     event.target.value = ''
   }

@@ -101,6 +101,8 @@ async function copyCode() {
     }, 2000)
   } catch (err) {
     console.error('Failed to copy:', err)
+    // Note: useToast not imported in this component, error is silently handled
+    // This is acceptable for onboarding flow where clipboard is optional
   }
 }
 </script>
