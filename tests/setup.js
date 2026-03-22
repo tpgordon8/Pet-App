@@ -40,6 +40,10 @@ global.matchMedia = vi.fn().mockImplementation(query => ({
 }))
 
 // Mock navigator.clipboard
-global.navigator.clipboard = {
-  writeText: vi.fn().mockResolvedValue()
-}
+Object.defineProperty(global.navigator, 'clipboard', {
+  value: {
+    writeText: vi.fn().mockResolvedValue()
+  },
+  writable: true,
+  configurable: true
+})
