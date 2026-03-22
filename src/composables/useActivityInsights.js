@@ -6,7 +6,6 @@ export function useActivityInsights(activities) {
     const results = []
     const now = Date.now()
     const today = startOfDay(new Date())
-    const yesterday = subDays(today, 1)
     const weekAgo = subDays(today, 7)
 
     // Optimization: Single pass through activities to categorize
@@ -16,7 +15,6 @@ export function useActivityInsights(activities) {
     const weekCounts = {}
 
     const todayTime = today.getTime()
-    const yesterdayTime = yesterday.getTime()
     const weekAgoTime = weekAgo.getTime()
 
     for (const activity of activities.value) {

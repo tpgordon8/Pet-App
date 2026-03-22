@@ -181,6 +181,8 @@ describe('Firebase Realtime Database Security Rules', () => {
 })
 
 describe('Firestore Security Rules', () => {
+  const testHouseholdCode = 'TEST123'
+
   describe('Mail Templates', () => {
     it('should allow reading mail templates', async () => {
       const templateRef = doc(firestore, 'mail_templates', 'test_template')

@@ -235,6 +235,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     try {
       // Restore with the same ID
       const activityRef = dbRef(database, `households/${householdStore.householdId}/activities/${activityId}`)
+      // eslint-disable-next-line no-unused-vars
       const { id, ...dataWithoutId } = activityData
       await update(activityRef, dataWithoutId)
 
