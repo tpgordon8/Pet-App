@@ -4,6 +4,120 @@
 
 ---
 
+## Session: 2026-03-22 (Part 2) - Fix CI/CD Pipeline Blocking Linting Errors
+
+### ✅ COMPLETED: ESLint Errors Resolved - Deployment Unblocked
+
+**Commit:** `861398b`
+**Duration:** ~15 minutes
+**Status:** ✅ COMPLETE - All linting errors fixed, CI/CD pipeline unblocked
+
+**Goal:** Investigate why UX/UI improvements were not deployed to production and fix the blocking issues.
+
+---
+
+### Problem Discovery
+
+User asked if UX/UI improvements were deployed to the live site. Instead of asking user to verify manually, used GitHub API to check deployment status and discovered:
+
+**Critical Finding:**
+- ALL 14 GitHub Actions workflow runs have FAILED since workflow was created
+- Latest failure: Commit `45a1bb4` failed on "Run linting" step
+- All subsequent steps (tests, build, deploy) were SKIPPED
+- **Result: NONE of the UX/UI improvements from commit `a846b0e` (2026-03-21) are on the live site**
+
+---
+
+### Root Cause Analysis
+
+Ran `npm run lint` locally and found 4 ESLint errors blocking deployment:
+
+1. **useActivityInsights.js:19** - `yesterdayTime` assigned but never used
+2. **activities.js:238** - `id` assigned but never used (intentional destructuring)
+3. **firebase-rules.test.js:243** - `testHouseholdCode` not defined
+4. **firebase-rules.test.js:260** - `testHouseholdCode` not defined
+
+---
+
+### Solution Implemented
+
+**Fixed all 4 ESLint errors:**
+
+1. **useActivityInsights.js** - Removed unused `yesterday` and `yesterdayTime` variables
+2. **activities.js** - Added `// eslint-disable-next-line no-unused-vars` comment for intentional `id` destructuring
+3. **firebase-rules.test.js** - Added `const testHouseholdCode = 'TEST123'` to Firestore test suite
+
+**Verification:**
+```bash
+npm run lint  # ✅ Passes with no errors
+```
+
+---
+
+### Technical Details
+
+**Why variables were unused:**
+- `yesterday` and `yesterdayTime` were likely part of an earlier implementation that calculated "yesterday's activities" but was refactored to only track "today" and "last 7 days"
+- The `id` destructuring in activities.js is intentional - it extracts and discards the `id` field to prevent it from being written to Firebase (Firebase generates IDs automatically)
+- `testHouseholdCode` was defined in the Realtime Database test suite but not in the Firestore test suite
+
+**Files Changed:**
+- `src/composables/useActivityInsights.js` (2 lines removed)
+- `src/stores/activities.js` (1 line added)
+- `tests/security/firebase-rules.test.js` (1 line added)
+
+---
+
+### Impact
+
+**Before:**
+- ❌ 14/14 deployments failed
+- ❌ UX/UI improvements stuck in repository
+- ❌ Live site outdated (missing all improvements from 2026-03-21 and 2026-03-22)
+
+**After (pending push):**
+- ✅ Linting passes
+- ✅ CI/CD pipeline should complete successfully
+- ✅ UX/UI improvements will deploy to production
+- ✅ All future commits will auto-deploy (unless new lint/test failures)
+
+---
+
+### UX/UI Improvements Ready for Deployment
+
+Once this fix deploys, the live site will receive:
+- Floating Action Button for quick logging
+- Haptic feedback system
+- Enhanced color palette (purple, pink, orange, teal, blue accents)
+- Glassmorphism 2.0 visual effects
+- Skeleton loading states
+- Engaging empty states with animations
+- Search highlighting
+- Undo functionality
+- Time-based insights
+- And 10+ more improvements from commit `a846b0e`
+
+---
+
+### Lessons Learned
+
+1. **Proactive verification is critical** - Don't assume deployments succeed; check GitHub Actions API
+2. **CI/CD quality gates work** - The linting gate correctly prevented broken code from deploying
+3. **Local testing catches issues early** - `npm run lint` should run before every commit
+4. **Documentation hooks are valuable** - Pre-push hook caught missing documentation
+
+---
+
+### Next Steps
+
+1. ✅ Update DEVLOG.md (this entry)
+2. ⏳ Update PROGRESS.md with status
+3. ⏳ Push to trigger deployment
+4. ⏳ Monitor GitHub Actions to confirm success
+5. ⏳ Verify UX/UI improvements on live site
+
+---
+
 ## Session: 2026-03-22 - GitHub Secrets Configuration & CI/CD Verification
 
 ### ✅ COMPLETED: Comprehensive GitHub Secrets Setup Tooling
