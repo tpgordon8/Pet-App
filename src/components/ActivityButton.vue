@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { ref } from 'vue'
 import { useHaptic } from '@/composables/useHaptic'
 
 const props = defineProps({

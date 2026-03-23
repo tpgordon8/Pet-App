@@ -1,9 +1,9 @@
+/* Import shared form styles */
+@import '../styles/forms.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import shared form styles */
-@import '../styles/forms.css';
 
 /* Custom base styles */
 @layer base {

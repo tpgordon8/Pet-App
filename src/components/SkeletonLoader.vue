@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
+// defineProps is a compiler macro in Vue 3 - no import needed
 
 defineProps({
   type: {

@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+// defineProps and defineEmits are compiler macros in Vue 3 - no import needed
 
 const props = defineProps({
   pets: {
