@@ -7,6 +7,8 @@ import { useHouseholdStore } from './household'
 import { usePetsStore } from './pets'
 import { useToast } from '@/composables/useToast'
 import { useAnalytics } from '@/composables/useAnalytics'
+import { REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES } from '@/constants/activityTypes'
+import { UPLOAD_LIMITS } from '@/constants/uiConstants'
 
 export const useActivitiesStore = defineStore('activities', () => {
   const householdStore = useHouseholdStore()
@@ -45,15 +47,15 @@ export const useActivitiesStore = defineStore('activities', () => {
   const stats = computed(() => {
     const today = todayActivities.value
     return {
-      poop: today.filter(a => a.type === 'Poop').length,
-      pee: today.filter(a => a.type === 'Pee').length,
-      food: today.filter(a => a.type === 'Food').length,
-      sleep: today.filter(a => a.type === 'Sleep').length,
-      meds: today.filter(a => a.type === 'Meds').length,
-      walk: today.filter(a => a.type === 'Walk').length,
-      vetVisit: today.filter(a => a.type === 'Vet Visit').length,
-      vaccination: today.filter(a => a.type === 'Vaccination').length,
-      weightCheck: today.filter(a => a.type === 'Weight Check').length,
+      poop: today.filter(a => a.type === REGULAR_ACTIVITIES.POOP).length,
+      pee: today.filter(a => a.type === REGULAR_ACTIVITIES.PEE).length,
+      food: today.filter(a => a.type === REGULAR_ACTIVITIES.FOOD).length,
+      sleep: today.filter(a => a.type === REGULAR_ACTIVITIES.SLEEP).length,
+      meds: today.filter(a => a.type === REGULAR_ACTIVITIES.MEDS).length,
+      walk: today.filter(a => a.type === REGULAR_ACTIVITIES.WALK).length,
+      vetVisit: today.filter(a => a.type === MEDICAL_ACTIVITIES.VET_VISIT).length,
+      vaccination: today.filter(a => a.type === MEDICAL_ACTIVITIES.VACCINATION).length,
+      weightCheck: today.filter(a => a.type === MEDICAL_ACTIVITIES.WEIGHT_CHECK).length,
       total: today.length
     }
   })

@@ -8,8 +8,14 @@ import './assets/main.css'
 import './firebase/config'
 
 const app = createApp(App)
+const pinia = createPinia()
 
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
+
+// Initialize theme store after Pinia is installed
+import { useThemeStore } from './stores/theme'
+const themeStore = useThemeStore(pinia)
+themeStore.initializeTheme()
 
 app.mount('#app')
