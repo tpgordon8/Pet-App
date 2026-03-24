@@ -4,6 +4,65 @@
 
 ---
 
+## Session: 2026-03-24 - CSV Export Feature Implementation
+
+### ✅ COMPLETED: Activity CSV Export
+
+**Commit:** `60d0d39`
+**Duration:** ~45 minutes
+**Status:** ✅ COMPLETE - CSV export fully functional
+
+**Goal:** Implement CSV export functionality to complete roadmap Option 2 (Search & Export).
+
+**What Was Built:**
+1. **useCsvExport Composable** (`src/composables/useCsvExport.js`)
+   - CSV generation with proper escaping (quotes, commas, newlines)
+   - Exports all activity fields: date, time, type, emoji, pet, user, notes, photo status
+   - Medical data support: vaccine names, weight, unit, cost, medical notes
+   - Pet name lookup integration
+   - Automatic filename generation with timestamps
+   - Error handling and result reporting
+
+2. **Dashboard Integration** (`src/views/DashboardView.vue`)
+   - Export CSV button added next to search bar
+   - Responsive design (mobile-friendly)
+   - Uses existing btn-export styling
+   - Toast notifications for success/error feedback
+   - Exports currently filtered activities (respects pet selection)
+
+**Features Discovered:**
+- ✅ **Weight Trend Chart** - Already fully implemented (Chart.js integration with unit conversion, dark mode)
+- ✅ **Search Functionality** - Already working (searches type, notes, user, pet, medical data)
+
+**Roadmap Status Update:**
+From Option 2 (Search & Export):
+- ✅ Activity search/filter by keyword (already implemented)
+- ✅ CSV export with all filters (NOW COMPLETE)
+- ⏳ PDF reports for vet visits (medical PDF exists, need general activities PDF)
+- ⏳ Custom date range reports (can add date picker to CSV export)
+
+**Technical Details:**
+- CSV format follows RFC 4180 standard
+- Proper quote escaping for data containing commas, quotes, or newlines
+- Includes 13 columns covering all activity data
+- File naming: `tailr-activities-{PetName}-{YYYY-MM-DD}.csv`
+- Download triggered via Blob API with automatic cleanup
+
+**Why This Matters:**
+- ✅ Users can analyze activity data in Excel/Google Sheets
+- ✅ Backup/archive capability for pet records
+- ✅ Share data with vets or pet sitters
+- ✅ Quick win from roadmap (high user value, low complexity)
+
+**Next Steps:**
+Based on roadmap, remaining high-impact features:
+1. Date range filtering for CSV exports
+2. PDF reports for all activities (not just medical)
+3. Weight trend insights (leverage existing chart data)
+4. Vaccination reminders
+
+---
+
 ## Session: 2026-03-23 (Part 3) - Deployment Strategy Simplification
 
 ### ✅ COMPLETED: Eliminated Build Warnings
