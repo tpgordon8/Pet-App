@@ -162,9 +162,33 @@ function close() {
 </script>
 
 <style scoped>
-.modal-enter-active,
+/* Modal backdrop with smooth animations */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  will-change: transform, opacity;
+}
+
+/* Smooth modal entrance/exit animations */
+.modal-enter-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-enter-active .modal-content {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.25s ease;
+}
+
 .modal-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.modal-leave-active .modal-content {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+              opacity 0.2s ease;
 }
 
 .modal-enter-from,
@@ -172,13 +196,34 @@ function close() {
   opacity: 0;
 }
 
-.modal-enter-active .modal-content,
-.modal-leave-active .modal-content {
-  transition: transform 0.3s ease;
+.modal-enter-from .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
 }
 
-.modal-enter-from .modal-content,
 .modal-leave-to .modal-content {
-  transform: scale(0.9);
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .modal-enter-from .modal-content {
+    transform: translateY(100%);
+  }
+
+  .modal-leave-to .modal-content {
+    transform: translateY(100%);
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active,
+  .modal-enter-active .modal-content,
+  .modal-leave-active .modal-content {
+    transition: none;
+  }
 }
 </style>

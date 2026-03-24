@@ -88,10 +88,13 @@ function handleOverlayClick() {
 </script>
 
 <style scoped>
-/* Modal transitions */
-.modal-fade-enter-active,
+/* Modal transitions with improved animations */
+.modal-fade-enter-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .modal-fade-leave-active {
-  transition: opacity 200ms ease;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .modal-fade-enter-from,
@@ -99,13 +102,20 @@ function handleOverlayClick() {
   opacity: 0;
 }
 
-.modal-slide-enter-active,
+.modal-slide-enter-active {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.25s ease;
+  will-change: transform, opacity;
+}
+
 .modal-slide-leave-active {
-  transition: all 200ms ease;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+              opacity 0.2s ease;
+  will-change: transform, opacity;
 }
 
 .modal-slide-enter-from {
-  transform: scale(0.95) translateY(-10px);
+  transform: scale(0.95) translateY(-20px);
   opacity: 0;
 }
 
@@ -117,5 +127,26 @@ function handleOverlayClick() {
 /* Smooth scrolling for modal content */
 .modal-content {
   scroll-behavior: smooth;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .modal-slide-enter-from {
+    transform: translateY(100%);
+  }
+
+  .modal-slide-leave-to {
+    transform: translateY(100%);
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .modal-fade-enter-active,
+  .modal-fade-leave-active,
+  .modal-slide-enter-active,
+  .modal-slide-leave-active {
+    transition: none;
+  }
 }
 </style>

@@ -1,10 +1,11 @@
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-    @click.self="handleClose"
-  >
-    <div class="card max-w-md w-full">
+  <Transition name="modal">
+    <div
+      v-if="show"
+      class="modal-backdrop"
+      @click.self="handleClose"
+    >
+      <div class="card max-w-md w-full modal-content">
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -95,7 +96,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup>
@@ -167,16 +168,78 @@ function handleSave() {
 </script>
 
 <style scoped>
+/* Modal backdrop with smooth animations */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  will-change: transform, opacity;
+}
+
+/* Smooth modal entrance/exit animations */
+.modal-enter-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-enter-active .modal-content {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.25s ease;
+}
+
+.modal-leave-active {
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.modal-leave-active .modal-content {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+              opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+}
+
+.modal-leave-to .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
 .input {
   @apply px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
     focus:outline-none focus:ring-2 focus:ring-sage-500 dark:focus:ring-sage-400
     transition-colors;
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  min-height: 44px; /* iOS touch target */
 }
 
 .btn {
   @apply px-4 py-2 rounded-lg font-medium transition-all
     disabled:opacity-50 disabled:cursor-not-allowed;
+  min-height: 44px; /* iOS touch target */
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
@@ -184,12 +247,53 @@ function handleSave() {
     dark:bg-sage-500 dark:hover:bg-sage-600;
 }
 
+.btn-primary:active {
+  @apply bg-sage-800 dark:bg-sage-700;
+}
+
 .btn-secondary {
   @apply bg-gray-200 hover:bg-gray-300 text-gray-700
     dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200;
 }
 
+.btn-secondary:active {
+  @apply bg-gray-400 dark:bg-gray-800;
+}
+
 .card {
   @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-enter-from .modal-content {
+    transform: translateY(100%);
+  }
+
+  .modal-leave-to .modal-content {
+    transform: translateY(100%);
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active,
+  .modal-enter-active .modal-content,
+  .modal-leave-active .modal-content {
+    transition: none;
+  }
 }
 </style>

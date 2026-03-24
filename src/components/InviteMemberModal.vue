@@ -1,11 +1,12 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto">
-    <!-- Backdrop -->
-    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" @click="closeModal"></div>
+  <Transition name="modal">
+    <div v-if="isOpen" class="modal-backdrop">
+      <!-- Backdrop -->
+      <div class="fixed inset-0 bg-black bg-opacity-50" @click="closeModal"></div>
 
-    <!-- Modal -->
-    <div class="flex min-h-screen items-center justify-center p-4">
-      <div class="relative w-full max-w-md transform rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+      <!-- Modal -->
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="modal-content relative w-full max-w-md transform rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl">
         <!-- Header -->
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Invite to Household</h2>
@@ -138,7 +139,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup>
@@ -258,3 +259,74 @@ async function sendEmail() {
   }
 }
 </script>
+
+<style scoped>
+/* Modal backdrop with smooth animations */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  will-change: transform, opacity;
+}
+
+/* Smooth modal entrance/exit animations */
+.modal-enter-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-enter-active .modal-content {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.25s ease;
+}
+
+.modal-leave-active {
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.modal-leave-active .modal-content {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+              opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+}
+
+.modal-leave-to .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .modal-enter-from .modal-content {
+    transform: translateY(100%);
+  }
+
+  .modal-leave-to .modal-content {
+    transform: translateY(100%);
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active,
+  .modal-enter-active .modal-content,
+  .modal-leave-active .modal-content {
+    transition: none;
+  }
+}
+</style>

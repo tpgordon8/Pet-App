@@ -1,10 +1,11 @@
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-    @click.self="$emit('close')"
-  >
-    <div class="card max-w-md w-full space-y-4 animate-scale-in">
+  <Transition name="modal">
+    <div
+      v-if="show"
+      class="modal-backdrop"
+      @click.self="$emit('close')"
+    >
+      <div class="card max-w-md w-full space-y-4 modal-content">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <h3 class="text-xl font-bold text-gray-900 dark:text-white">
@@ -92,7 +93,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup>
@@ -191,18 +192,89 @@ function handleSave() {
 </script>
 
 <style scoped>
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
+/* Modal backdrop with smooth animations */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  will-change: transform, opacity;
+}
+
+/* Smooth modal entrance/exit animations */
+.modal-enter-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-enter-active .modal-content {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.25s ease;
+}
+
+.modal-leave-active {
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.modal-leave-active .modal-content {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+              opacity 0.2s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+}
+
+.modal-leave-to .modal-content {
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+
+  .modal-content {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-enter-from .modal-content {
+    transform: translateY(100%);
+  }
+
+  .modal-leave-to .modal-content {
+    transform: translateY(100%);
   }
 }
 
-.animate-scale-in {
-  animation: scale-in 0.2s ease-out;
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .modal-enter-active,
+  .modal-leave-active,
+  .modal-enter-active .modal-content,
+  .modal-leave-active .modal-content {
+    transition: none;
+  }
 }
 </style>

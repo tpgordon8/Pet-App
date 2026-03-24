@@ -21,7 +21,7 @@
       <div class="flex items-center gap-2">
         <span v-if="badge" class="badge">{{ badge }}</span>
         <span
-          class="chevron transition-transform duration-300"
+          class="chevron"
           :class="{ 'chevron-expanded': !isCollapsed }"
         >
           ▼
@@ -29,25 +29,20 @@
       </div>
     </button>
 
-    <Transition
-      name="collapse"
-      @enter="onEnter"
-      @after-enter="onAfterEnter"
-      @leave="onLeave"
+    <div
+      :id="`section-${sectionId}`"
+      class="collapsible-content-wrapper"
+      :class="{ 'is-collapsed': isCollapsed }"
     >
-      <div
-        v-show="!isCollapsed"
-        :id="`section-${sectionId}`"
-        class="collapsible-content"
-      >
+      <div class="collapsible-content">
         <slot></slot>
       </div>
-    </Transition>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   title: {
@@ -81,28 +76,6 @@ const isCollapsed = ref(props.defaultCollapsed)
 function toggleCollapsed() {
   isCollapsed.value = !isCollapsed.value
 }
-
-// Smooth collapse/expand animations
-function onEnter(el) {
-  el.style.height = '0'
-  el.style.overflow = 'hidden'
-}
-
-function onAfterEnter(el) {
-  el.style.height = 'auto'
-  el.style.overflow = 'visible'
-}
-
-function onLeave(el) {
-  el.style.height = `${el.scrollHeight}px`
-  el.style.overflow = 'hidden'
-
-  // Force reflow
-  // eslint-disable-next-line no-unused-expressions
-  el.offsetHeight
-
-  el.style.height = '0'
-}
 </script>
 
 <style scoped>
@@ -115,7 +88,8 @@ function onLeave(el) {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .collapsible-header:hover {
@@ -124,12 +98,15 @@ function onLeave(el) {
 
 .collapsible-header:active {
   transform: translateY(0);
+  transition: transform 0.1s ease;
 }
 
 .chevron {
   font-size: 0.875rem;
   color: #6b7280;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+  display: inline-block;
 }
 
 .dark .chevron {
@@ -155,19 +132,38 @@ function onLeave(el) {
   box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 
+/* Smooth CSS-only collapse animation */
+.collapsible-content-wrapper {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease,
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top;
+  opacity: 1;
+  transform: scaleY(1);
+  will-change: max-height, opacity, transform;
+}
+
+.collapsible-content-wrapper.is-collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: scaleY(0.95);
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease,
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .collapsible-content {
   padding: 0 1.5rem 1.5rem;
 }
 
-/* Collapse transition */
-.collapse-enter-active,
-.collapse-leave-active {
-  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.collapse-enter-from,
-.collapse-leave-to {
-  height: 0;
-  overflow: hidden;
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-header,
+  .chevron,
+  .collapsible-content-wrapper {
+    transition: none;
+  }
 }
 </style>
