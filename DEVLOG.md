@@ -4,6 +4,232 @@
 
 ---
 
+## Session: 2026-03-24 (Part 6) - Search-Aware CSV Export & Modal Template Fixes
+
+### ✅ COMPLETED: CSV Export Respects Search Filters
+
+**Commit:** `2060c62`
+**Duration:** ~30 minutes
+**Status:** ✅ COMPLETE - CSV export now intelligently exports filtered results
+
+**Goal:** Enhance CSV export to respect search filters, allowing users to export targeted subsets of activities.
+
+**Problem Statement:**
+The existing CSV export always exported ALL activities, even when users had filtered the view with a search query. This missed an opportunity for users to export specific subsets of data (e.g., "all vaccination records" or "all activities with 'medicine X' in notes").
+
+**Solution Implemented:**
+
+**1. Centralized Search Filtering**
+
+Moved search filtering logic from `ActivityFeed.vue` to `DashboardView.vue`:
+
+**DashboardView.vue:**
+```javascript
+// Computed: Filter activities based on search query
+const filteredActivities = computed(() => {
+  if (!searchQuery.value || searchQuery.value.trim() === '') {
+    return activitiesStore.sortedActivities
+  }
+
+  const query = searchQuery.value.toLowerCase().trim()
+
+  return activitiesStore.sortedActivities.filter(activity => {
+    // Search in: type, notes, user, pet name, medical data
+    // (vaccine name, weight, cost, unit, medical notes)
+    // ...full search implementation
+  })
+})
+```
+
+**Benefits:**
+- Single source of truth for filtered activities
+- Both ActivityFeed AND CSV export use the same filtered data
+- DRY principle - no duplicate filtering logic
+- Better separation of concerns
+
+**2. Enhanced Export Button UX**
+
+```vue
+<button
+  :title="searchQuery ? `Export ${filteredActivities.length} filtered activities to CSV` : 'Export all activities to CSV'"
+  @click="exportActivitiesToCSV"
+>
+  <span class="text-lg">📊</span>
+  <span class="export-label">
+    Export CSV
+    <span v-if="searchQuery" class="export-count">
+      ({{ filteredActivities.length }})
+    </span>
+  </span>
+</button>
+```
+
+**UX Improvements:**
+- Shows count of filtered activities when searching (e.g., "Export CSV (15)")
+- Dynamic tooltip explains what will be exported
+- Visual feedback that export respects the current filter
+
+**3. Simplified ActivityFeed Component**
+
+**Before:**
+- ActivityFeed had duplicate search filtering logic
+- Performed filtering internally on received activities prop
+
+**After:**
+- ActivityFeed receives pre-filtered activities
+- Removed duplicate `filteredActivities` computed property
+- Simplified to just display what it receives
+- Better component architecture (presentation vs logic)
+
+**4. Export Function Enhancement**
+
+```javascript
+function exportActivitiesToCSV() {
+  const result = exportActivitiesCSV(
+    filteredActivities.value, // ← Now uses filtered activities
+    petsStore.pets,
+    {
+      petName: petsStore.selectedPet?.name || 'All Pets',
+      searchQuery: searchQuery.value // ← Passed for context
+    }
+  )
+
+  const message = searchQuery.value
+    ? `CSV exported: ${result.count} filtered activities`
+    : `CSV exported: ${result.count} activities`
+
+  toast.success(message)
+}
+```
+
+**Benefits:**
+- Clear feedback about what was exported
+- Passes search query to export function for potential filename customization
+- Respects both pet filter AND search filter
+
+**Use Cases Unlocked:**
+
+1. **Medical Records Export:**
+   - Search: "vaccination" → Export only vaccination records
+   - Search: "rabies" → Export all rabies-related activities
+
+2. **Cost Analysis:**
+   - Search: "vet visit" → Export all vet visits for cost analysis
+
+3. **Medication Tracking:**
+   - Search: "meds" or specific medicine name → Export medication logs
+
+4. **Date-Specific Exports:**
+   - Search: "2026-03" → Export activities from March (if in notes)
+
+5. **Pet-Specific Medical:**
+   - Select pet → Search "vaccination" → Export that pet's vaccines only
+
+### 🐛 BUGFIX: Missing Closing Tags in Modal Components
+
+**Problem:**
+Build was failing with "Element is missing end tag" errors in 5 modal components:
+- ActivityNotesModal.vue
+- MedicalModal.vue
+- EditActivityModal.vue
+- HouseholdSettingsModal.vue
+- InviteMemberModal.vue
+
+**Root Cause:**
+Modal template structure had nested divs:
+```vue
+<Transition name="modal">
+  <div class="modal-backdrop">      <!-- Line 3 - opened -->
+    <div class="card ...">           <!-- Line 8 - opened -->
+      <!-- Modal content -->
+    </div>                           <!-- Closes card -->
+  </Transition>                      <!-- ❌ Missing backdrop closing div! -->
+</template>
+```
+
+**Fix:**
+Added missing `</div>` before `</Transition>` in all 5 modals:
+```vue
+<Transition name="modal">
+  <div class="modal-backdrop">
+    <div class="card ...">
+      <!-- Modal content -->
+    </div>                           <!-- Closes card -->
+    </div>                           <!-- ✅ Closes backdrop -->
+  </Transition>
+</template>
+```
+
+**How Issue Was Introduced:**
+Likely during recent modal animation refactoring - accidentally removed or never added the backdrop closing tag.
+
+**Build Verification:**
+✅ `npm run build` now passes successfully
+✅ All modals render correctly
+✅ PWA build generates service worker correctly
+
+### 🧹 CLEANUP: Removed Unused Import
+
+**activities.js:**
+- Removed unused `UPLOAD_LIMITS` import from `@/constants/uiConstants`
+- Import was defined but never used in the store
+- Fixed ESLint warning
+
+**Files Modified:**
+- src/views/DashboardView.vue (search filtering + export button)
+- src/components/ActivityFeed.vue (simplified, removed duplicate filtering)
+- src/stores/activities.js (removed unused import)
+- src/components/ActivityNotesModal.vue (template fix)
+- src/components/MedicalModal.vue (template fix)
+- src/components/EditActivityModal.vue (template fix)
+- src/components/HouseholdSettingsModal.vue (template fix)
+- src/components/InviteMemberModal.vue (template fix)
+
+**Technical Wins:**
+
+1. **Better Architecture:**
+   - Moved business logic (filtering) to parent component
+   - Presentation component (ActivityFeed) is now simpler
+   - Follows Vue best practices
+
+2. **Reusability:**
+   - `filteredActivities` computed can be used by any feature needing filtered data
+   - Future features can access the same filtered list
+
+3. **Performance:**
+   - Filtering happens once in parent
+   - ActivityFeed just renders (no re-filtering)
+   - Computed caching ensures efficiency
+
+4. **User Experience:**
+   - Clear visual feedback on what will be exported
+   - More powerful export capability
+   - Intuitive behavior (WYSIWYG - what you see is what you export)
+
+**Lessons Learned:**
+
+1. **Template Validation:**
+   - Vite's build catches template errors that might not appear in dev
+   - Always run `npm run build` before pushing
+   - Modal wrapper divs need careful tracking
+
+2. **Architecture Decisions:**
+   - Lifting state/logic to parent component can simplify children
+   - Computed properties are perfect for derived/filtered data
+   - Single source of truth prevents bugs and inconsistencies
+
+3. **Feature Synergy:**
+   - Existing search feature + existing export feature = powerful new capability
+   - Minimal code for maximum user value
+   - Look for opportunities to combine features
+
+**Next Priorities:**
+- Activity pattern insights (e.g., "Luna usually poops 3x/day")
+- Bulk delete operations (select multiple activities)
+- Advanced date range filtering for exports
+
+---
+
 ## Session: 2026-03-24 (Part 5) - Animation Performance & Modal UX Improvements
 
 ### ✅ COMPLETED: Smooth Animations for Collapsible Sections and Modals
