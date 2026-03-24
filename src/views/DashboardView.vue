@@ -154,6 +154,20 @@
         />
       </div>
 
+      <!-- Activity Insights -->
+      <CollapsibleSection
+        title="Activity Insights"
+        :subtitle="petsStore.selectedPet ? `Smart patterns for ${petsStore.selectedPet.name}` : 'Smart patterns and alerts'"
+        icon="💡"
+        :default-collapsed="false"
+        section-id="activity-insights"
+      >
+        <ActivityInsights
+          :activities="activitiesStore.filteredActivities"
+          :pet-name="petsStore.selectedPet?.name"
+        />
+      </CollapsibleSection>
+
       <!-- Today's Summary (Collapsed by Default) -->
       <TodaysSummary
         :stats="activitiesStore.stats"
@@ -302,6 +316,13 @@ const ActivityFeed = defineAsyncComponent({
 
 const WeightTrendChart = defineAsyncComponent({
   loader: () => import('@/components/WeightTrendChart.vue'),
+  loadingComponent: LoadingSpinner,
+  delay: 200,
+  timeout: 10000
+})
+
+const ActivityInsights = defineAsyncComponent({
+  loader: () => import('@/components/ActivityInsights.vue'),
   loadingComponent: LoadingSpinner,
   delay: 200,
   timeout: 10000
