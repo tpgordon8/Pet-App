@@ -1,10 +1,7 @@
 <template>
   <div class="activity-feed space-y-4">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        Recent Activity
-      </h3>
+    <!-- Result Count -->
+    <div v-if="searchQuery || activities.length > 0" class="flex items-center justify-end">
       <span class="text-sm text-gray-500 dark:text-gray-400">
         <template v-if="searchQuery">
           Showing {{ filteredActivities.length }} of {{ activities.length }}

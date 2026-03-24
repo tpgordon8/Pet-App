@@ -1,60 +1,47 @@
 <template>
   <div class="min-h-screen p-4 pb-20">
     <div class="max-w-4xl mx-auto space-y-6 py-8">
-      <!-- Header -->
-      <div class="card flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            🐾 {{ householdStore.householdName || 'Tailr' }}
-          </h1>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            Welcome, {{ householdStore.memberName }}!
-          </p>
+      <!-- Header with Compact Context Controls -->
+      <div class="card">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <!-- Title -->
+          <div class="flex-shrink-0">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+              🐾 {{ householdStore.householdName || 'Tailr' }}
+            </h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Welcome, {{ householdStore.memberName }}!
+            </p>
+          </div>
+
+          <!-- Compact Context Bar -->
+          <div class="flex-1 flex justify-end items-center gap-3 flex-wrap">
+            <CompactContextBar
+              :pets="petsStore.pets"
+              :selected-pet-id="petsStore.selectedPetId"
+              :has-pets="petsStore.hasPets"
+              :members="householdStore.members"
+              :current-member="householdStore.currentMember"
+              :has-members="householdStore.members.length > 0"
+              @select-pet="petsStore.selectPet"
+              @select-member="householdStore.selectMember"
+              @add-pet="showAddPetModal = true"
+            />
+
+            <!-- Settings Button -->
+            <button
+              class="btn btn-secondary flex items-center gap-2"
+              title="Household Settings"
+              @click="showSettingsModal = true"
+            >
+              <span class="text-lg">⚙️</span>
+              <span class="hidden sm:inline">Settings</span>
+            </button>
+          </div>
         </div>
-        <button
-          class="btn btn-secondary flex items-center gap-2"
-          title="Household Settings"
-          @click="showSettingsModal = true"
-        >
-          <span class="text-lg">⚙️</span>
-          <span class="hidden sm:inline">Settings</span>
-        </button>
       </div>
 
-      <!-- Member Selector -->
-      <div class="card">
-        <MemberSelector
-          :members="householdStore.members"
-          :current-member="householdStore.currentMember"
-          :has-members="householdStore.members.length > 0"
-          @select="householdStore.selectMember"
-        />
-      </div>
-
-      <!-- Pet Selector -->
-      <div class="card">
-        <PetSelector
-          :pets="petsStore.pets"
-          :selected-pet-id="petsStore.selectedPetId"
-          :has-pets="petsStore.hasPets"
-          @select="petsStore.selectPet"
-          @add-pet="showAddPetModal = true"
-        />
-      </div>
-
-      <!-- Stats Widget -->
-      <StatsWidget
-        :stats="activitiesStore.stats"
-        :pet-name="petsStore.selectedPet?.name"
-      />
-
-      <!-- Activity Insights -->
-      <ActivityInsights
-        :activities="activitiesStore.filteredActivities"
-        :pet-name="petsStore.selectedPet?.name"
-      />
-
-      <!-- Activity Logging Buttons -->
+      <!-- PRIMARY ACTION: Quick Log Buttons -->
       <div class="card">
         <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
           Quick Log
@@ -111,13 +98,70 @@
         </div>
       </div>
 
+      <!-- Activity Feed with Integrated Search -->
+      <div class="card">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            Recent Activity
+          </h3>
+          <!-- Export Button -->
+          <button
+            class="btn-export"
+            title="Export activities to CSV"
+            @click="exportActivitiesToCSV"
+          >
+            <span class="text-lg">📊</span>
+            <span class="export-label">Export CSV</span>
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative mb-4">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span class="text-gray-400 text-lg">🔍</span>
+          </div>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search activities..."
+            class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+          >
+          <button
+            v-if="searchQuery"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Clear search"
+            @click="searchQuery = ''"
+          >
+            <span class="text-xl">✕</span>
+          </button>
+        </div>
+
+        <!-- Activity Feed -->
+        <ActivityFeed
+          :activities="activitiesStore.sortedActivities"
+          :pets="petsStore.pets"
+          :show-pet-names="petsStore.selectedPetId === 'all'"
+          :search-query="searchQuery"
+          @delete="handleDelete"
+          @edit="handleEdit"
+        />
+      </div>
+
+      <!-- Today's Summary (Collapsed by Default) -->
+      <TodaysSummary
+        :stats="activitiesStore.stats"
+        :pet-name="petsStore.selectedPet?.name"
+        :activities="activitiesStore.filteredActivities"
+        :default-collapsed="true"
+      />
+
       <!-- Medical Tracking Section -->
       <CollapsibleSection
         title="Medical Tracking"
         :subtitle="petsStore.selectedPet ? `for ${petsStore.selectedPet.emoji} ${petsStore.selectedPet.name}` : ''"
         icon="🏥"
         :badge="activitiesStore.stats.vetVisit + activitiesStore.stats.vaccination + activitiesStore.stats.weightCheck"
-        :default-collapsed="false"
+        :default-collapsed="true"
         section-id="medical-tracking"
       >
         <div class="flex justify-end mb-4">
@@ -166,54 +210,6 @@
       >
         <WeightTrendChart :activities="activitiesStore.filteredActivities" />
       </CollapsibleSection>
-
-      <!-- Search Bar & Export -->
-      <div class="card">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <!-- Search Input -->
-          <div class="relative flex-1">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-400 text-lg">🔍</span>
-            </div>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search activities..."
-              class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
-            >
-            <button
-              v-if="searchQuery"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              aria-label="Clear search"
-              @click="searchQuery = ''"
-            >
-              <span class="text-xl">✕</span>
-            </button>
-          </div>
-
-          <!-- Export Button -->
-          <button
-            class="btn-export"
-            title="Export activities to CSV"
-            @click="exportActivitiesToCSV"
-          >
-            <span class="text-lg">📊</span>
-            <span class="export-label">Export CSV</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Activity Feed -->
-      <div class="card">
-        <ActivityFeed
-          :activities="activitiesStore.sortedActivities"
-          :pets="petsStore.pets"
-          :show-pet-names="petsStore.selectedPetId === 'all'"
-          :search-query="searchQuery"
-          @delete="handleDelete"
-          @edit="handleEdit"
-        />
-      </div>
     </div>
 
     <!-- Add Pet Modal -->
@@ -280,9 +276,8 @@ import { useHaptic } from '@/composables/useHaptic'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
-import StatsWidget from '@/components/StatsWidget.vue'
-import PetSelector from '@/components/PetSelector.vue'
-import MemberSelector from '@/components/MemberSelector.vue'
+import CompactContextBar from '@/components/CompactContextBar.vue'
+import TodaysSummary from '@/components/TodaysSummary.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import FloatingActionButton from '@/components/FloatingActionButton.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
@@ -296,13 +291,6 @@ const ActivityFeed = defineAsyncComponent({
   loadingComponent: SkeletonLoader,
   delay: 200, // Show loading after 200ms
   timeout: 10000 // 10 second timeout
-})
-
-const ActivityInsights = defineAsyncComponent({
-  loader: () => import('@/components/ActivityInsights.vue'),
-  loadingComponent: LoadingSpinner,
-  delay: 200,
-  timeout: 10000
 })
 
 const WeightTrendChart = defineAsyncComponent({
