@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen p-4 pb-20">
-    <div class="max-w-4xl mx-auto space-y-6 py-8">
+  <div class="min-h-screen p-3 sm:p-4 pb-20">
+    <div class="max-w-4xl mx-auto space-y-4 sm:space-y-6 py-4 sm:py-8">
       <!-- Header with Compact Context Controls -->
       <div class="card">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -52,7 +52,7 @@
             for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           <ActivityButton
             emoji="💩"
             label="Poop"
@@ -124,7 +124,8 @@
             v-model="searchQuery"
             type="text"
             placeholder="Search activities..."
-            class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+            class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+            style="font-size: 16px; min-height: 48px;"
           >
           <button
             v-if="searchQuery"
@@ -175,7 +176,7 @@
             <span class="export-label">Export PDF</span>
           </button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <ActivityButton
             emoji="🏥"
             label="Vet Visit"
@@ -473,15 +474,17 @@ async function handleQuickLog({ type, emoji }) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.625rem 0.75rem; /* 10px 12px - ensures 44px touch target */
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 1rem; /* 16px - prevents iOS zoom */
   font-weight: 500;
   cursor: pointer;
   transition: all 150ms ease-in-out;
+  min-height: 44px; /* iOS minimum touch target */
+  min-width: 44px; /* iOS minimum touch target */
 }
 
 .dark .btn-export {
@@ -510,6 +513,11 @@ async function handleQuickLog({ type, emoji }) {
 @media (min-width: 640px) {
   .export-label {
     display: inline;
+  }
+
+  .btn-export {
+    font-size: 0.875rem; /* 14px on desktop */
+    padding: 0.5rem 1rem; /* More padding on desktop */
   }
 }
 </style>

@@ -23,7 +23,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-3 gap-3 mb-4">
+    <div class="grid grid-cols-3 gap-3 sm:gap-3 mb-4">
       <!-- Poop -->
       <div class="stat-item" :class="{ 'stat-active': stats.poop > 0 }">
         <span class="text-2xl">💩</span>
@@ -198,9 +198,38 @@ const lastActivity = computed(() => {
   }
 }
 
+/* Mobile optimization */
 @media (max-width: 640px) {
   .stat-item {
-    padding: 0.75rem 0.375rem;
+    padding: 0.75rem 0.375rem; /* 12px 6px */
+    gap: 0.125rem; /* Tighter vertical spacing */
+  }
+
+  .stat-item span:first-child {
+    font-size: 1.75rem; /* Emoji: 28px (smaller) */
+  }
+
+  .stat-item span:nth-child(2) {
+    font-size: 1.125rem; /* Number: 18px */
+  }
+
+  .stat-item span:nth-child(3) {
+    font-size: 0.6875rem; /* Label: 11px (minimum acceptable) */
+  }
+}
+
+/* iPhone 12 mini optimization (375px) */
+@media (max-width: 390px) {
+  .stat-item {
+    padding: 0.625rem 0.25rem; /* 10px 4px - even tighter */
+  }
+
+  .stat-item span:first-child {
+    font-size: 1.5rem; /* Emoji: 24px */
+  }
+
+  .stat-item span:nth-child(2) {
+    font-size: 1rem; /* Number: 16px */
   }
 }
 </style>

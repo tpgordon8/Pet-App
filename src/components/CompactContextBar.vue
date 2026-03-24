@@ -153,6 +153,7 @@ function handleMemberChange() {
   background-repeat: no-repeat;
   background-size: 1.25rem;
   min-width: 120px;
+  min-height: 44px; /* iOS minimum touch target */
 }
 
 .dark .context-select {
@@ -210,16 +211,31 @@ function handleMemberChange() {
 
   .context-select {
     min-width: 100px;
-    font-size: 0.8125rem;
-    padding: 0.4rem 1.75rem 0.4rem 0.6rem;
+    font-size: 1rem; /* 16px - CRITICAL: prevents iOS auto-zoom */
+    padding: 0.6875rem 1.75rem 0.6875rem 0.625rem; /* 11px vertical ensures 44px height */
+    min-height: 44px; /* iOS minimum touch target */
   }
 
   .context-label {
-    font-size: 0.8125rem;
+    font-size: 0.8125rem; /* 13px - compressed for space */
   }
 
   .add-pet-btn {
-    padding: 0.4rem 0.6rem;
+    padding: 0.625rem; /* Ensures 44x44px touch target */
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* iPhone 12 mini optimization (375px) */
+@media (max-width: 390px) {
+  .compact-context-bar {
+    gap: 0.375rem; /* 6px - tighter spacing */
+  }
+
+  .context-select {
+    min-width: 90px; /* Slightly narrower */
+    font-size: 1rem; /* Keep 16px to prevent zoom */
   }
 }
 </style>
