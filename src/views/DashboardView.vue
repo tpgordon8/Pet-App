@@ -107,11 +107,17 @@
           <!-- Export Button -->
           <button
             class="btn-export"
-            title="Export activities to CSV"
+            :title="searchQuery ? `Export ${filteredActivities.length} filtered activities to CSV` : 'Export all activities to CSV'"
             @click="exportActivitiesToCSV"
           >
             <span class="text-lg">📊</span>
-            <span class="export-label">Export CSV</span>
+            <span class="export-label">
+              Export CSV
+              <span
+                v-if="searchQuery"
+                class="export-count"
+              >({{ filteredActivities.length }})</span>
+            </span>
           </button>
         </div>
 
@@ -139,7 +145,7 @@
 
         <!-- Activity Feed -->
         <ActivityFeed
-          :activities="activitiesStore.sortedActivities"
+          :activities="filteredActivities"
           :pets="petsStore.pets"
           :show-pet-names="petsStore.selectedPetId === 'all'"
           :search-query="searchQuery"
@@ -266,7 +272,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
@@ -340,6 +346,41 @@ const pendingActivity = ref({ type: '', emoji: '' })
 const pendingMedical = ref({ type: '', emoji: '' })
 const editingActivity = ref(null)
 const searchQuery = ref('')
+
+// Computed: Filter activities based on search query
+const filteredActivities = computed(() => {
+  if (!searchQuery.value || searchQuery.value.trim() === '') {
+    return activitiesStore.sortedActivities
+  }
+
+  const query = searchQuery.value.toLowerCase().trim()
+
+  return activitiesStore.sortedActivities.filter(activity => {
+    // Search in activity type
+    if (activity.type.toLowerCase().includes(query)) return true
+
+    // Search in notes
+    if (activity.notes && activity.notes.toLowerCase().includes(query)) return true
+
+    // Search in user name
+    if (activity.user && activity.user.toLowerCase().includes(query)) return true
+
+    // Search in pet name
+    const pet = petsStore.pets.find(p => p.id === activity.petId)
+    if (pet && pet.name.toLowerCase().includes(query)) return true
+
+    // Search in medical data
+    if (activity.medicalData) {
+      if (activity.medicalData.notes && activity.medicalData.notes.toLowerCase().includes(query)) return true
+      if (activity.medicalData.cost && activity.medicalData.cost.toString().includes(query)) return true
+      if (activity.medicalData.vaccineName && activity.medicalData.vaccineName.toLowerCase().includes(query)) return true
+      if (activity.medicalData.weight && activity.medicalData.weight.toString().includes(query)) return true
+      if (activity.medicalData.unit && activity.medicalData.unit.toLowerCase().includes(query)) return true
+    }
+
+    return false
+  })
+})
 
 onMounted(() => {
   // Start Firebase listeners for real-time sync
@@ -435,16 +476,21 @@ function exportMedicalPdf() {
 }
 
 function exportActivitiesToCSV() {
+  // Export filtered activities (respects search query and pet filter)
   const result = exportActivitiesCSV(
-    activitiesStore.sortedActivities,
+    filteredActivities.value,
     petsStore.pets,
     {
-      petName: petsStore.selectedPet?.name || 'All Pets'
+      petName: petsStore.selectedPet?.name || 'All Pets',
+      searchQuery: searchQuery.value
     }
   )
 
   if (result.success) {
-    toast.success(`CSV exported: ${result.count} activities`)
+    const message = searchQuery.value
+      ? `CSV exported: ${result.count} filtered activities`
+      : `CSV exported: ${result.count} activities`
+    toast.success(message)
   } else {
     toast.error(`Failed to export: ${result.error}`)
   }

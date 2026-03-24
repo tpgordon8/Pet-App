@@ -131,6 +131,7 @@
           </button>
         </div>
       </div>
+      </div>
     </div>
   </Transition>
 </template>

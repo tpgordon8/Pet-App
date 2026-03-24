@@ -92,6 +92,7 @@
           Log Activity
         </button>
       </div>
+      </div>
     </div>
   </Transition>
 </template>

@@ -1,20 +1,15 @@
 <template>
   <div class="activity-feed space-y-4">
     <!-- Result Count -->
-    <div v-if="searchQuery || activities.length > 0" class="flex items-center justify-end">
+    <div v-if="activities.length > 0" class="flex items-center justify-end">
       <span class="text-sm text-gray-500 dark:text-gray-400">
-        <template v-if="searchQuery">
-          Showing {{ filteredActivities.length }} of {{ activities.length }}
-        </template>
-        <template v-else>
-          {{ activities.length }} total
-        </template>
+        {{ activities.length }} {{ activities.length === 1 ? 'activity' : 'activities' }}
       </span>
     </div>
 
     <!-- Empty state -->
     <EmptyState
-      v-if="filteredActivities.length === 0"
+      v-if="activities.length === 0"
       :icon="searchQuery ? '🔍' : '🐾'"
       :title="searchQuery ? 'No matches found' : 'No activities yet'"
       :description="searchQuery ? `No activities match '${searchQuery}'. Try a different search term.` : 'Start tracking your pet\'s activities using the quick log buttons above!'"
@@ -87,46 +82,11 @@ function handleDelete(activityId) {
   emit('delete', activityId)
 }
 
-// Filter activities based on search query
-const filteredActivities = computed(() => {
-  if (!props.searchQuery || props.searchQuery.trim() === '') {
-    return props.activities
-  }
-
-  const query = props.searchQuery.toLowerCase().trim()
-
-  return props.activities.filter(activity => {
-    // Search in activity type
-    if (activity.type.toLowerCase().includes(query)) return true
-
-    // Search in notes
-    if (activity.notes && activity.notes.toLowerCase().includes(query)) return true
-
-    // Search in user name
-    if (activity.user && activity.user.toLowerCase().includes(query)) return true
-
-    // Search in pet name
-    const petName = getPetName(activity.petId)
-    if (petName && petName.toLowerCase().includes(query)) return true
-
-    // Search in medical data
-    if (activity.medicalData) {
-      if (activity.medicalData.notes && activity.medicalData.notes.toLowerCase().includes(query)) return true
-      if (activity.medicalData.cost && activity.medicalData.cost.toString().includes(query)) return true
-      if (activity.medicalData.vaccineName && activity.medicalData.vaccineName.toLowerCase().includes(query)) return true
-      if (activity.medicalData.weight && activity.medicalData.weight.toString().includes(query)) return true
-      if (activity.medicalData.unit && activity.medicalData.unit.toLowerCase().includes(query)) return true
-    }
-
-    return false
-  })
-})
-
-// Group activities by date
+// Group activities by date (activities are already filtered by parent component)
 const groupedActivities = computed(() => {
   const groups = {}
 
-  filteredActivities.value.forEach(activity => {
+  props.activities.forEach(activity => {
     const date = new Date(activity.timestamp)
     const dateKey = format(date, 'yyyy-MM-dd')
 

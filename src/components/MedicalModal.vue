@@ -140,6 +140,7 @@
           Log {{ activityType }}
         </button>
       </div>
+      </div>
     </div>
   </Transition>
 </template>

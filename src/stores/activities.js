@@ -8,7 +8,6 @@ import { usePetsStore } from './pets'
 import { useToast } from '@/composables/useToast'
 import { useAnalytics } from '@/composables/useAnalytics'
 import { REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES } from '@/constants/activityTypes'
-import { UPLOAD_LIMITS } from '@/constants/uiConstants'
 
 export const useActivitiesStore = defineStore('activities', () => {
   const householdStore = useHouseholdStore()
