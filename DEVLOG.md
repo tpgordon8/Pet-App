@@ -4,6 +4,161 @@
 
 ---
 
+## Session: 2026-03-24 (Part 7) - Activity Insights Integration
+
+### ✅ COMPLETED: Integrate Smart Pattern Analysis into Dashboard
+
+**Commit:** `d811e59`
+**Duration:** ~20 minutes
+**Status:** ✅ COMPLETE - Users can now see intelligent health pattern alerts
+
+**Goal:** Surface the already-built Activity Insights feature to users by integrating it into the dashboard.
+
+**Background:**
+While reviewing the codebase, discovered that `useActivityInsights.js` composable and `ActivityInsights.vue` component were fully implemented but never integrated into the main dashboard. This feature analyzes activity patterns over 7 days and provides actionable health alerts.
+
+**Implementation:**
+
+**1. Added ActivityInsights to DashboardView.vue**
+
+```javascript
+// Lazy-loaded for performance
+const ActivityInsights = defineAsyncComponent({
+  loader: () => import('@/components/ActivityInsights.vue'),
+  loadingComponent: LoadingSpinner,
+  delay: 200,
+  timeout: 10000
+})
+```
+
+**2. Integrated in Template with CollapsibleSection**
+
+```vue
+<!-- Activity Insights -->
+<CollapsibleSection
+  title="Activity Insights"
+  :subtitle="petsStore.selectedPet ? `Smart patterns for ${petsStore.selectedPet.name}` : 'Smart patterns and alerts'"
+  icon="💡"
+  :default-collapsed="false"
+  section-id="activity-insights"
+>
+  <ActivityInsights
+    :activities="activitiesStore.filteredActivities"
+    :pet-name="petsStore.selectedPet?.name"
+  />
+</CollapsibleSection>
+```
+
+**Positioning Decision:**
+- Placed after Activity Feed (highly visible position)
+- Before Today's Summary (insights more actionable than stats)
+- Set `default-collapsed="false"` for immediate visibility
+- Users will see alerts as soon as they open the dashboard
+
+**3. Existing Intelligence (No Code Changes Needed)**
+
+The `useActivityInsights.js` composable already provides:
+
+```javascript
+// Pattern Analysis (7-day rolling window)
+- Poop patterns (missing, fewer/more than average)
+- Food patterns (no meals, eating less)
+- Pee frequency (more bathroom breaks)
+- Weight trends (>5% change alerts, >10% warnings)
+- Medication compliance (missed doses)
+- Walk tracking (no walks logged)
+- Overall activity consistency
+```
+
+**Alert Severity System:**
+- `warning` (critical): No poop, no food, no meds, >10% weight change
+- `low` (info): Fewer poops, eating less, more pees, no walks, activity changes
+
+**Data Requirements:**
+- Minimum 5 activities in last 7 days for meaningful insights
+- Empty state: "Keep logging activities for at least 7 days to see patterns"
+
+**Files Modified:**
+- `src/views/DashboardView.vue` (+21 lines)
+  - Import ActivityInsights component (lazy-loaded)
+  - Add CollapsibleSection with insights
+
+**Build Verification:**
+```
+✓ npm run build succeeded
+✓ ActivityInsights-DYUwa5ME.css (3.06 kB)
+✓ ActivityInsights-Cg3yihiy.js (4.95 kB)
+✓ No errors, warnings, or bundle size issues
+```
+
+**User Experience Flow:**
+
+1. **User opens dashboard**
+2. **Insights section visible by default**
+3. **If <5 activities:** Shows encouraging empty state
+4. **If ≥5 activities:** Shows pattern-based alerts sorted by severity
+5. **Example alerts:**
+   - ⚠️ "No poop logged today - Usually 2.3 times per day"
+   - 🍽️ "Eating less than usual - 1 meals today vs 2.5 average"
+   - 📈 "Weight has gained 3.2 lbs - 8.4% change since Mar 10"
+   - 💊 "Medication not logged today - Usually 1.0 times per day"
+
+**Why This Matters:**
+
+**Before:** Users had to manually spot patterns by scrolling through activity feed
+**After:** System proactively alerts users to potential health issues
+
+This helps users:
+- Catch health issues early (missed meals, irregular bathroom habits)
+- Track medication compliance
+- Monitor weight trends
+- Make informed decisions about vet visits
+- Reduce cognitive load (system remembers patterns)
+
+**Technical Learnings:**
+
+1. **Feature Discovery:** Always check for "orphaned" components
+   - `grep -r "Component" src/components/*.vue`
+   - Compare with actual usage in views
+   - Unused components may be valuable features waiting to be surfaced
+
+2. **Lazy Loading Pattern:** Critical for performance
+   - ActivityInsights is only ~5KB but lazy-loaded anyway
+   - Maintains fast initial page load
+   - SkeletonLoader provides perceived performance
+
+3. **CollapsibleSection Consistency:** Using the same wrapper for all dashboard sections
+   - Insights, Medical Tracking, Weight Trends all use CollapsibleSection
+   - Consistent expand/collapse UX
+   - Persistent state via localStorage (section-id)
+
+**Next Enhancements (Future Considerations):**
+
+1. **Actionable Insights:**
+   - Add "Log Now" button to warnings (e.g., "Log Poop", "Log Medication")
+   - Quick-dismiss non-critical insights
+   - Mark insights as "Acknowledged" to reduce noise
+
+2. **Filtering Options:**
+   - Toggle "Show only warnings"
+   - Hide specific insight types (e.g., suppress walk alerts)
+
+3. **Export to PDF:**
+   - Include insights in medical PDF exports
+   - Useful for vet visits ("Pattern shows eating 40% less this week")
+
+4. **Historical Insights:**
+   - "Insights from last week" comparison
+   - Track if patterns are improving/worsening over time
+
+**Success Metrics (When Analytics Added):**
+- % of users who expand/collapse insights
+- Which insight types get the most engagement
+- Correlation between insights and subsequent logging behavior
+- User feedback on insight accuracy/usefulness
+
+---
+
 ## Session: 2026-03-24 (Part 6) - Search-Aware CSV Export & Modal Template Fixes
 
 ### ✅ COMPLETED: CSV Export Respects Search Filters
