@@ -167,25 +167,38 @@
         <WeightTrendChart :activities="activitiesStore.filteredActivities" />
       </CollapsibleSection>
 
-      <!-- Search Bar -->
+      <!-- Search Bar & Export -->
       <div class="card">
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <span class="text-gray-400 text-lg">🔍</span>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <!-- Search Input -->
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-400 text-lg">🔍</span>
+            </div>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search activities..."
+              class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+            >
+            <button
+              v-if="searchQuery"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              aria-label="Clear search"
+              @click="searchQuery = ''"
+            >
+              <span class="text-xl">✕</span>
+            </button>
           </div>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search activities..."
-            class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
-          >
+
+          <!-- Export Button -->
           <button
-            v-if="searchQuery"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            aria-label="Clear search"
-            @click="searchQuery = ''"
+            class="btn-export"
+            title="Export activities to CSV"
+            @click="exportActivitiesToCSV"
           >
-            <span class="text-xl">✕</span>
+            <span class="text-lg">📊</span>
+            <span class="export-label">Export CSV</span>
           </button>
         </div>
       </div>
@@ -262,6 +275,7 @@ import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
 import { useToast } from '@/composables/useToast'
 import { usePdfExport } from '@/composables/usePdfExport'
+import { useCsvExport } from '@/composables/useCsvExport'
 import { useHaptic } from '@/composables/useHaptic'
 
 // Eager-loaded lightweight components (used immediately on page load)
@@ -324,6 +338,7 @@ const activitiesStore = useActivitiesStore()
 const petsStore = usePetsStore()
 const toast = useToast()
 const { generateMedicalPdf } = usePdfExport()
+const { exportActivitiesCSV } = useCsvExport()
 const haptic = useHaptic()
 
 const showAddPetModal = ref(false)
@@ -427,6 +442,22 @@ function exportMedicalPdf() {
     toast.success(`PDF exported: ${result.filename}`)
   } else {
     toast.error(`Failed to export PDF: ${result.error}`)
+  }
+}
+
+function exportActivitiesToCSV() {
+  const result = exportActivitiesCSV(
+    activitiesStore.sortedActivities,
+    petsStore.pets,
+    {
+      petName: petsStore.selectedPet?.name || 'All Pets'
+    }
+  )
+
+  if (result.success) {
+    toast.success(`CSV exported: ${result.count} activities`)
+  } else {
+    toast.error(`Failed to export: ${result.error}`)
   }
 }
 
