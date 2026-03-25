@@ -37,6 +37,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useHaptic } from '@/composables/useHaptic'
+import { useAnimations } from '@/composables/useAnimations'
 
 const props = defineProps({
   emoji: {
@@ -63,14 +64,26 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 const haptic = useHaptic()
+const { celebrateSuccess } = useAnimations()
 
 const isPressed = ref(false)
 const showRipple = ref(false)
 const rippleStyle = ref({})
+const buttonRef = ref(null)
 
-function handleClick() {
+function handleClick(event) {
   if (!props.disabled) {
     haptic.light()
+
+    // Add celebration animation on click
+    if (event.currentTarget) {
+      celebrateSuccess(event.currentTarget, {
+        duration: 300,
+        scale: 1.05,
+        confetti: false // Can enable for special occasions
+      })
+    }
+
     emit('click')
   }
 }
@@ -122,8 +135,9 @@ function onTouchEnd() {
 
 .activity-button:not(:disabled):hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(139, 154, 125, 0.2);
-  border-color: rgba(139, 154, 125, 0.3);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.05) 100%);
 }
 
 .activity-button:not(:disabled):active,

@@ -95,7 +95,7 @@ defineEmits(['action'])
 .decoration-circle {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 154, 125, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(139, 154, 125, 0.1) 50%, transparent 70%);
   animation: float 3s ease-in-out infinite;
 }
 

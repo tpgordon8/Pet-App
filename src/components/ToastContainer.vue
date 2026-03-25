@@ -45,20 +45,20 @@ function handleAction(toast) {
 
 function toastClass(type) {
   const classes = {
-    success: 'border-l-4 border-green-500 bg-green-50/90 dark:bg-green-900/30 text-green-900 dark:text-green-100',
-    error: 'border-l-4 border-red-500 bg-red-50/90 dark:bg-red-900/30 text-red-900 dark:text-red-100',
-    warning: 'border-l-4 border-yellow-500 bg-yellow-50/90 dark:bg-yellow-900/30 text-yellow-900 dark:text-yellow-100',
-    info: 'border-l-4 border-sage-500 bg-sage-50/90 dark:bg-sage-900/30 text-sage-900 dark:text-sage-100'
+    success: 'border-l-4 border-emerald-500 bg-gradient-to-r from-emerald-50/95 to-emerald-100/80 dark:from-emerald-900/40 dark:to-emerald-800/30 text-emerald-900 dark:text-emerald-100',
+    error: 'border-l-4 border-rose-500 bg-gradient-to-r from-rose-50/95 to-rose-100/80 dark:from-rose-900/40 dark:to-rose-800/30 text-rose-900 dark:text-rose-100',
+    warning: 'border-l-4 border-amber-500 bg-gradient-to-r from-amber-50/95 to-amber-100/80 dark:from-amber-900/40 dark:to-amber-800/30 text-amber-900 dark:text-amber-100',
+    info: 'border-l-4 border-sage-500 bg-gradient-to-r from-sage-50/95 to-sage-100/80 dark:from-sage-900/40 dark:to-sage-800/30 text-sage-900 dark:text-sage-100'
   }
   return classes[type] || classes.info
 }
 
 function toastIcon(type) {
   const icons = {
-    success: '✓',
-    error: '✕',
-    warning: '⚠',
-    info: 'ℹ'
+    success: '🎉',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️'
   }
   return icons[type] || icons.info
 }
