@@ -63,7 +63,7 @@ export const usePetsStore = defineStore('pets', () => {
     }
   }
 
-  async function addPet(name, emoji, species = '') {
+  async function addPet(name, emoji, species = '', birthday = '') {
     if (!householdStore.householdId) {
       toast.error('Please sign in first')
       return false
@@ -78,6 +78,7 @@ export const usePetsStore = defineStore('pets', () => {
       name: name.trim(),
       emoji,
       species: species.trim(),
+      birthday: birthday || null,
       createdAt: Date.now(),
       createdBy: householdStore.memberName
     }

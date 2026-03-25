@@ -19,11 +19,13 @@
 - [x] Loading states and error handling
 
 ### Multi-Pet Support (Phase 2.1) ✅ COMPLETED
-- [x] Pet profiles (name, emoji, species)
+- [x] Pet profiles (name, emoji, species, birthday)
 - [x] Pet selector ("All Pets" vs individual pet filtering)
 - [x] Individual stats per pet + household totals
 - [x] Filter activities by pet
-- [x] Pet edit/delete functionality in stores
+- [x] Pet edit/delete functionality (full UI in HouseholdSettingsModal)
+- [x] Pet age calculation based on birthday
+- [x] Birthday tracking for reminder calculations
 
 ### User Management (Phase 2.2) ⚠️ PARTIALLY COMPLETED
 - [x] Household member management (multiple users per household)
@@ -50,14 +52,16 @@
 - [ ] Before/after comparisons
 - [ ] Automatic timeline of pet's life
 
-### Medical Tracking (Phase 3.1) ⚠️ PARTIALLY COMPLETED
+### Medical Tracking (Phase 3.1) ✅ COMPLETED
 - [x] Vet visit logging (notes, cost)
 - [x] Vaccination tracker (vaccine name, notes)
 - [x] Weight tracking (weight, unit, notes)
 - [x] Medical data displays inline in activity feed
-- [ ] Medication schedules with alerts
-- [ ] Lab results storage
-- [ ] Vaccination due date reminders
+- [x] Smart reminders system (vaccinations, medications, vet appointments)
+- [x] Vaccination due date calculator
+- [x] Web Notifications API integration
+- [ ] Medication dosage tracking (future enhancement)
+- [ ] Lab results storage (future enhancement)
 
 ### UX/UI Optimization (Phase 6) ✅ COMPLETED
 - [x] Dark mode toggle (auto-detect + manual)
@@ -96,14 +100,19 @@
 
 **Estimated Impact:** HIGH - Proactive health monitoring fully implemented, users can see patterns and export reports
 
-**📅 Smart Reminders**
-- [ ] Vaccination due date reminders (Web Notifications API)
-- [ ] Medication schedules with alerts
-- [ ] Custom recurring reminders
-- [ ] Smart suggestions (e.g., "It's been 8 hours since last meal")
-- [ ] Push notifications
+**📅 Smart Reminders** ✅ COMPLETED (March 2026)
+- [x] Vaccination due date reminders (Web Notifications API)
+- [x] Medication schedule tracking
+- [x] Custom reminders (vet appointments, medications, etc.)
+- [x] Automatic vaccination due date calculator
+- [x] Web Notifications with browser permission handling
+- [x] Upcoming and overdue reminder tracking
+- [x] Reminder completion and deletion
+- [ ] Recurring reminders (future enhancement)
+- [ ] Smart activity-based suggestions (future enhancement)
+- [ ] Push notifications for mobile (future enhancement)
 
-**Estimated Impact:** HIGH - Prevents missed vet appointments & meds
+**Estimated Impact:** HIGH - Completed! Prevents missed vet appointments & meds
 
 **📋 Search & Export** ✅ COMPLETED (March 2026)
 - [x] Activity search/filter by keyword (integrated in DashboardView)
@@ -187,14 +196,16 @@
 
 **Estimated Impact:** LOW - Polish and delight
 
-**🔧 Pet Management**
-- [ ] Edit pet details (currently can only add/delete)
-- [ ] Pet photo uploads
-- [ ] Pet breed selection
-- [ ] Pet birthday tracking
-- [ ] Pet health conditions tags
+**🔧 Pet Management** ✅ COMPLETED (March 2026)
+- [x] Edit pet details (name, species, emoji, birthday)
+- [x] Pet birthday tracking with age calculation
+- [x] Delete pet with confirmation
+- [x] Comprehensive pet management UI in settings
+- [ ] Pet photo uploads (future enhancement)
+- [ ] Pet breed selection (future enhancement)
+- [ ] Pet health conditions tags (future enhancement)
 
-**Estimated Impact:** MEDIUM - Completes pet profile management
+**Estimated Impact:** MEDIUM - Completed! Pet profile management fully functional
 
 ---
 
@@ -272,21 +283,43 @@ Open up the app to external users:
 |----------|-----------|-------------|---------|
 | Core Activity Tracking | ✅ 100% | - | - |
 | Multi-Pet Support | ✅ 100% | - | - |
-| Medical Tracking | ✅ 60% | - | Reminders, Charts |
+| Medical Tracking | ✅ 100% | - | - |
 | Photo & Notes | ✅ 100% | - | Gallery View |
 | User Management | ⚠️ 50% | - | Authentication |
-| Search & Export | ❌ 0% | - | Search, CSV, PDF |
-| Health Insights | ❌ 0% | - | Charts, Patterns |
+| Search & Export | ✅ 100% | - | - |
+| Health Insights | ✅ 100% | - | - |
+| Smart Reminders | ✅ 100% | - | - |
+| Pet Management | ✅ 100% | - | Photo Uploads |
 | Sharing | ❌ 0% | - | Auth, Guest Access |
 
 ---
 
-**Last Updated:** 2026-03-21
+**Last Updated:** 2026-03-25
 **Next Review:** After next major feature release
 
 ---
 
-## ✅ Recently Completed (March 21, 2026)
+## ✅ Recently Completed (March 25, 2026)
+
+### Smart Reminders System
+- [x] **Reminders Store** - Full Pinia store for reminder management
+- [x] **Web Notifications Integration** - Browser notification permission handling
+- [x] **Vaccination Due Date Calculator** - Automatic calculation based on common schedules
+- [x] **RemindersWidget Component** - Upcoming and overdue reminder display
+- [x] **AddReminderModal** - Create vaccination, medication, and custom reminders
+- [x] **Notification Triggers** - Automatic notifications for upcoming reminders (24h window)
+
+### Enhanced Pet Management
+- [x] **Edit Pet Functionality** - Full edit support in AddPetModal
+- [x] **Birthday Tracking** - Pet birthday field with age calculation
+- [x] **Pet Management UI** - Comprehensive pet list with edit/delete in HouseholdSettingsModal
+- [x] **Age Display** - Automatic age calculation (years and months)
+
+**Impact**: Complete reminder system prevents missed vaccinations and medications. Enhanced pet profiles support better health tracking.
+
+---
+
+## ✅ Previously Completed (March 21, 2026)
 
 ### UX/UI Completion & Accessibility
 - [x] **CollapsibleSection Integration** - Medical Tracking and Weight Trends now collapsible

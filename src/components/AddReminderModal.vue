@@ -10,7 +10,7 @@
           <!-- Header -->
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-              {{ editPet ? 'Edit Pet' : 'Add New Pet' }}
+              Add Reminder
             </h2>
             <button
               @click="close"
@@ -22,58 +22,103 @@
 
           <!-- Form -->
           <form @submit.prevent="handleSubmit" class="space-y-4">
-            <!-- Pet Name -->
+            <!-- Reminder Type -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Pet Name *
+                Reminder Type *
               </label>
-              <input
-                v-model="form.name"
-                type="text"
-                placeholder="e.g., Luna"
+              <select
+                v-model="form.type"
                 class="input"
                 required
-                maxlength="20"
-                autofocus
               >
+                <option value="vaccination">💉 Vaccination</option>
+                <option value="medication">💊 Medication</option>
+                <option value="vet-appointment">🏥 Vet Appointment</option>
+                <option value="custom">🔔 Custom Reminder</option>
+              </select>
             </div>
 
-            <!-- Pet Species (Optional) -->
+            <!-- Title -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Species (optional)
+                Title *
               </label>
               <input
-                v-model="form.species"
+                v-model="form.title"
                 type="text"
-                placeholder="e.g., Dog, Cat, Rabbit"
+                :placeholder="getTitlePlaceholder()"
                 class="input"
-                maxlength="20"
+                required
+                maxlength="50"
               >
             </div>
 
-            <!-- Emoji Picker -->
-            <EmojiPicker
-              label="Choose an emoji *"
-              :selected-emoji="form.emoji"
-              @select="form.emoji = $event"
-            />
+            <!-- Pet Selection -->
+            <div v-if="pets.length > 0">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Pet *
+              </label>
+              <select
+                v-model="form.petId"
+                class="input"
+                required
+              >
+                <option value="">Select a pet</option>
+                <option v-for="pet in pets" :key="pet.id" :value="pet.id">
+                  {{ pet.emoji }} {{ pet.name }}
+                </option>
+              </select>
+            </div>
 
-            <!-- Birthday (Optional) -->
+            <!-- Due Date -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Birthday (optional)
+                Due Date *
               </label>
               <input
-                v-model="form.birthday"
-                type="date"
+                v-model="form.dueDate"
+                type="datetime-local"
                 class="input"
-                :max="today"
+                required
+                :min="today"
               >
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Notes (optional)
+              </label>
+              <textarea
+                v-model="form.notes"
+                class="input"
+                rows="3"
+                maxlength="200"
+                placeholder="Additional details..."
+              />
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Used for age calculation and birthday reminders
+                {{ form.notes.length }}/200 characters
               </p>
             </div>
+
+            <!-- Recurrence (Future Feature) -->
+            <!--
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Repeat (optional)
+              </label>
+              <select
+                v-model="form.recurrence"
+                class="input"
+              >
+                <option value="">Does not repeat</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            -->
 
             <!-- Error Message -->
             <div
@@ -95,14 +140,9 @@
               <button
                 type="submit"
                 class="btn btn-primary flex-1"
-                :disabled="loading || !form.name || !form.emoji"
+                :disabled="loading"
               >
-                <template v-if="editPet">
-                  {{ loading ? 'Saving...' : 'Save Changes' }}
-                </template>
-                <template v-else>
-                  {{ loading ? 'Adding...' : 'Add Pet' }}
-                </template>
+                {{ loading ? 'Adding...' : 'Add Reminder' }}
               </button>
             </div>
           </form>
@@ -114,56 +154,58 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { usePetsStore } from '@/stores/pets'
-import EmojiPicker from './EmojiPicker.vue'
+import { useRemindersStore } from '@/stores/reminders'
 
 const props = defineProps({
   show: {
     type: Boolean,
     required: true
   },
-  editPet: {
-    type: Object,
-    default: null
+  pets: {
+    type: Array,
+    default: () => []
   }
 })
 
 const emit = defineEmits(['close'])
 
-const petsStore = usePetsStore()
+const remindersStore = useRemindersStore()
 
 const form = ref({
-  name: '',
-  emoji: '',
-  species: '',
-  birthday: ''
+  type: 'vaccination',
+  title: '',
+  petId: '',
+  dueDate: '',
+  notes: '',
+  recurrence: ''
 })
 
 const loading = ref(false)
 const error = ref('')
 
-// Today's date for max birthday constraint
-const today = computed(() => new Date().toISOString().split('T')[0])
+// Today's date for min constraint
+const today = computed(() => {
+  const now = new Date()
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
+  return now.toISOString().slice(0, 16)
+})
 
-// Reset or populate form when modal opens
+// Reset form when modal opens
 watch(() => props.show, (newVal) => {
   if (newVal) {
-    if (props.editPet) {
-      // Edit mode: populate with existing data
-      form.value = {
-        name: props.editPet.name || '',
-        emoji: props.editPet.emoji || '',
-        species: props.editPet.species || '',
-        birthday: props.editPet.birthday || ''
-      }
-    } else {
-      // Add mode: reset form
-      form.value = {
-        name: '',
-        emoji: '',
-        species: '',
-        birthday: ''
-      }
+    // Set default due date to tomorrow at 9am
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(9, 0, 0, 0)
+    tomorrow.setMinutes(tomorrow.getMinutes() - tomorrow.getTimezoneOffset())
+
+    form.value = {
+      type: 'vaccination',
+      title: '',
+      petId: props.pets.length > 0 ? props.pets[0].id : '',
+      dueDate: tomorrow.toISOString().slice(0, 16),
+      notes: '',
+      recurrence: ''
     }
     error.value = ''
   }
@@ -176,36 +218,38 @@ watch(() => props.show, (newVal) => {
   }
 })
 
+function getTitlePlaceholder() {
+  const placeholders = {
+    'vaccination': 'e.g., Rabies booster',
+    'medication': 'e.g., Flea & tick medication',
+    'vet-appointment': 'e.g., Annual checkup',
+    'custom': 'e.g., Grooming appointment'
+  }
+  return placeholders[form.value.type] || 'Enter reminder title'
+}
+
 async function handleSubmit() {
   error.value = ''
   loading.value = true
 
   try {
-    let success
+    // Convert datetime-local to Unix timestamp
+    const dueDate = new Date(form.value.dueDate).getTime()
 
-    if (props.editPet) {
-      // Update existing pet
-      success = await petsStore.updatePet(props.editPet.id, {
-        name: form.value.name.trim(),
-        emoji: form.value.emoji,
-        species: form.value.species.trim(),
-        birthday: form.value.birthday || null
-      })
-    } else {
-      // Add new pet
-      success = await petsStore.addPet(
-        form.value.name,
-        form.value.emoji,
-        form.value.species,
-        form.value.birthday
-      )
-    }
+    const success = await remindersStore.addReminder({
+      type: form.value.type,
+      title: form.value.title.trim(),
+      dueDate,
+      petId: form.value.petId,
+      notes: form.value.notes.trim(),
+      recurrence: form.value.recurrence || null
+    })
 
     if (success) {
       close()
     }
   } catch (err) {
-    error.value = err.message || `Failed to ${props.editPet ? 'update' : 'add'} pet`
+    error.value = err.message || 'Failed to add reminder'
   } finally {
     loading.value = false
   }

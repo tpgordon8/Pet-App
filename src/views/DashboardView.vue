@@ -230,12 +230,33 @@
       >
         <WeightTrendChart :activities="activitiesStore.filteredActivities" />
       </CollapsibleSection>
+
+      <!-- Smart Reminders -->
+      <CollapsibleSection
+        title="Reminders"
+        :subtitle="`${remindersStore.activeReminders.length} active reminder${remindersStore.activeReminders.length !== 1 ? 's' : ''}`"
+        icon="🔔"
+        :badge="remindersStore.overdueReminders.length > 0 ? remindersStore.overdueReminders.length : null"
+        :default-collapsed="false"
+        section-id="reminders"
+      >
+        <div class="flex justify-end mb-3">
+          <button
+            class="text-sm font-medium text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300"
+            @click="showAddReminderModal = true"
+          >
+            + Add Reminder
+          </button>
+        </div>
+        <RemindersWidget @add-reminder="showAddReminderModal = true" />
+      </CollapsibleSection>
     </div>
 
     <!-- Add Pet Modal -->
     <AddPetModal
       :show="showAddPetModal"
-      @close="showAddPetModal = false"
+      :edit-pet="editingPet"
+      @close="handleCloseAddPetModal"
     />
 
     <!-- Activity Notes Modal -->
@@ -267,14 +288,24 @@
     <!-- Household Settings Modal -->
     <HouseholdSettingsModal
       :is-open="showSettingsModal"
+      :pets="petsStore.pets"
       @close="showSettingsModal = false"
       @open-invite="openInviteModal"
+      @edit-pet="handleEditPet"
+      @add-pet="handleAddPet"
     />
 
     <!-- Invite Member Modal -->
     <InviteMemberModal
       :is-open="showInviteModal"
       @close="showInviteModal = false"
+    />
+
+    <!-- Add Reminder Modal -->
+    <AddReminderModal
+      :show="showAddReminderModal"
+      :pets="petsStore.pets"
+      @close="showAddReminderModal = false"
     />
 
     <!-- Floating Action Button -->
@@ -289,6 +320,7 @@ import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
+import { useRemindersStore } from '@/stores/reminders'
 import { useToast } from '@/composables/useToast'
 import { usePdfExport } from '@/composables/usePdfExport'
 import { useCsvExport } from '@/composables/useCsvExport'
@@ -302,6 +334,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import FloatingActionButton from '@/components/FloatingActionButton.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import RemindersWidget from '@/components/RemindersWidget.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
@@ -347,10 +380,14 @@ const HouseholdSettingsModal = defineAsyncComponent(() =>
 const InviteMemberModal = defineAsyncComponent(() =>
   import('@/components/InviteMemberModal.vue')
 )
+const AddReminderModal = defineAsyncComponent(() =>
+  import('@/components/AddReminderModal.vue')
+)
 
 const householdStore = useHouseholdStore()
 const activitiesStore = useActivitiesStore()
 const petsStore = usePetsStore()
+const remindersStore = useRemindersStore()
 const toast = useToast()
 const { generateMedicalPdf } = usePdfExport()
 const { exportActivitiesCSV } = useCsvExport()
@@ -360,6 +397,8 @@ const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
 const showMedicalModalRef = ref(false)
 const showEditModal = ref(false)
+const showAddReminderModal = ref(false)
+const editingPet = ref(null)
 const showSettingsModal = ref(false)
 const showInviteModal = ref(false)
 const pendingActivity = ref({ type: '', emoji: '' })
@@ -406,6 +445,10 @@ onMounted(() => {
   // Start Firebase listeners for real-time sync
   activitiesStore.startListener()
   petsStore.startListener()
+  remindersStore.startListener()
+
+  // Initialize reminders (check notification permissions)
+  remindersStore.initialize()
 
   // Load offline queue
   activitiesStore.loadOfflineQueue()
@@ -420,6 +463,7 @@ onUnmounted(() => {
   // Stop listeners when leaving dashboard
   activitiesStore.stopListener()
   petsStore.stopListener()
+  remindersStore.stopListener()
 
   // Save offline queue
   activitiesStore.saveOfflineQueue()
@@ -428,6 +472,23 @@ onUnmounted(() => {
 function openInviteModal() {
   showSettingsModal.value = false
   showInviteModal.value = true
+}
+
+function handleAddPet() {
+  editingPet.value = null
+  showSettingsModal.value = false
+  showAddPetModal.value = true
+}
+
+function handleEditPet(pet) {
+  editingPet.value = pet
+  showSettingsModal.value = false
+  showAddPetModal.value = true
+}
+
+function handleCloseAddPetModal() {
+  showAddPetModal.value = false
+  editingPet.value = null
 }
 
 function showActivityNotes(type, emoji) {

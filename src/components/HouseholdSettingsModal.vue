@@ -71,6 +71,60 @@
           </div>
         </div>
 
+        <!-- Pets List -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Pets ({{ pets.length }})
+            </label>
+            <button
+              @click="openAddPetModal"
+              class="text-sm font-medium text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300"
+            >
+              + Add Pet
+            </button>
+          </div>
+          <div class="space-y-2 max-h-48 overflow-y-auto">
+            <div
+              v-if="pets.length === 0"
+              class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm"
+            >
+              No pets yet. Add your first pet!
+            </div>
+            <div
+              v-for="pet in pets"
+              :key="pet.id"
+              class="flex items-center justify-between rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-3"
+            >
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">{{ pet.emoji }}</span>
+                <div>
+                  <div class="font-medium text-gray-900 dark:text-white">{{ pet.name }}</div>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ pet.species || 'Pet' }}{{ pet.birthday ? ` • ${calculateAge(pet.birthday)}` : '' }}
+                  </p>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  @click="editPet(pet)"
+                  class="text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300 text-sm font-medium"
+                  title="Edit pet"
+                >
+                  Edit
+                </button>
+                <button
+                  @click="confirmDeletePet(pet)"
+                  class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium"
+                  title="Delete pet"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Members List -->
         <div class="mb-6">
           <div class="flex items-center justify-between mb-2">
@@ -139,6 +193,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useHouseholdStore } from '@/stores/household'
+import { usePetsStore } from '@/stores/pets'
 import { useToast } from '@/composables/useToast'
 import { useRouter } from 'vue-router'
 
@@ -146,12 +201,17 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
+  },
+  pets: {
+    type: Array,
+    default: () => []
   }
 })
 
-const emit = defineEmits(['close', 'openInvite'])
+const emit = defineEmits(['close', 'openInvite', 'editPet', 'addPet'])
 
 const householdStore = useHouseholdStore()
+const petsStore = usePetsStore()
 const { showToast } = useToast()
 const router = useRouter()
 
@@ -159,6 +219,40 @@ const isEditingName = ref(false)
 const newHouseholdName = ref('')
 const nameError = ref('')
 const codeCopied = ref(false)
+
+// Helper function to calculate pet age
+function calculateAge(birthday) {
+  if (!birthday) return ''
+
+  const birthDate = new Date(birthday)
+  const today = new Date()
+  const ageInMonths = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth())
+
+  if (ageInMonths < 12) {
+    return `${ageInMonths} month${ageInMonths !== 1 ? 's' : ''} old`
+  } else {
+    const years = Math.floor(ageInMonths / 12)
+    const months = ageInMonths % 12
+    if (months === 0) {
+      return `${years} year${years !== 1 ? 's' : ''} old`
+    }
+    return `${years}y ${months}m old`
+  }
+}
+
+function openAddPetModal() {
+  emit('addPet')
+}
+
+function editPet(pet) {
+  emit('editPet', pet)
+}
+
+async function confirmDeletePet(pet) {
+  if (confirm(`Are you sure you want to delete ${pet.emoji} ${pet.name}? This action cannot be undone.`)) {
+    await petsStore.deletePet(pet.id)
+  }
+}
 
 // Reset editing state when modal opens/closes
 watch(() => props.isOpen, (isOpen) => {

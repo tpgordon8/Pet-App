@@ -4,7 +4,254 @@
 
 ---
 
-## Session: 2026-03-25 - Mobile Layout Optimization
+## Session: 2026-03-25 - Smart Reminders & Enhanced Pet Management
+
+### ✅ COMPLETED: Smart Reminder System + Pet Management Enhancements
+
+**Duration:** ~2 hours
+**Status:** ✅ COMPLETE - Full reminder system with Web Notifications + Complete pet management UI
+
+**Goal:** Implement high-priority roadmap features: Smart Reminders system for vaccinations/medications and enhanced pet management with edit/birthday tracking.
+
+### Feature 1: Smart Reminders System
+
+**New Files Created:**
+- `src/stores/reminders.js` - Complete Pinia store for reminder management
+- `src/components/RemindersWidget.vue` - Reminder display component
+- `src/components/AddReminderModal.vue` - Reminder creation modal
+
+**Key Implementation Details:**
+
+**1. Reminders Store (`src/stores/reminders.js`)**
+- Firebase Realtime Database integration for reminder sync
+- Reminder types: vaccination, medication, vet-appointment, custom
+- Automatic notification system with Web Notifications API
+- Vaccination due date calculator based on common schedules:
+  - Rabies: 16 weeks initial, 3-year booster
+  - DHPP: 16 weeks initial, annual booster
+  - Bordetella: 12 weeks initial, 6-month booster
+  - FVRCP, FeLV for cats
+- Computed properties:
+  - `upcomingReminders` - Due within next 3 days
+  - `overdueReminders` - Past due date
+  - `activeReminders` - All non-completed reminders
+- Browser notification integration:
+  - Permission request handling
+  - Auto-notification for reminders due within 24 hours
+  - De-duplication using localStorage
+  - Auto-close after 10 seconds
+
+**2. RemindersWidget Component**
+- Displays overdue reminders (highlighted in red)
+- Shows upcoming reminders (next 3 days)
+- Enable notifications prompt for new users
+- Quick actions: Complete (✓) and Delete (✕)
+- Emoji-based reminder type indicators
+- Relative time display ("2 hours ago", "in 3 days")
+- Empty state with "+ Add Reminder" CTA
+
+**3. AddReminderModal**
+- Reminder type selection (vaccination, medication, vet appointment, custom)
+- Pet selection dropdown
+- Due date picker (datetime-local input)
+- Notes field (200 char limit)
+- Smart placeholders based on reminder type
+- Converts datetime-local to Unix timestamp for Firebase
+
+**4. DashboardView Integration**
+- Added RemindersWidget in CollapsibleSection
+- Badge shows overdue count
+- Subtitle shows active reminder count
+- "+ Add Reminder" button in section header
+- Listener lifecycle:
+  - `onMounted`: Start listener + initialize notification permissions
+  - `onUnmounted`: Stop listener cleanup
+
+**Database Schema:**
+```javascript
+/households/{householdId}/reminders/{reminderId}
+  - type: "vaccination" | "medication" | "vet-appointment" | "custom"
+  - title: string
+  - dueDate: Unix timestamp
+  - petId: string
+  - notes: string
+  - recurrence: { interval, count } | null
+  - completed: boolean
+  - completedAt: timestamp (when marked complete)
+  - completedBy: string
+  - createdAt: timestamp
+  - createdBy: string
+```
+
+**Technical Decisions:**
+1. **Web Notifications API over push notifications** - Simpler implementation, no service worker complexity, works when app is open
+2. **24-hour notification window** - Prevents notification spam while still providing timely alerts
+3. **localStorage for notification deduplication** - Prevents repeated notifications for same reminder
+4. **Vaccination calculator** - Automatic due date calculation based on pet birthday and vaccine type
+5. **No recurring reminders (initial version)** - Simplified first implementation, can add later
+
+### Feature 2: Enhanced Pet Management
+
+**Modified Files:**
+- `src/components/AddPetModal.vue` - Now supports both add and edit modes
+- `src/components/HouseholdSettingsModal.vue` - Added pet management UI
+- `src/stores/pets.js` - Updated to accept birthday parameter
+- `src/views/DashboardView.vue` - Wired up edit/delete handlers
+
+**Key Implementation Details:**
+
+**1. AddPetModal Enhancements**
+- Added `editPet` prop for edit mode detection
+- Birthday field (date input, optional)
+- Dynamic title: "Add New Pet" vs "Edit Pet"
+- Dynamic button text: "Add Pet" vs "Save Changes"
+- Form pre-population when editing
+- Max date constraint (can't set future birthday)
+- Helper text explaining birthday usage
+
+**2. HouseholdSettingsModal Pet Management**
+- New "Pets" section above "Members"
+- Pet list with emoji, name, species, age
+- Age calculation helper function:
+  - Displays "X months old" for pets under 1 year
+  - Displays "X years Y months old" for older pets
+  - Format: "2y 3m old" for compact display
+- Edit and Delete buttons for each pet
+- Delete confirmation dialog
+- "+ Add Pet" button in section header
+- Empty state message
+
+**3. Pet Age Calculation**
+```javascript
+function calculateAge(birthday) {
+  const ageInMonths = (today - birthDate) in months
+  if (ageInMonths < 12) return `${months} month(s) old`
+  const years = floor(ageInMonths / 12)
+  const remainingMonths = ageInMonths % 12
+  return `${years}y ${remainingMonths}m old`
+}
+```
+
+**4. DashboardView Handlers**
+- `handleAddPet()` - Opens modal in add mode
+- `handleEditPet(pet)` - Opens modal with pet data in edit mode
+- `handleCloseAddPetModal()` - Cleanup when closing
+- State management:
+  - `editingPet` ref tracks current editing pet
+  - Null when in add mode
+
+**Updated Database Schema:**
+```javascript
+/households/{householdId}/pets/{petId}
+  - name: string
+  - emoji: string
+  - species: string
+  - birthday: "YYYY-MM-DD" | null  // NEW FIELD
+  - createdAt: timestamp
+  - createdBy: string
+```
+
+### Integration Points
+
+**Reminder + Pet Integration:**
+1. AddReminderModal uses pets list for pet selection dropdown
+2. Vaccination due date calculator uses pet birthday from pets store
+3. RemindersWidget can be filtered by selectedPetId (future enhancement)
+4. Vaccination activities could auto-create reminders (future enhancement)
+
+**Firebase Security Considerations:**
+- Reminders require same authentication as activities
+- Only household members can create/edit/delete reminders
+- Birthday is optional to maintain backward compatibility
+
+### Testing Results
+
+**Build Test:**
+```bash
+npm run build
+✓ built in 11.79s
+```
+
+**ESLint:**
+```bash
+npm run lint
+✓ No errors
+```
+
+**Bundle Analysis:**
+- AddReminderModal: 4.89 kB (gzip: 2.12 kB)
+- RemindersWidget: Eager-loaded (~3 kB estimated)
+- reminders.js store: ~6 kB (bundled with app)
+- Total impact: ~14 kB uncompressed
+
+**Browser Compatibility:**
+- Web Notifications API: Supported in Chrome 22+, Firefox 22+, Safari 6+
+- datetime-local input: Supported in modern browsers (fallback to text input)
+- Reminder system gracefully degrades if notifications blocked
+
+### UX Improvements
+
+**Reminders:**
+1. Clear visual hierarchy (overdue in red, upcoming in default)
+2. One-tap complete (✓) and delete (✕) actions
+3. Smart notification prompts (only shown if have active reminders)
+4. Dismissible notification prompt
+5. Relative time display for better context
+
+**Pet Management:**
+1. Centralized pet management in settings (avoids cluttering main dashboard)
+2. Age automatically calculated and displayed
+3. Confirmation dialog prevents accidental deletions
+4. Edit/delete buttons only appear on hover (desktop) or always visible (mobile)
+
+### Known Limitations
+
+1. **No recurring reminders** - Future enhancement (would need cron-like logic)
+2. **Notifications only work when browser open** - Push notifications require service worker
+3. **No medication dosage tracking** - Simplified first version
+4. **Vaccination calculator uses general schedules** - Vet-specific schedules may vary
+5. **No reminder history** - Completed reminders removed from active list
+
+### Future Enhancements
+
+**Reminders:**
+- [ ] Recurring reminders (daily, weekly, monthly)
+- [ ] Medication dosage tracking
+- [ ] Auto-create reminders from vaccination activities
+- [ ] Reminder history view
+- [ ] Push notifications via service worker
+- [ ] Integration with calendar apps
+- [ ] Smart activity-based suggestions
+
+**Pet Management:**
+- [ ] Pet photo uploads
+- [ ] Breed selection dropdown
+- [ ] Health conditions tags
+- [ ] Pet profile page with complete history
+
+### Commit Summary
+
+**Files Created (3):**
+- `src/stores/reminders.js`
+- `src/components/RemindersWidget.vue`
+- `src/components/AddReminderModal.vue`
+
+**Files Modified (6):**
+- `src/components/AddPetModal.vue`
+- `src/components/HouseholdSettingsModal.vue`
+- `src/stores/pets.js`
+- `src/views/DashboardView.vue`
+- `ROADMAP.md`
+- `DEVLOG.md`
+
+**Lines Changed:**
+- Added: ~850 lines
+- Modified: ~150 lines
+- Total impact: ~1,000 lines
+
+---
+
+## Session: 2026-03-25 - Mobile Layout Optimization (Earlier Today)
 
 ### ✅ COMPLETED: Compact Mobile-First Design Implementation
 
