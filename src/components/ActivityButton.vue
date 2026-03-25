@@ -109,7 +109,7 @@ function onTouchEnd() {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  min-height: 140px;
+  min-height: 100px;
   min-width: 44px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
@@ -135,8 +135,14 @@ function onTouchEnd() {
   border-color: rgba(139, 154, 125, 0.2);
 }
 
+/* Medical button compact variant */
+.activity-button.medical-button-compact {
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
 .emoji-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -145,7 +151,7 @@ function onTouchEnd() {
 }
 
 .button-label {
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: #374151;
   transition: color 0.2s;
@@ -156,9 +162,9 @@ function onTouchEnd() {
 }
 
 .count-badge {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #6b7280;
-  padding: 0.25rem 0.75rem;
+  padding: 0.125rem 0.5rem;
   border-radius: 9999px;
   background: rgba(0, 0, 0, 0.05);
   transition: all 0.2s;
@@ -183,13 +189,13 @@ function onTouchEnd() {
 /* Activity indicator dot */
 .activity-indicator {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
   animation: pulse-indicator 2s ease-in-out infinite;
 }
 
@@ -231,16 +237,41 @@ function onTouchEnd() {
 
 @media (max-width: 640px) {
   .activity-button {
-    min-height: 120px;
-    padding: 1rem;
+    min-height: 85px;
+    padding: 0.75rem;
   }
 
   .emoji-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .button-label {
-    font-size: 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .count-badge {
+    font-size: 0.6875rem;
+  }
+
+  /* Medical compact variant on mobile */
+  .activity-button.medical-button-compact {
+    min-width: 120px;
+  }
+}
+
+/* Very small screens (3-4 column grid) */
+@media (max-width: 390px) {
+  .activity-button {
+    min-height: 80px;
+    padding: 0.625rem;
+  }
+
+  .emoji-icon {
+    font-size: 1.75rem;
+  }
+
+  .button-label {
+    font-size: 0.75rem;
   }
 }
 </style>

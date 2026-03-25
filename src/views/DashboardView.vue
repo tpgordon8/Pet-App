@@ -1,21 +1,16 @@
 <template>
-  <div class="min-h-screen p-3 sm:p-4 pb-20">
-    <div class="max-w-4xl mx-auto space-y-4 sm:space-y-6 py-4 sm:py-8">
-      <!-- Header with Compact Context Controls -->
-      <div class="card">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+  <div class="min-h-screen p-2 sm:p-3 pb-20">
+    <div class="max-w-4xl mx-auto space-y-3 sm:space-y-4 py-2 sm:py-4">
+      <!-- Compact Sticky Header -->
+      <div class="card-compact sticky-header">
+        <div class="flex items-center justify-between gap-2">
           <!-- Title -->
-          <div class="flex-shrink-0">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-              🐾 {{ householdStore.householdName || 'Tailr' }}
-            </h1>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Welcome, {{ householdStore.memberName }}!
-            </p>
-          </div>
+          <h1 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex-shrink-0">
+            🐾 {{ householdStore.householdName || 'Tailr' }}
+          </h1>
 
-          <!-- Compact Context Bar -->
-          <div class="flex-1 flex justify-end items-center gap-3 flex-wrap">
+          <!-- Compact Context Bar + Settings -->
+          <div class="flex items-center gap-2 flex-1 justify-end">
             <CompactContextBar
               :pets="petsStore.pets"
               :selected-pet-id="petsStore.selectedPetId"
@@ -28,31 +23,31 @@
               @add-pet="showAddPetModal = true"
             />
 
-            <!-- Settings Button -->
+            <!-- Settings Button (Icon Only) -->
             <button
-              class="btn btn-secondary flex items-center gap-2"
+              class="settings-btn"
               title="Household Settings"
+              aria-label="Open household settings"
               @click="showSettingsModal = true"
             >
               <span class="text-lg">⚙️</span>
-              <span class="hidden sm:inline">Settings</span>
             </button>
           </div>
         </div>
       </div>
 
       <!-- PRIMARY ACTION: Quick Log Buttons -->
-      <div class="card">
-        <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-4">
+      <div class="card-compact">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">
           Quick Log
           <span
             v-if="petsStore.selectedPet"
-            class="text-sage-600 dark:text-sage-400"
+            class="text-sage-600 dark:text-sage-400 text-xs"
           >
-            for {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
+            • {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
           <ActivityButton
             emoji="💩"
             label="Poop"
@@ -99,9 +94,9 @@
       </div>
 
       <!-- Activity Feed with Integrated Search -->
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+      <div class="card-compact">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
             Recent Activity
           </h3>
           <!-- Export Button -->
@@ -122,24 +117,24 @@
         </div>
 
         <!-- Search Bar -->
-        <div class="relative mb-4">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <span class="text-gray-400 text-lg">🔍</span>
+        <div class="relative mb-3">
+          <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+            <span class="text-gray-400 text-base">🔍</span>
           </div>
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Search activities..."
-            class="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
-            style="font-size: 16px; min-height: 48px;"
+            class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+            style="font-size: 16px; min-height: 44px;"
           >
           <button
             v-if="searchQuery"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label="Clear search"
             @click="searchQuery = ''"
           >
-            <span class="text-xl">✕</span>
+            <span class="text-lg">✕</span>
           </button>
         </div>
 
@@ -185,7 +180,7 @@
         :default-collapsed="true"
         section-id="medical-tracking"
       >
-        <div class="flex justify-end mb-4">
+        <div class="flex justify-end mb-2">
           <button
             v-if="petsStore.selectedPet && petsStore.selectedPetId !== 'all'"
             class="btn-export"
@@ -196,12 +191,14 @@
             <span class="export-label">Export PDF</span>
           </button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+        <!-- Horizontal Scrolling Medical Buttons -->
+        <div class="medical-buttons-scroll">
           <ActivityButton
             emoji="🏥"
             label="Vet Visit"
             :count="activitiesStore.stats.vetVisit"
             :disabled="activitiesStore.loading"
+            custom-class="medical-button-compact"
             @click="showMedicalModal('Vet Visit', '🏥')"
           />
           <ActivityButton
@@ -209,6 +206,7 @@
             label="Vaccination"
             :count="activitiesStore.stats.vaccination"
             :disabled="activitiesStore.loading"
+            custom-class="medical-button-compact"
             @click="showMedicalModal('Vaccination', '💉')"
           />
           <ActivityButton
@@ -216,6 +214,7 @@
             label="Weight Check"
             :count="activitiesStore.stats.weightCheck"
             :disabled="activitiesStore.loading"
+            custom-class="medical-button-compact"
             @click="showMedicalModal('Weight Check', '⚖️')"
           />
         </div>
@@ -537,21 +536,106 @@ async function handleQuickLog({ type, emoji }) {
 </script>
 
 <style scoped>
+/* Compact Card Styles */
+.card-compact {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.dark .card-compact {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(75, 85, 99, 0.5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 640px) {
+  .card-compact {
+    padding: 1rem;
+  }
+}
+
+/* Sticky Header */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: all 0.3s ease;
+}
+
+/* Settings Button (Icon Only) */
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.dark .settings-btn {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.settings-btn:hover {
+  background: #8B9A7D;
+  border-color: #8B9A7D;
+  transform: translateY(-1px);
+}
+
+/* Medical Buttons Horizontal Scroll */
+.medical-buttons-scroll {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 154, 125, 0.3) transparent;
+}
+
+.medical-buttons-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.medical-buttons-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.medical-buttons-scroll::-webkit-scrollbar-thumb {
+  background: rgba(139, 154, 125, 0.3);
+  border-radius: 3px;
+}
+
+.medical-buttons-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 154, 125, 0.5);
+}
+
+/* Export Button */
 .btn-export {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 0.75rem; /* 10px 12px - ensures 44px touch target */
+  padding: 0.5rem 0.625rem;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   color: #374151;
-  font-size: 1rem; /* 16px - prevents iOS zoom */
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 150ms ease-in-out;
-  min-height: 44px; /* iOS minimum touch target */
-  min-width: 44px; /* iOS minimum touch target */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 .dark .btn-export {
@@ -583,8 +667,8 @@ async function handleQuickLog({ type, emoji }) {
   }
 
   .btn-export {
-    font-size: 0.875rem; /* 14px on desktop */
-    padding: 0.5rem 1rem; /* More padding on desktop */
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 </style>
