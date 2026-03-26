@@ -177,6 +177,17 @@
         :default-collapsed="true"
       />
 
+      <!-- Calendar View -->
+      <CollapsibleSection
+        title="Calendar View"
+        :subtitle="petsStore.selectedPet ? `Activity calendar for ${petsStore.selectedPet.name}` : 'View activities by date'"
+        icon="📅"
+        :default-collapsed="true"
+        section-id="calendar-view"
+      >
+        <CalendarView :activities="activitiesStore.filteredActivities" />
+      </CollapsibleSection>
+
       <!-- Medical Tracking Section -->
       <CollapsibleSection
         title="Medical Tracking"
@@ -350,6 +361,7 @@ import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import RemindersWidget from '@/components/RemindersWidget.vue'
 import StreakCounter from '@/components/StreakCounter.vue'
+import CalendarView from '@/components/CalendarView.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
