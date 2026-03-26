@@ -279,6 +279,21 @@
         </div>
         <RemindersWidget @add-reminder="showAddReminderModal = true" />
       </CollapsibleSection>
+
+      <!-- Photo Gallery -->
+      <CollapsibleSection
+        title="Photo Gallery"
+        :subtitle="photoCount > 0 ? `${photoCount} photo${photoCount !== 1 ? 's' : ''}` : 'Moments with your pet'"
+        icon="📸"
+        :badge="photoCount"
+        :default-collapsed="true"
+        section-id="photo-gallery"
+      >
+        <PhotoGallery
+          :activities="activitiesStore.filteredActivities"
+          :pets="petsStore.pets"
+        />
+      </CollapsibleSection>
     </div>
 
     <!-- Add Pet Modal -->
@@ -375,6 +390,7 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import RemindersWidget from '@/components/RemindersWidget.vue'
 import StreakCounter from '@/components/StreakCounter.vue'
 import CalendarView from '@/components/CalendarView.vue'
+import PhotoGallery from '@/components/PhotoGallery.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
@@ -455,6 +471,11 @@ const pendingActivity = ref({ type: '', emoji: '' })
 const pendingMedical = ref({ type: '', emoji: '' })
 const editingActivity = ref(null)
 const searchQuery = ref('')
+
+// Computed: Photo count
+const photoCount = computed(() => {
+  return activitiesStore.filteredActivities.filter(a => a.photoUrl).length
+})
 
 // Computed: Filter activities based on search query
 const filteredActivities = computed(() => {
