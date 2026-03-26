@@ -325,6 +325,7 @@ import { useToast } from '@/composables/useToast'
 import { usePdfExport } from '@/composables/usePdfExport'
 import { useCsvExport } from '@/composables/useCsvExport'
 import { useHaptic } from '@/composables/useHaptic'
+import { useTheme } from '@/composables/useTheme'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
@@ -392,6 +393,9 @@ const toast = useToast()
 const { generateMedicalPdf } = usePdfExport()
 const { exportActivitiesCSV } = useCsvExport()
 const haptic = useHaptic()
+
+// Initialize theme system - automatically applies theme when pet is selected
+useTheme()
 
 const showAddPetModal = ref(false)
 const showNotesModal = ref(false)

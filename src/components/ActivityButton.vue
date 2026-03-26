@@ -135,9 +135,10 @@ function onTouchEnd() {
 
 .activity-button:not(:disabled):hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.25);
-  border-color: rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.05) 100%);
+  box-shadow: 0 12px 32px rgba(var(--theme-primary-rgb, 16, 185, 129), 0.25);
+  border-color: var(--theme-light);
+  background: var(--theme-gradient);
+  opacity: 0.15;
 }
 
 .activity-button:not(:disabled):active,

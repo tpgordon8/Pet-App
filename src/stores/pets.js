@@ -63,7 +63,7 @@ export const usePetsStore = defineStore('pets', () => {
     }
   }
 
-  async function addPet(name, emoji, species = '', birthday = '') {
+  async function addPet(name, emoji, species = '', birthday = '', themeColor = 'sage') {
     if (!householdStore.householdId) {
       toast.error('Please sign in first')
       return false
@@ -79,6 +79,7 @@ export const usePetsStore = defineStore('pets', () => {
       emoji,
       species: species.trim(),
       birthday: birthday || null,
+      themeColor: themeColor || 'sage',
       createdAt: Date.now(),
       createdBy: householdStore.memberName
     }
