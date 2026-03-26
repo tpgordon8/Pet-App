@@ -23,6 +23,18 @@
               @add-pet="showAddPetModal = true"
             />
 
+            <!-- Voice Button (if supported) -->
+            <button
+              v-if="voice.isSupported"
+              class="settings-btn"
+              :class="{ 'voice-listening': voice.isListening }"
+              title="Voice log activity"
+              aria-label="Voice log activity"
+              @click="handleVoiceLog"
+            >
+              <span class="text-lg">{{ voice.isListening ? '🎤' : '🗣️' }}</span>
+            </button>
+
             <!-- Settings Button (Icon Only) -->
             <button
               class="settings-btn"
@@ -350,6 +362,7 @@ import { usePdfExport } from '@/composables/usePdfExport'
 import { useCsvExport } from '@/composables/useCsvExport'
 import { useHaptic } from '@/composables/useHaptic'
 import { useTheme } from '@/composables/useTheme'
+import { useVoiceInput } from '@/composables/useVoiceInput'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
@@ -425,6 +438,9 @@ const haptic = useHaptic()
 
 // Initialize theme system - automatically applies theme when pet is selected
 useTheme()
+
+// Initialize voice input
+const voice = useVoiceInput()
 
 const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
@@ -628,6 +644,50 @@ async function handleQuickLog({ type, emoji }) {
   // Success feedback
   toast.success(`${emoji} ${type} logged!`)
 }
+
+function handleVoiceLog() {
+  if (voice.isListening) {
+    voice.stopListening()
+  } else {
+    voice.startListening()
+  }
+}
+
+// Watch for voice transcript changes
+import { watch } from 'vue'
+watch(() => voice.transcript, async (newTranscript) => {
+  if (!newTranscript) return
+
+  const command = voice.parseCommand(newTranscript)
+
+  if (!command) {
+    toast.error(`Could not understand: "${newTranscript}". Try "log poop" or "log food"`)
+    return
+  }
+
+  // If pet name specified, try to select that pet
+  if (command.petName) {
+    const pet = petsStore.pets.find(p => p.name.toLowerCase() === command.petName.toLowerCase())
+    if (pet) {
+      petsStore.selectPet(pet.id)
+      toast.success(`Selected ${pet.emoji} ${pet.name}`)
+    } else {
+      toast.error(`Pet "${command.petName}" not found`)
+      return
+    }
+  }
+
+  // Check if pet is selected
+  if (!petsStore.selectedPet || petsStore.selectedPetId === 'all') {
+    toast.error('Please select a specific pet first or say "for [pet name]"')
+    return
+  }
+
+  // Log the activity
+  await handleQuickLog({ type: command.type, emoji: command.emoji })
+
+  toast.success(`Voice logged: ${command.emoji} ${command.type}`)
+})
 </script>
 
 <style scoped>
@@ -685,6 +745,21 @@ async function handleQuickLog({ type, emoji }) {
   background: #8B9A7D;
   border-color: #8B9A7D;
   transform: translateY(-1px);
+}
+
+.voice-listening {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  animation: pulse-voice 1s ease-in-out infinite;
+}
+
+@keyframes pulse-voice {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
 }
 
 /* Medical Buttons Horizontal Scroll */
