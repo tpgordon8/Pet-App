@@ -60,52 +60,184 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 
 ## Claude Code Skills
 
-**Available skills for this project:**
+**27 skills installed for this project** — organized by category for easy discovery.
 
-### gstack - Web Browsing Tool
+---
 
-**CRITICAL - Always use gstack for web browsing:**
+### 🎨 Frontend & Web Development
 
-- Use the `/browse` skill from gstack for **ALL** web browsing tasks
+**`/frontend-design`** (Anthropic)
+- Guides bold UI/UX decisions, avoids generic aesthetics
+- Works well with React, Vue, and Tailwind CSS
+- Use for: Designing new interfaces, improving visual appeal
+
+**`/web-artifacts-builder`** (Anthropic)
+- Build complex HTML artifacts with React, Tailwind, shadcn/ui
+- Use for: Creating reusable components, prototyping UI
+
+**`/vue-expert`** (Jeffallan) ⭐ **Vue.js specialist**
+- Deep expertise in Vue 3, Composition API, Pinia, Vue Router
+- Use for: Vue-specific best practices, component design, reactivity patterns
+
+**`/javascript-pro`** (Jeffallan)
+- Advanced JavaScript patterns, ES6+, async/await, closures
+- Use for: Complex JS logic, performance optimization
+
+**`/typescript-pro`** (Jeffallan)
+- TypeScript best practices, type safety, generics
+- Use for: Adding TypeScript to project (future consideration)
+
+---
+
+### 🧪 Testing & Quality Assurance
+
+**`/webapp-testing`** (Anthropic) ⭐ **Local webapp testing**
+- Test web apps using Playwright for UI verification and debugging
+- Use for: Testing Vue app, capturing screenshots, debugging UI
+
+**`/test-driven-development`** (Superpowers) ⭐ **TDD best practices**
+- Write tests before implementation for any feature or bugfix
+- Use for: Implementing new features with test coverage first
+
+**`/test-master`** (Jeffallan)
+- Comprehensive testing strategies (unit, integration, e2e)
+- Use for: Test planning, coverage analysis, testing patterns
+
+**`/playwright-expert`** (Jeffallan)
+- Deep Playwright expertise for e2e testing
+- Use for: Complex e2e test scenarios, browser automation
+
+**`/verification-before-completion`** (Superpowers) ⭐ **Quality gates**
+- Verify work before marking complete (tests, linting, documentation)
+- Use for: Ensuring quality before commits/PRs
+
+---
+
+### 🐛 Debugging & Code Review
+
+**`/systematic-debugging`** (Superpowers) ⭐ **Debugging methodology**
+- Structured approach to finding and fixing bugs
+- Use for: Troubleshooting complex issues, root cause analysis
+
+**`/code-reviewer`** (Jeffallan)
+- Comprehensive code review with best practices
+- Use for: Pre-commit reviews, identifying code smells
+
+**`/secure-code-guardian`** (Jeffallan) ⭐ **Security analysis**
+- Security vulnerability detection, OWASP top 10
+- Use for: Security audits, preventing XSS/SQL injection/etc.
+
+---
+
+### 📋 Planning & Development Workflow
+
+**`/writing-plans`** (Superpowers) ⭐ **Feature planning**
+- Create detailed implementation plans for complex features
+- Use for: Breaking down large features, technical design docs
+
+**`/feature-forge`** (Jeffallan)
+- End-to-end feature development guidance
+- Use for: Coordinating full feature implementation
+
+**`/finishing-a-development-branch`** (Superpowers)
+- Checklist for completing branches (tests, docs, cleanup)
+- Use for: Before creating PRs, ensuring nothing is missed
+
+---
+
+### 🚀 DevOps & Deployment
+
+**`/devops-engineer`** (Jeffallan) ⭐ **Deployment expertise**
+- CI/CD pipelines, GitHub Actions, Vercel deployment
+- Use for: Improving deployment workflow, troubleshooting CI/CD
+
+**`/ship`** (gstack) ⭐ **Complete ship workflow**
+- Merge main → run tests → review diff → bump VERSION → update CHANGELOG → commit → push → create PR
+- Use for: End-to-end shipping process
+
+**`/retro`** (gstack)
+- Weekly retrospective analyzing commit history and patterns
+- Use for: Understanding work patterns, identifying improvements
+
+---
+
+### 📝 Documentation
+
+**`/changelog-generator`** (Composio) ⭐ **Auto-generate changelogs**
+- Transforms git commits into user-friendly release notes
+- Use for: Maintaining CHANGELOG.md, creating release notes
+
+**`/code-documenter`** (Jeffallan)
+- Generate comprehensive code documentation
+- Use for: Documenting complex functions, creating API docs
+
+**`/pdf`** (Anthropic)
+- Create and edit PDF documents
+- Use for: PDF export features (already in roadmap)
+
+---
+
+### 🔍 Code Review & Analysis
+
+**`/review`** (gstack) ⭐ **Pre-landing PR review**
+- Analyzes diff for SQL safety, LLM trust boundaries, conditional side effects
+- Use for: Final PR review before merging
+
+**`/plan-ceo-review`** (gstack)
+- CEO/founder-mode plan review (dream big, challenge premises)
+- Use for: Strategic feature planning, product direction
+
+**`/plan-eng-review`** (gstack)
+- Engineering manager-mode plan review (architecture, edge cases)
+- Use for: Technical architecture review, implementation details
+
+---
+
+### 🌐 Web Browsing
+
+**`/browse`** (gstack) ⭐ **Fast web browsing**
+- **CRITICAL:** Use for **ALL** web browsing tasks
 - **NEVER** use `mcp__claude-in-chrome__*` tools
-- gstack provides fast, persistent headless Chromium for web interaction
+- Fast, persistent headless Chromium (~100ms per command)
+- Use for: Checking deployments, reading docs, verifying web features
 
-**Available gstack skills:**
-- `/browse` - Navigate, read, interact with web pages
-- `/plan-ceo-review` - CEO-level plan review
-- `/plan-eng-review` - Engineering plan review
-- `/review` - Pre-landing PR review (SQL safety, LLM trust boundaries, etc.)
-- `/ship` - Complete ship workflow (merge main, test, review diff, bump VERSION, update CHANGELOG, commit, push, create PR)
-- `/retro` - Weekly engineering retrospective with commit history analysis
+---
 
-**Installation:**
-- Global install: `~/.claude/skills/gstack`
-- Project install: `.claude/skills/gstack` (committed to repo for teammates)
+### ⚙️ Setup & Configuration
 
-**Troubleshooting:**
-If gstack skills aren't working, run: `cd .claude/skills/gstack && ./setup`
-This rebuilds the browser binary and registers skills.
+**`/session-start-hook`**
+- Creates startup hooks for Claude Code on the web
+- Use for: Auto-installing dependencies in remote sessions
 
-### session-start-hook
+---
 
-**Purpose:** Creates startup hooks for Claude Code on the web to automatically install dependencies.
-
-**Use when:**
-- Setting up repository for Claude Code web sessions
-- Need to ensure tests/linters work in remote sessions
-- Want to cache dependency installations
-
-**Location:** `.claude/skills/session-start-hook`
-
-### Built-in Skills (via Skill tool)
+### 🛠️ Built-in Skills (via Skill tool)
 
 **Available without installation:**
-- `simplify` - Review changed code for reuse, quality, and efficiency
-- `update-config` - Configure Claude Code settings.json
-- `keybindings-help` - Customize keyboard shortcuts
-- `loop` - Run prompt/command on recurring interval
-- `schedule` - Create scheduled remote agents (cron-style)
-- `claude-api` - Build apps with Claude API/Anthropic SDK
+- `/simplify` - Review changed code for reuse, quality, and efficiency
+- `/update-config` - Configure Claude Code settings.json
+- `/keybindings-help` - Customize keyboard shortcuts
+- `/loop` - Run prompt/command on recurring interval
+- `/schedule` - Create scheduled remote agents (cron-style)
+- `/claude-api` - Build apps with Claude API/Anthropic SDK
+
+---
+
+### 📚 Skill Repositories Installed
+
+**Location:** `.claude/skills/`
+
+- **anthropic-skills** - Official Anthropic skills (17 skills)
+- **superpowers** (obra) - Battle-tested productivity skills (14 skills)
+- **composio-skills** (ComposioHQ) - Automation and integration skills
+- **jeffallan-skills** (Jeffallan) - 66 specialized full-stack skills
+
+**Installation:**
+All skills are symlinked in `.claude/skills/` and ready to use with `/skill-name`.
+
+**Troubleshooting:**
+- gstack skills: `cd .claude/skills/gstack && ./setup`
+- Check available skills: Run `/help` or check `.claude/skills/` directory
 
 ---
 
