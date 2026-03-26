@@ -58,7 +58,11 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 
 ---
 
-## gstack - Web Browsing Tool
+## Claude Code Skills
+
+**Available skills for this project:**
+
+### gstack - Web Browsing Tool
 
 **CRITICAL - Always use gstack for web browsing:**
 
@@ -70,9 +74,9 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 - `/browse` - Navigate, read, interact with web pages
 - `/plan-ceo-review` - CEO-level plan review
 - `/plan-eng-review` - Engineering plan review
-- `/review` - Code/content review
-- `/ship` - Shipping checklist
-- `/retro` - Retrospective analysis
+- `/review` - Pre-landing PR review (SQL safety, LLM trust boundaries, etc.)
+- `/ship` - Complete ship workflow (merge main, test, review diff, bump VERSION, update CHANGELOG, commit, push, create PR)
+- `/retro` - Weekly engineering retrospective with commit history analysis
 
 **Installation:**
 - Global install: `~/.claude/skills/gstack`
@@ -81,6 +85,27 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 **Troubleshooting:**
 If gstack skills aren't working, run: `cd .claude/skills/gstack && ./setup`
 This rebuilds the browser binary and registers skills.
+
+### session-start-hook
+
+**Purpose:** Creates startup hooks for Claude Code on the web to automatically install dependencies.
+
+**Use when:**
+- Setting up repository for Claude Code web sessions
+- Need to ensure tests/linters work in remote sessions
+- Want to cache dependency installations
+
+**Location:** `.claude/skills/session-start-hook`
+
+### Built-in Skills (via Skill tool)
+
+**Available without installation:**
+- `simplify` - Review changed code for reuse, quality, and efficiency
+- `update-config` - Configure Claude Code settings.json
+- `keybindings-help` - Customize keyboard shortcuts
+- `loop` - Run prompt/command on recurring interval
+- `schedule` - Create scheduled remote agents (cron-style)
+- `claude-api` - Build apps with Claude API/Anthropic SDK
 
 ---
 
