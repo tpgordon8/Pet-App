@@ -93,6 +93,12 @@
         </div>
       </div>
 
+      <!-- Streak Counter & Achievements -->
+      <StreakCounter
+        :activities="activitiesStore.sortedActivities"
+        @show-achievements="showAchievementsModal = true"
+      />
+
       <!-- Activity Feed with Integrated Search -->
       <div class="card-compact">
         <div class="flex items-center justify-between mb-2">
@@ -308,6 +314,13 @@
       @close="showAddReminderModal = false"
     />
 
+    <!-- Achievements Modal -->
+    <AchievementsModal
+      :show="showAchievementsModal"
+      :activities="activitiesStore.sortedActivities"
+      @close="showAchievementsModal = false"
+    />
+
     <!-- Floating Action Button -->
     <FloatingActionButton
       @quick-log="handleQuickLog"
@@ -336,6 +349,7 @@ import FloatingActionButton from '@/components/FloatingActionButton.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import RemindersWidget from '@/components/RemindersWidget.vue'
+import StreakCounter from '@/components/StreakCounter.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
@@ -384,6 +398,9 @@ const InviteMemberModal = defineAsyncComponent(() =>
 const AddReminderModal = defineAsyncComponent(() =>
   import('@/components/AddReminderModal.vue')
 )
+const AchievementsModal = defineAsyncComponent(() =>
+  import('@/components/AchievementsModal.vue')
+)
 
 const householdStore = useHouseholdStore()
 const activitiesStore = useActivitiesStore()
@@ -402,6 +419,7 @@ const showNotesModal = ref(false)
 const showMedicalModalRef = ref(false)
 const showEditModal = ref(false)
 const showAddReminderModal = ref(false)
+const showAchievementsModal = ref(false)
 const editingPet = ref(null)
 const showSettingsModal = ref(false)
 const showInviteModal = ref(false)
