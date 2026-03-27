@@ -50,3 +50,6 @@ yarn-error.*
 # Test files in skills directories
 .claude/skills/**/test_*.py
 .claude/skills/**/test-*.js
+
+# Ignore changes in skills submodules (managed separately)
+.claude/skills/
