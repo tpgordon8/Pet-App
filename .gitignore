@@ -46,3 +46,7 @@ test_mobile_playwright.py
 web-build/
 yarn-debug.*
 yarn-error.*
+
+# Test files in skills directories
+.claude/skills/**/test_*.py
+.claude/skills/**/test-*.js
