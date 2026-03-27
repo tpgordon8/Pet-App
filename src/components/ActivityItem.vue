@@ -90,6 +90,7 @@
 <script setup>
 import { reactive, computed } from 'vue'
 import { format, formatDistanceToNow } from 'date-fns'
+import { useHaptic } from '@/composables/useHaptic'
 import MedicalDataDisplay from './MedicalDataDisplay.vue'
 
 const props = defineProps({
@@ -116,6 +117,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['delete', 'edit'])
+
+// Haptic feedback
+const haptic = useHaptic()
 
 // Swipe state management
 const swipeState = reactive({
@@ -171,7 +175,13 @@ function onTouchMove(event) {
     event.preventDefault()
     swipeState.currentX = touch.clientX
     swipeState.transform = Math.max(deltaX, -150)
+
+    // Trigger light haptic when delete action is revealed
+    const wasRevealed = swipeState.isRevealed
     swipeState.isRevealed = deltaX < SWIPE_THRESHOLD
+    if (!wasRevealed && swipeState.isRevealed) {
+      haptic.light()
+    }
   }
 }
 
@@ -181,6 +191,8 @@ function onTouchEnd() {
   const deltaX = swipeState.currentX - swipeState.startX
 
   if (deltaX < SWIPE_DELETE_THRESHOLD) {
+    // Heavy haptic feedback for delete action
+    haptic.heavy()
     emit('delete', props.activity.id)
   } else if (deltaX < SWIPE_THRESHOLD) {
     swipeState.transform = SWIPE_THRESHOLD

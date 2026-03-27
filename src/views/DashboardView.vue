@@ -1,5 +1,21 @@
 <template>
   <div class="min-h-screen p-2 sm:p-3 pb-20">
+    <!-- Pull-to-Refresh Indicator -->
+    <div
+      v-if="pullToRefresh.isPulling.value || pullToRefresh.isRefreshing.value"
+      class="pull-to-refresh-indicator"
+      :style="{ height: `${pullToRefresh.pullDistance.value}px`, opacity: pullToRefresh.pullProgress.value }"
+    >
+      <div class="pull-to-refresh-content">
+        <span v-if="pullToRefresh.isRefreshing.value" class="spinner">⟳</span>
+        <span v-else-if="pullToRefresh.pullProgress.value >= 1" class="text-lg">↓</span>
+        <span v-else class="text-lg opacity-50">↓</span>
+        <span class="text-sm ml-2">
+          {{ pullToRefresh.isRefreshing.value ? 'Refreshing...' : pullToRefresh.pullProgress.value >= 1 ? 'Release to refresh' : 'Pull to refresh' }}
+        </span>
+      </div>
+    </div>
+
     <div class="max-w-4xl mx-auto space-y-3 sm:space-y-4 py-2 sm:py-4">
       <!-- Compact Sticky Header -->
       <div class="card-compact sticky-header">
@@ -378,6 +394,7 @@ import { useCsvExport } from '@/composables/useCsvExport'
 import { useHaptic } from '@/composables/useHaptic'
 import { useTheme } from '@/composables/useTheme'
 import { useVoiceInput } from '@/composables/useVoiceInput'
+import { usePullToRefresh } from '@/composables/usePullToRefresh'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
@@ -458,6 +475,24 @@ useTheme()
 // Initialize voice input
 const voice = useVoiceInput()
 
+// Initialize pull-to-refresh
+const handleRefresh = async () => {
+  // Re-sync activities from Firebase
+  await activitiesStore.refreshActivities()
+  // Re-sync offline queue if exists
+  if (activitiesStore.offlineQueue.length > 0) {
+    await activitiesStore.syncOfflineQueue()
+  }
+  toast.success('Activities refreshed', 1500)
+  haptic.light()
+}
+
+const pullToRefresh = usePullToRefresh(handleRefresh, {
+  threshold: 80,
+  maxPull: 120,
+  resistance: 2.5
+})
+
 const showAddPetModal = ref(false)
 const showNotesModal = ref(false)
 const showMedicalModalRef = ref(false)
@@ -528,6 +563,12 @@ onMounted(() => {
   if (activitiesStore.offlineQueue.length > 0) {
     activitiesStore.syncOfflineQueue()
   }
+
+  // Setup pull-to-refresh listeners on the main dashboard container
+  const dashboardContainer = document.querySelector('.min-h-screen')
+  if (dashboardContainer) {
+    pullToRefresh.setupListeners(dashboardContainer)
+  }
 })
 
 onUnmounted(() => {
@@ -538,6 +579,12 @@ onUnmounted(() => {
 
   // Save offline queue
   activitiesStore.saveOfflineQueue()
+
+  // Remove pull-to-refresh listeners
+  const dashboardContainer = document.querySelector('.min-h-screen')
+  if (dashboardContainer) {
+    pullToRefresh.removeListeners(dashboardContainer)
+  }
 })
 
 function openInviteModal() {
@@ -860,6 +907,49 @@ watch(() => voice.transcript, async (newTranscript) => {
   .btn-export {
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Pull-to-Refresh Indicator */
+.pull-to-refresh-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 50;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.pull-to-refresh-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  color: #8B9A7D;
+  font-weight: 500;
+}
+
+.dark .pull-to-refresh-content {
+  color: #a8b89a;
+}
+
+.spinner {
+  display: inline-block;
+  font-size: 1.25rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

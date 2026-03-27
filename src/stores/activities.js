@@ -92,6 +92,16 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
+  async function refreshActivities() {
+    // Force a manual refresh by restarting the listener
+    // This triggers a fresh fetch from Firebase
+    if (listener.value) {
+      stopListener()
+      await new Promise(resolve => setTimeout(resolve, 100))
+      startListener()
+    }
+  }
+
   async function uploadPhoto(file) {
     try {
       const timestamp = Date.now()
@@ -324,6 +334,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     // Actions
     startListener,
     stopListener,
+    refreshActivities,
     logActivity,
     deleteActivity,
     restoreActivity,

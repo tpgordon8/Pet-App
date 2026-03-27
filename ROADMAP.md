@@ -136,6 +136,11 @@
 - [x] Progressive disclosure (CollapsibleSection for sections)
 - [x] Improved loading skeletons (SkeletonLoader component)
 - [x] Activity type icons with animation (ripple effects)
+- [x] **Mobile UX Enhancements** (✅ March 27, 2026)
+  - Pull-to-refresh on activity feed (mobile standard gesture)
+  - Enhanced haptic feedback on swipe-to-delete (light on reveal, heavy on delete)
+  - Calendar touch target optimization for iPhone SE (44px+ minimum)
+  - Search clear button already implemented
 - [ ] Custom color themes per pet
 - [ ] Sound effects on button press (optional)
 
@@ -188,11 +193,11 @@
 - [x] Lazy loading preserved (~600KB saved)
 
 **Future Design Enhancements:**
-- [ ] Pull-to-refresh for activity feed
 - [ ] Celebration confetti on milestones
 - [ ] Interactive onboarding flow
 - [ ] Advanced chart interactions (pinch-to-zoom)
 - [ ] Photo gallery with swipe navigation
+- [ ] Calendar swipe navigation (left/right for prev/next month)
 
 ---
 

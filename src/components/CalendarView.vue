@@ -417,12 +417,33 @@ function formatTime(timestamp) {
 
 /* Very small screens (iPhone SE and smaller) */
 @media (max-width: 390px) {
+  .calendar-view {
+    padding: 0.75rem;  /* Reduce container padding to give more space for days */
+  }
+
+  .calendar-grid {
+    gap: 0.25rem;  /* Reduce gap from 6px to 4px */
+  }
+
   .calendar-day {
-    padding: 0.375rem 0.25rem;
+    padding: 0.5rem 0.375rem;  /* Increase padding for larger touch area */
+    /* With 4px gap and reduced container padding, each day gets ~47-48px */
+    /* This ensures 44px+ touch targets on iPhone SE (375px) */
+    min-height: 44px;
+    min-width: 44px;
   }
 
   .day-number {
     font-size: 0.875rem;  /* 14px minimum */
+  }
+
+  .weekday-label {
+    font-size: 0.6875rem;  /* 11px - slightly smaller to save space */
+  }
+
+  .activity-dot {
+    width: 2.5px;
+    height: 2.5px;
   }
 }
 </style>
