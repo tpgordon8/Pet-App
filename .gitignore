@@ -1,50 +1,48 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
-
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
-/ios
-/android
 
 # Environment variables (Vue rebuild)
-.env
-
-# Vercel
-.vercel
-
+# Expo
 # Firebase
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# Metro
+# Native
+# Test scripts from browser automation debugging (temporary)
+# Vercel
+# debug
+# dependencies
+# generated native folders
+# local env files
+# macOS
+# typescript
+*.jks
+*.key
+*.mobileprovision
+*.orig.*
+*.p12
+*.p8
+*.pem
+*.tsbuildinfo
+.DS_Store
+.env
+.env*.local
+.expo/
 .firebase/
+.kotlin/
+.metro-health-check*
+.vercel
+/android
+/ios
+debug-page-content.js
+deep-mobile-testing.js
+dist/
+expo-env.d.ts
+node_modules/
+npm-debug.*
+simple-test.js
+test-mobile-content.js
+test-mobile-simple.js
+test-mobile-viewports.js
+test_mobile_default.py
+test_mobile_playwright.py
+web-build/
+yarn-debug.*
+yarn-error.*
