@@ -13,7 +13,8 @@
         </h3>
         <button
           @click="handleClose"
-          class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          class="modal-close-btn"
+          aria-label="Close modal"
         >
           ✕
         </button>

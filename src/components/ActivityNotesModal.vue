@@ -13,7 +13,8 @@
         </h3>
         <button
           @click="$emit('close')"
-          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl leading-none"
+          class="modal-close-btn"
+          aria-label="Close modal"
         >
           ×
         </button>

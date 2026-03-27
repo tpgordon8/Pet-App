@@ -8,8 +8,15 @@
       <div class="flex min-h-screen items-center justify-center p-4">
         <div class="modal-content relative w-full max-w-md transform rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl">
         <!-- Header -->
-        <div class="mb-6">
+        <div class="mb-6 flex items-center justify-between">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Household Settings</h2>
+          <button
+            @click="closeModal"
+            class="modal-close-btn"
+            aria-label="Close modal"
+          >
+            ✕
+          </button>
         </div>
 
         <!-- Household Name -->

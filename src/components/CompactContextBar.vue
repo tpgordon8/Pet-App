@@ -116,11 +116,11 @@ function handleMemberChange() {
 
 /* Ultra-Compact Select Dropdowns */
 .context-select-compact {
-  padding: 0.5rem 1.5rem 0.5rem 0.5rem;
+  padding: 0.625rem 1.5rem 0.625rem 0.5rem;
   background: white;
   border: 1.5px solid #e5e7eb;
   border-radius: 0.5rem;
-  font-size: 0.8125rem; /* 13px */
+  font-size: 0.875rem; /* 14px - better readability */
   font-weight: 500;
   color: #1f2937;
   cursor: pointer;
@@ -131,7 +131,7 @@ function handleMemberChange() {
   background-repeat: no-repeat;
   background-size: 1rem;
   min-width: 85px;
-  min-height: 36px;
+  min-height: 44px;  /* iOS minimum touch target - applied globally */
   max-width: 110px;
 }
 
@@ -162,7 +162,7 @@ function handleMemberChange() {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
+  padding: 0.625rem;
   background: #f3f4f6;
   border: 1.5px solid #e5e7eb;
   border-radius: 0.5rem;
@@ -170,8 +170,8 @@ function handleMemberChange() {
   color: #6b7280;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 44px;   /* iOS minimum touch target */
+  min-height: 44px;  /* iOS minimum touch target */
 }
 
 .dark .add-pet-btn-compact {
@@ -187,7 +187,7 @@ function handleMemberChange() {
   transform: translateY(-1px);
 }
 
-/* Mobile: Ensure touch targets meet iOS standards */
+/* Mobile: Prevent iOS auto-zoom and optimize spacing */
 @media (max-width: 640px) {
   .compact-context-bar {
     gap: 0.25rem;
@@ -197,13 +197,6 @@ function handleMemberChange() {
     min-width: 80px;
     max-width: 100px;
     font-size: 1rem; /* 16px - CRITICAL: prevents iOS auto-zoom */
-    padding: 0.5625rem 1.5rem 0.5625rem 0.5rem; /* Ensures 44px touch target */
-    min-height: 44px; /* iOS minimum touch target */
-  }
-
-  .add-pet-btn-compact {
-    min-width: 44px;
-    min-height: 44px;
   }
 }
 

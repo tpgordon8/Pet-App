@@ -261,11 +261,11 @@ function onTouchEnd() {
   }
 
   .button-label {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;  /* 14px - improved readability */
   }
 
   .count-badge {
-    font-size: 0.6875rem;
+    font-size: 0.75rem;  /* 12px - slightly larger for readability */
   }
 
   /* Medical compact variant on mobile */

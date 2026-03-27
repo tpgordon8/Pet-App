@@ -221,8 +221,8 @@ function formatTime(timestamp) {
 }
 
 .nav-button {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;   /* 44px - iOS minimum touch target */
+  height: 2.75rem;  /* 44px - iOS minimum touch target */
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -393,12 +393,16 @@ function formatTime(timestamp) {
 
 /* Mobile optimizations */
 @media (max-width: 640px) {
+  .calendar-grid {
+    gap: 0.375rem;  /* More breathing room between days */
+  }
+
   .calendar-day {
-    padding: 0.25rem;
+    padding: 0.5rem 0.375rem;  /* Larger touch area */
   }
 
   .day-number {
-    font-size: 0.75rem;
+    font-size: 0.9375rem;  /* 15px - better readability */
   }
 
   .activity-dot {
@@ -408,6 +412,17 @@ function formatTime(timestamp) {
 
   .calendar-title {
     font-size: 1rem;
+  }
+}
+
+/* Very small screens (iPhone SE and smaller) */
+@media (max-width: 390px) {
+  .calendar-day {
+    padding: 0.375rem 0.25rem;
+  }
+
+  .day-number {
+    font-size: 0.875rem;  /* 14px minimum */
   }
 }
 </style>

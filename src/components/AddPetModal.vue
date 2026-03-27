@@ -14,7 +14,8 @@
             </h2>
             <button
               @click="close"
-              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl"
+              class="modal-close-btn"
+              aria-label="Close modal"
             >
               ✕
             </button>
