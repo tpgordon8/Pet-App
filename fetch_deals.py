@@ -3,7 +3,9 @@
 
 import json
 from datetime import datetime, timedelta
-from fli import search_flights
+
+from fli.search import SearchFlights
+from fli.models import FlightSearchFilters, FlightSegment, PassengerInfo, SeatType, MaxStops, SortBy
 
 ORIGINS = ["PHL", "JFK", "EWR", "BWI", "DCA", "BOS"]
 
@@ -18,6 +20,7 @@ DESTINATIONS = [
     ("DFW", "Southwest"),
 ]
 
+
 def get_travel_dates():
     """Get departure and return dates (2 weeks out, 4-day trip)."""
     depart = datetime.now() + timedelta(days=14)
@@ -28,26 +31,43 @@ def get_travel_dates():
 def fetch_deals_for_origin(origin: str, depart_date: str, return_date: str) -> list:
     """Fetch flight deals from a single origin."""
     deals = []
+    search = SearchFlights()
 
     for dest_code, region in DESTINATIONS:
         try:
-            results = search_flights(
-                origin=origin,
-                destination=dest_code,
-                departure_date=depart_date,
-                return_date=return_date,
-                max_results=3,
+            filters = FlightSearchFilters(
+                passenger_info=PassengerInfo(adults=1),
+                flight_segments=[
+                    FlightSegment(
+                        departure_airport=origin,
+                        arrival_airport=dest_code,
+                        travel_date=depart_date,
+                    ),
+                    FlightSegment(
+                        departure_airport=dest_code,
+                        arrival_airport=origin,
+                        travel_date=return_date,
+                    ),
+                ],
+                seat_type=SeatType.ECONOMY,
+                stops=MaxStops.ANY,
+                sort_by=SortBy.CHEAPEST,
             )
 
-            for flight in results:
+            results = search.search(filters)
+
+            for flight in results[:3]:
+                # Extract first leg info
+                first_leg = flight.legs[0] if flight.legs else None
+
                 deals.append({
                     "destination": dest_code,
                     "region": region,
                     "price": flight.price,
-                    "airline": flight.airline,
-                    "departTime": flight.departure_time,
-                    "arriveTime": flight.arrival_time,
-                    "duration": flight.duration,
+                    "airline": first_leg.airline if first_leg else "Unknown",
+                    "departTime": first_leg.departure_time if first_leg else "",
+                    "arriveTime": first_leg.arrival_time if first_leg else "",
+                    "duration": f"{flight.duration // 60}h {flight.duration % 60}m",
                     "stops": flight.stops,
                     "departDate": depart_date,
                     "returnDate": return_date,
