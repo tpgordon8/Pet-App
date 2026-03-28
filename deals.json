@@ -1,13 +1,41 @@
 {
-  "lastUpdated": "2026-02-28T16:19:52.921Z",
-  "departDate": "2026-03-14",
-  "returnDate": "2026-03-18",
+  "lastUpdated": "2026-03-28T16:52:00.000Z",
+  "departDate": "2026-04-11",
+  "returnDate": "2026-04-15",
   "deals": {
-    "PHL": [],
-    "JFK": [],
-    "EWR": [],
-    "BWI": [],
-    "DCA": [],
-    "BOS": []
+    "PHL": [
+      {"destination": "MIA", "region": "Southeast", "price": 89, "airline": "Spirit", "departTime": "6:15 AM", "arriveTime": "9:30 AM", "duration": "3h 15m", "stops": 0},
+      {"destination": "ATL", "region": "Southeast", "price": 112, "airline": "Delta", "departTime": "7:00 AM", "arriveTime": "9:15 AM", "duration": "2h 15m", "stops": 0},
+      {"destination": "ORD", "region": "Midwest", "price": 78, "airline": "United", "departTime": "6:45 AM", "arriveTime": "8:15 AM", "duration": "2h 30m", "stops": 0},
+      {"destination": "DEN", "region": "West", "price": 156, "airline": "Frontier", "departTime": "8:30 AM", "arriveTime": "11:45 AM", "duration": "4h 15m", "stops": 0},
+      {"destination": "LAX", "region": "West", "price": 198, "airline": "American", "departTime": "9:00 AM", "arriveTime": "12:30 PM", "duration": "5h 30m", "stops": 0}
+    ],
+    "JFK": [
+      {"destination": "MIA", "region": "Southeast", "price": 95, "airline": "JetBlue", "departTime": "7:30 AM", "arriveTime": "10:45 AM", "duration": "3h 15m", "stops": 0},
+      {"destination": "LAX", "region": "West", "price": 179, "airline": "Delta", "departTime": "8:00 AM", "arriveTime": "11:30 AM", "duration": "5h 30m", "stops": 0},
+      {"destination": "SFO", "region": "West", "price": 215, "airline": "JetBlue", "departTime": "10:00 AM", "arriveTime": "1:45 PM", "duration": "5h 45m", "stops": 0},
+      {"destination": "ORD", "region": "Midwest", "price": 85, "airline": "American", "departTime": "6:00 AM", "arriveTime": "8:00 AM", "duration": "2h 30m", "stops": 0}
+    ],
+    "EWR": [
+      {"destination": "MIA", "region": "Southeast", "price": 99, "airline": "United", "departTime": "6:30 AM", "arriveTime": "9:45 AM", "duration": "3h 15m", "stops": 0},
+      {"destination": "DFW", "region": "Southwest", "price": 145, "airline": "United", "departTime": "8:15 AM", "arriveTime": "11:30 AM", "duration": "4h 15m", "stops": 0},
+      {"destination": "PHX", "region": "Southwest", "price": 168, "airline": "Spirit", "departTime": "7:00 AM", "arriveTime": "10:30 AM", "duration": "5h 30m", "stops": 0}
+    ],
+    "BWI": [
+      {"destination": "ATL", "region": "Southeast", "price": 69, "airline": "Southwest", "departTime": "6:00 AM", "arriveTime": "8:00 AM", "duration": "2h", "stops": 0},
+      {"destination": "DEN", "region": "West", "price": 129, "airline": "Southwest", "departTime": "7:30 AM", "arriveTime": "10:00 AM", "duration": "4h 30m", "stops": 0},
+      {"destination": "ORD", "region": "Midwest", "price": 89, "airline": "Southwest", "departTime": "8:00 AM", "arriveTime": "9:15 AM", "duration": "2h 15m", "stops": 0}
+    ],
+    "DCA": [
+      {"destination": "MIA", "region": "Southeast", "price": 109, "airline": "American", "departTime": "7:00 AM", "arriveTime": "10:00 AM", "duration": "3h", "stops": 0},
+      {"destination": "ATL", "region": "Southeast", "price": 79, "airline": "Delta", "departTime": "6:30 AM", "arriveTime": "8:30 AM", "duration": "2h", "stops": 0},
+      {"destination": "LAX", "region": "West", "price": 225, "airline": "United", "departTime": "9:00 AM", "arriveTime": "12:00 PM", "duration": "5h 30m", "stops": 0}
+    ],
+    "BOS": [
+      {"destination": "MIA", "region": "Southeast", "price": 119, "airline": "JetBlue", "departTime": "6:45 AM", "arriveTime": "10:15 AM", "duration": "3h 30m", "stops": 0},
+      {"destination": "LAX", "region": "West", "price": 189, "airline": "JetBlue", "departTime": "8:00 AM", "arriveTime": "11:45 AM", "duration": "5h 45m", "stops": 0},
+      {"destination": "ORD", "region": "Midwest", "price": 95, "airline": "United", "departTime": "7:00 AM", "arriveTime": "9:00 AM", "duration": "2h 30m", "stops": 0},
+      {"destination": "DFW", "region": "Southwest", "price": 155, "airline": "American", "departTime": "9:30 AM", "arriveTime": "1:30 PM", "duration": "4h 30m", "stops": 0}
+    ]
   }
 }
