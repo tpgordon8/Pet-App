@@ -6,7 +6,7 @@ on:
       - 'claude/flight-deal-tracker-*'
     paths:
       - '.github/workflows/fetch-flights.yml'
-      - 'fetch_deals.py'
+      - 'fetch-deals.js'
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
@@ -23,16 +23,15 @@ jobs:
         with:
           ref: claude/flight-deal-tracker-S9GVJ
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
-
-      - name: Install fli
-        run: pip install fli
+          node-version: '20'
 
       - name: Fetch flight deals
-        run: python fetch_deals.py
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: node fetch-deals.js
 
       - name: Commit and push
         run: |

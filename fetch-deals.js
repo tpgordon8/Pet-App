@@ -5,36 +5,23 @@ const RAPIDAPI_HOST = 'sky-scrapper.p.rapidapi.com';
 
 if (!RAPIDAPI_KEY) {
   console.error('ERROR: RAPIDAPI_KEY secret is not set!');
-  console.error('Go to: Settings → Secrets → Actions → New repository secret');
-  console.error('Name: RAPIDAPI_KEY');
-  console.error('Value: your RapidAPI key');
   process.exit(1);
 }
 
-const ORIGINS = {
-  PHL: '27544008',
-  JFK: '27537542',
-  EWR: '27537564',
-  BWI: '27539604',
-  DCA: '27539525',
-  BOS: '27539525',
+const ORIGINS = ['PHL', 'JFK', 'EWR', 'BWI', 'DCA', 'BOS'];
+
+const REGIONS = {
+  MIA: 'Southeast', ATL: 'Southeast', MCO: 'Southeast', TPA: 'Southeast',
+  ORD: 'Midwest', DTW: 'Midwest', MSP: 'Midwest', CLE: 'Midwest',
+  LAX: 'West', SFO: 'West', DEN: 'West', SEA: 'West', LAS: 'West',
+  DFW: 'Southwest', PHX: 'Southwest', HOU: 'Southwest', AUS: 'Southwest',
+  SJU: 'Southeast', CUN: 'Southwest', NAS: 'Southeast',
 };
 
-const DESTS = {
-  MIA: '27544850',
-  MCO: '27539793',
-  ATL: '27544008',
-  ORD: '27539733',
-  DEN: '27539465',
-  LAS: '27544156',
-  LAX: '27544850',
-  DFW: '27539454',
-  SJU: '27546055',
-  CUN: '27540568',
-};
+async function fetchDealsFromOrigin(origin, travelDate) {
+  const url = `https://${RAPIDAPI_HOST}/api/v1/flights/searchFlightEverywhere?originSkyId=${origin}&oneWay=false&currency=USD&countryCode=US&market=en-US&travelDate=${travelDate}`;
 
-async function fetchFlights(origin, originId, dest, destId, departDate, returnDate) {
-  const url = `https://${RAPIDAPI_HOST}/api/v2/flights/searchFlightsComplete?originSkyId=${origin}&destinationSkyId=${dest}&originEntityId=${originId}&destinationEntityId=${destId}&cabinClass=economy&adults=1&sortBy=best&currency=USD&market=en-US&countryCode=US&date=${departDate}&returnDate=${returnDate}`;
+  console.log(`Fetching from ${origin}...`);
 
   try {
     const response = await fetch(url, {
@@ -45,14 +32,34 @@ async function fetchFlights(origin, originId, dest, destId, departDate, returnDa
     });
 
     if (!response.ok) {
-      console.log(`  API error ${response.status} for ${origin}->${dest}`);
+      console.log(`  API error ${response.status}`);
       return [];
     }
 
-    const data = await response.json();
-    return data?.data?.itineraries || [];
+    const json = await response.json();
+    const results = json?.data?.results || json?.data?.everywhere || json?.data || [];
+
+    if (!Array.isArray(results)) {
+      console.log(`  Unexpected response format`);
+      return [];
+    }
+
+    console.log(`  Found ${results.length} destinations`);
+
+    return results.slice(0, 15).map(item => ({
+      destination: item.destinationSkyId || item.skyId || item.iata || 'UNK',
+      region: REGIONS[item.destinationSkyId] || REGIONS[item.skyId] || 'Other',
+      price: item.price?.amount || item.cost || item.price || 0,
+      airline: item.carrier || item.airline || 'Multiple',
+      departTime: '',
+      arriveTime: '',
+      duration: '',
+      stops: item.stops ?? 0,
+      departDate: travelDate,
+    })).filter(d => d.price > 0);
+
   } catch (e) {
-    console.log(`  Fetch error for ${origin}->${dest}: ${e.message}`);
+    console.log(`  Error: ${e.message}`);
     return [];
   }
 }
@@ -63,48 +70,27 @@ function sleep(ms) {
 
 async function main() {
   const today = new Date();
-  const departDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  const returnDate = new Date(today.getTime() + 18 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const travelDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  console.log(`Fetching flights for ${departDate} to ${returnDate}`);
+  console.log(`Fetching flight deals for ${travelDate}\n`);
 
   const result = {
     lastUpdated: new Date().toISOString(),
-    departDate,
-    returnDate,
+    departDate: travelDate,
+    returnDate: new Date(today.getTime() + 18 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     deals: {},
   };
 
-  const destKeys = Object.keys(DESTS);
-
-  for (const [origin, originId] of Object.entries(ORIGINS)) {
-    console.log(`\nFetching from ${origin}...`);
-    result.deals[origin] = [];
-
-    // Fetch to 3 random destinations per origin
-    const shuffled = destKeys.sort(() => Math.random() - 0.5).slice(0, 3);
-
-    for (const dest of shuffled) {
-      console.log(`  -> ${dest}`);
-      const itineraries = await fetchFlights(origin, originId, dest, DESTS[dest], departDate, returnDate);
-
-      if (itineraries.length > 0) {
-        console.log(`     Found ${itineraries.length} flights`);
-        result.deals[origin].push(...itineraries.slice(0, 5)); // Keep top 5 per route
-      }
-
-      await sleep(500); // Rate limiting
-    }
-
-    console.log(`  Total for ${origin}: ${result.deals[origin].length} itineraries`);
+  for (const origin of ORIGINS) {
+    result.deals[origin] = await fetchDealsFromOrigin(origin, travelDate);
+    await sleep(1000); // Rate limit
   }
 
   fs.writeFileSync('deals.json', JSON.stringify(result, null, 2));
   console.log('\nSaved deals.json');
 
-  // Summary
   const totalDeals = Object.values(result.deals).reduce((sum, arr) => sum + arr.length, 0);
-  console.log(`Total: ${totalDeals} itineraries across ${Object.keys(result.deals).length} airports`);
+  console.log(`Total: ${totalDeals} deals`);
 }
 
 main().catch(e => {
