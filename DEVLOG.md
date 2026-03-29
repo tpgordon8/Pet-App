@@ -4,6 +4,25 @@
 
 ---
 
+## Session: 2026-03-29 - Repository Maintenance
+
+### ✅ COMPLETED: Add Log Files to .gitignore
+
+**Duration:** < 5 minutes
+**Status:** ✅ COMPLETE
+**Impact:** LOW - Maintenance task
+**Commit:** `e0a80cb`
+
+**Changes:**
+- Added `*.log` pattern to `.gitignore`
+- Prevents `dev-server.log` and other log files from being tracked
+- Keeps repository clean from development artifacts
+
+**Files Modified:**
+- `.gitignore` - Added log file exclusion pattern
+
+---
+
 ## Session: 2026-03-27 - Visual Testing Integration (/browse + Playwright)
 
 ### ✅ COMPLETED: Integrated Visual Testing Workflow
