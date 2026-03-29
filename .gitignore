@@ -53,3 +53,6 @@ yarn-error.*
 
 # Ignore changes in skills submodules (managed separately)
 .claude/skills/
+
+# Log files
+*.log
