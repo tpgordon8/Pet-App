@@ -28,26 +28,15 @@
     <div class="max-w-4xl mx-auto space-y-5 sm:space-y-6 py-3 sm:py-4">
       <!-- Compact Sticky Header -->
       <div class="card-compact sticky-header">
-        <div class="flex items-center justify-between gap-2">
+        <!-- Row 1: Title + Settings Button -->
+        <div class="flex items-center justify-between gap-2 mb-2">
           <!-- Title -->
           <h1 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex-shrink-0">
             🐾 {{ householdStore.householdName || 'Tailr' }}
           </h1>
 
-          <!-- Compact Context Bar + Settings -->
-          <div class="flex items-center gap-2 flex-1 justify-end">
-            <CompactContextBar
-              :pets="petsStore.pets"
-              :selected-pet-id="petsStore.selectedPetId"
-              :has-pets="petsStore.hasPets"
-              :members="householdStore.members"
-              :current-member="householdStore.currentMember"
-              :has-members="householdStore.members.length > 0"
-              @select-pet="petsStore.selectPet"
-              @select-member="householdStore.selectMember"
-              @add-pet="showAddPetModal = true"
-            />
-
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-1.5 flex-shrink-0">
             <!-- Voice Button (if supported) -->
             <button
               v-if="voice.isSupported"
@@ -70,6 +59,21 @@
               <span class="text-lg">⚙️</span>
             </button>
           </div>
+        </div>
+
+        <!-- Row 2: Context Selectors (Full Width) -->
+        <div class="w-full">
+          <CompactContextBar
+            :pets="petsStore.pets"
+            :selected-pet-id="petsStore.selectedPetId"
+            :has-pets="petsStore.hasPets"
+            :members="householdStore.members"
+            :current-member="householdStore.currentMember"
+            :has-members="householdStore.members.length > 0"
+            @select-pet="petsStore.selectPet"
+            @select-member="householdStore.selectMember"
+            @add-pet="showAddPetModal = true"
+          />
         </div>
       </div>
 
@@ -214,7 +218,7 @@
         title="Activity Insights"
         :subtitle="petsStore.selectedPet ? `Smart patterns for ${petsStore.selectedPet.name}` : 'Smart patterns and alerts'"
         icon="💡"
-        :default-collapsed="false"
+        :default-collapsed="true"
         section-id="activity-insights"
       >
         <ActivityInsights
@@ -308,7 +312,7 @@
         :subtitle="`${remindersStore.activeReminders.length} active reminder${remindersStore.activeReminders.length !== 1 ? 's' : ''}`"
         icon="🔔"
         :badge="remindersStore.overdueReminders.length > 0 ? remindersStore.overdueReminders.length : null"
-        :default-collapsed="false"
+        :default-collapsed="true"
         section-id="reminders"
       >
         <div class="flex justify-end mb-3">
@@ -791,10 +795,8 @@ async function handleQuickLog({ type, emoji }) {
   haptic.success()
 
   // Log activity immediately without modal (quick mode)
+  // Note: logActivity() already shows success toast, so we don't need another one here
   await activitiesStore.logActivity(type, emoji, '', null)
-
-  // Success feedback
-  toast.success(`${emoji} ${type} logged!`)
 }
 
 function handleVoiceLog() {
@@ -835,10 +837,8 @@ watch(() => voice.transcript, async (newTranscript) => {
     return
   }
 
-  // Log the activity
+  // Log the activity (already shows success toast)
   await handleQuickLog({ type: command.type, emoji: command.emoji })
-
-  toast.success(`Voice logged: ${command.emoji} ${command.type}`)
 })
 </script>
 

@@ -72,6 +72,7 @@
           <input
             type="file"
             accept="image/*"
+            capture="environment"
             class="hidden"
             @change="handlePhotoSelect"
           />

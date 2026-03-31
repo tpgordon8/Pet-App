@@ -111,7 +111,8 @@ function handleMemberChange() {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* Allow wrapping on very small screens */
+  width: 100%;
 }
 
 /* Ultra-Compact Select Dropdowns */

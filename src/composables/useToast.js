@@ -70,6 +70,7 @@ export function useToast() {
   return {
     toasts,
     show,
+    showToast: show, // Alias for backwards compatibility
     remove,
     success,
     error,

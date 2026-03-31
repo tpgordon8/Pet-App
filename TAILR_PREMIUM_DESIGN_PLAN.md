@@ -815,6 +815,83 @@ XL  - 0 8px 12px rgba(0,0,0,0.1), 0 16px 32px rgba(0,0,0,0.08)
 
 ## 🔄 REVISION LOG
 
+### Revision 2.0 (2026-03-31 - Current Session)
+
+**CRITICAL ISSUES IDENTIFIED FROM USER TESTING:**
+
+Based on screenshots and real device testing, the following issues are now TOP PRIORITY:
+
+**1. Overlapping Icons Still Present**
+- Icons and UI elements overlapping on mobile
+- Likely z-index issues or positioning conflicts
+- **Fix:** Audit all position: absolute/fixed elements, check sticky header collisions
+
+**2. Non-Functional Top Buttons**
+- Record/voice button doesn't work
+- Other header buttons may be broken
+- **Fix:** Debug click handlers, check if buttons are covered by other elements
+
+**3. App Too Long - Poor Scroll UX**
+- Dashboard extremely long on mobile
+- User has to scroll excessively to see content
+- Many sections visible on load that should be collapsed
+- **Fix:** Research how top apps handle long activity lists (Strava, MyFitnessPal, Apple Health)
+  - Implement strategic default-collapsed sections
+  - Virtual scrolling for long activity lists
+  - "Show More" patterns instead of infinite scroll
+  - Sticky filters/quick actions
+
+**4. Duplicate Toast Notifications**
+- Same notification appearing twice on screen
+- Creating visual clutter
+- **Fix:** Check if toast composable being called multiple times, ensure single instance
+
+**5. Photo Functionality Completely Broken**
+- Photo capture/upload not working at all
+- Needs thorough testing and complete fix
+- **Fix:** Test entire photo flow, check Firebase Storage permissions, verify camera API
+
+**6. Dead Code Cleanup**
+- Defunct/unused code slowing down app
+- Old components still imported
+- **Fix:** Code audit, remove unused imports/components, tree-shake
+
+**7. Quick Log Still Using Old Design**
+- Not matching premium design system
+- Should follow best practices from top apps
+- **Fix:** Apply Phase 4 (Premium Button Design) specifically to Quick Log section
+
+**8. General Stability Issues**
+- App feels unstable in places
+- **Fix:** Error boundary components, better loading states, defensive coding
+
+---
+
+### UPDATED PRIORITY ORDER (Based on Real User Pain):
+
+**CRITICAL (Fix Immediately):**
+1. **Fix overlapping UI elements** (breaks usability)
+2. **Fix non-functional buttons** (blocks functionality)
+3. **Fix photo functionality** (core feature broken)
+4. **Fix duplicate toasts** (UX annoyance)
+
+**HIGH PRIORITY (Next):**
+5. **Improve scroll UX** (research + implement smart collapsing)
+6. **Upgrade Quick Log design** (most-used feature)
+7. **Remove dead code** (performance)
+
+**MEDIUM PRIORITY (Then):**
+8. **Stability improvements** (error handling, loading states)
+9. **Test on real devices** (validate all fixes)
+
+**ORIGINAL PLAN PHASES (Still Valid, Lower Priority):**
+10. Phase 1: Enhanced Color System
+11. Phase 2: Icon Refinement
+12. Phase 5: Responsive Grid
+13. Other phases as time permits
+
+---
+
 ### Revision 1.1 (2026-03-31 22:45)
 
 **Added: Priority Execution Order**
@@ -840,5 +917,5 @@ If time/token constrained, implement in this order for maximum impact:
 
 ---
 
-**Plan Version:** 2.1 (Revised)
-**Ready for:** Immediate Execution
+**Plan Version:** 2.2 (Updated with Critical Bug Fixes)
+**Ready for:** Immediate Execution (Bug Fixes First, Then Design Polish)
