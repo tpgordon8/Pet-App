@@ -4,6 +4,15 @@
 /* Import new design system */
 @import '../styles/design-system.css';
 
+/* Import premium typography system */
+@import '../styles/typography.css';
+
+/* Import vibrant color system */
+@import '../styles/colors.css';
+
+/* Import rich animations system */
+@import '../styles/animations.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

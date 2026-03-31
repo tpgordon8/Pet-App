@@ -1,0 +1,444 @@
+/**
+ * Tailr Premium Color System
+ * A vibrant, sophisticated color palette with depth and personality
+ */
+
+@layer base {
+  :root {
+    /* ===================================
+       PRIMARY BRAND COLORS (Sage)
+       =================================== */
+    --sage-50: #f6f7f4;
+    --sage-100: #e8ebe3;
+    --sage-200: #d1d8c7;
+    --sage-300: #b4bfa3;
+    --sage-400: #8B9A7D;  /* Primary brand color */
+    --sage-500: #6d7e60;
+    --sage-600: #56654b;
+    --sage-700: #44503d;
+    --sage-800: #384234;
+    --sage-900: #2f372d;
+
+    /* ===================================
+       VIBRANT ACCENT COLORS
+       =================================== */
+
+    /* Purple - Luxury, creativity */
+    --purple-50: #faf5ff;
+    --purple-100: #f3e8ff;
+    --purple-200: #e9d5ff;
+    --purple-300: #d8b4fe;
+    --purple-400: #c084fc;
+    --purple-500: #a78bfa;  /* Primary purple */
+    --purple-600: #9333ea;
+    --purple-700: #7e22ce;
+    --purple-800: #6b21a8;
+    --purple-900: #581c87;
+
+    /* Pink - Playful, friendly */
+    --pink-50: #fdf2f8;
+    --pink-100: #fce7f3;
+    --pink-200: #fbcfe8;
+    --pink-300: #f9a8d4;
+    --pink-400: #f472b6;  /* Primary pink */
+    --pink-500: #ec4899;
+    --pink-600: #db2777;
+    --pink-700: #be185d;
+    --pink-800: #9f1239;
+    --pink-900: #831843;
+
+    /* Orange - Energy, enthusiasm */
+    --orange-50: #fff7ed;
+    --orange-100: #ffedd5;
+    --orange-200: #fed7aa;
+    --orange-300: #fdba74;
+    --orange-400: #fb923c;  /* Primary orange */
+    --orange-500: #f97316;
+    --orange-600: #ea580c;
+    --orange-700: #c2410c;
+    --orange-800: #9a3412;
+    --orange-900: #7c2d12;
+
+    /* Teal - Fresh, modern */
+    --teal-50: #f0fdfa;
+    --teal-100: #ccfbf1;
+    --teal-200: #99f6e4;
+    --teal-300: #5eead4;
+    --teal-400: #2dd4bf;  /* Primary teal */
+    --teal-500: #14b8a6;
+    --teal-600: #0d9488;
+    --teal-700: #0f766e;
+    --teal-800: #115e59;
+    --teal-900: #134e4a;
+
+    /* Blue - Trust, calm */
+    --blue-50: #eff6ff;
+    --blue-100: #dbeafe;
+    --blue-200: #bfdbfe;
+    --blue-300: #93c5fd;
+    --blue-400: #60a5fa;  /* Primary blue */
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
+    --blue-800: #1e40af;
+    --blue-900: #1e3a8a;
+
+    /* ===================================
+       SEMANTIC COLORS
+       =================================== */
+
+    /* Success - Green */
+    --success-50: #ecfdf5;
+    --success-100: #d1fae5;
+    --success-200: #a7f3d0;
+    --success-300: #6ee7b7;
+    --success-400: #34d399;
+    --success-500: #10b981;  /* Primary success */
+    --success-600: #059669;
+    --success-700: #047857;
+    --success-800: #065f46;
+    --success-900: #064e3b;
+
+    /* Warning - Amber */
+    --warning-50: #fffbeb;
+    --warning-100: #fef3c7;
+    --warning-200: #fde68a;
+    --warning-300: #fcd34d;
+    --warning-400: #fbbf24;
+    --warning-500: #f59e0b;  /* Primary warning */
+    --warning-600: #d97706;
+    --warning-700: #b45309;
+    --warning-800: #92400e;
+    --warning-900: #78350f;
+
+    /* Error/Danger - Red */
+    --danger-50: #fef2f2;
+    --danger-100: #fee2e2;
+    --danger-200: #fecaca;
+    --danger-300: #fca5a5;
+    --danger-400: #f87171;
+    --danger-500: #ef4444;  /* Primary danger */
+    --danger-600: #dc2626;
+    --danger-700: #b91c1c;
+    --danger-800: #991b1b;
+    --danger-900: #7f1d1d;
+
+    /* Info - Cyan */
+    --info-50: #ecfeff;
+    --info-100: #cffafe;
+    --info-200: #a5f3fc;
+    --info-300: #67e8f9;
+    --info-400: #22d3ee;
+    --info-500: #06b6d4;  /* Primary info */
+    --info-600: #0891b2;
+    --info-700: #0e7490;
+    --info-800: #155e75;
+    --info-900: #164e63;
+
+    /* ===================================
+       NEUTRAL COLORS (Grays)
+       =================================== */
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e5e5e5;
+    --gray-300: #d4d4d4;
+    --gray-400: #a3a3a3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --gray-900: #171717;
+
+    /* ===================================
+       GRADIENT DEFINITIONS
+       =================================== */
+
+    /* Brand gradients */
+    --gradient-sage: linear-gradient(135deg, var(--sage-400) 0%, var(--sage-600) 100%);
+    --gradient-sage-vibrant: linear-gradient(135deg, var(--sage-300) 0%, var(--sage-500) 50%, var(--teal-400) 100%);
+
+    /* Accent gradients */
+    --gradient-purple: linear-gradient(135deg, var(--purple-400) 0%, var(--purple-600) 100%);
+    --gradient-pink: linear-gradient(135deg, var(--pink-400) 0%, var(--pink-600) 100%);
+    --gradient-orange: linear-gradient(135deg, var(--orange-400) 0%, var(--orange-600) 100%);
+    --gradient-teal: linear-gradient(135deg, var(--teal-400) 0%, var(--teal-600) 100%);
+    --gradient-blue: linear-gradient(135deg, var(--blue-400) 0%, var(--blue-600) 100%);
+
+    /* Multi-color gradients */
+    --gradient-sunset: linear-gradient(135deg, var(--orange-400) 0%, var(--pink-400) 50%, var(--purple-400) 100%);
+    --gradient-ocean: linear-gradient(135deg, var(--blue-400) 0%, var(--teal-400) 100%);
+    --gradient-forest: linear-gradient(135deg, var(--sage-400) 0%, var(--teal-500) 100%);
+    --gradient-dawn: linear-gradient(135deg, var(--purple-400) 0%, var(--pink-400) 50%, var(--orange-400) 100%);
+    --gradient-fire: linear-gradient(135deg, var(--orange-500) 0%, var(--pink-500) 100%);
+    --gradient-tropical: linear-gradient(135deg, var(--teal-400) 0%, var(--blue-400) 50%, var(--purple-400) 100%);
+
+    /* Subtle gradients for backgrounds */
+    --gradient-subtle-sage: linear-gradient(135deg, rgba(139, 154, 125, 0.1) 0%, rgba(139, 154, 125, 0.05) 100%);
+    --gradient-subtle-purple: linear-gradient(135deg, rgba(167, 139, 250, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%);
+    --gradient-subtle-pink: linear-gradient(135deg, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0.05) 100%);
+
+    /* ===================================
+       SHADOW COLORS
+       =================================== */
+    --shadow-sage: 0 8px 24px rgba(139, 154, 125, 0.25);
+    --shadow-sage-lg: 0 20px 40px rgba(139, 154, 125, 0.35);
+    --shadow-purple: 0 8px 24px rgba(167, 139, 250, 0.3);
+    --shadow-purple-lg: 0 20px 40px rgba(167, 139, 250, 0.4);
+    --shadow-pink: 0 8px 24px rgba(244, 114, 182, 0.3);
+    --shadow-pink-lg: 0 20px 40px rgba(244, 114, 182, 0.4);
+    --shadow-success: 0 8px 24px rgba(16, 185, 129, 0.3);
+    --shadow-warning: 0 8px 24px rgba(245, 158, 11, 0.3);
+    --shadow-danger: 0 8px 24px rgba(239, 68, 68, 0.3);
+  }
+
+  /* ===================================
+     DARK MODE COLOR ADJUSTMENTS
+     =================================== */
+  .dark {
+    --gray-50: #171717;
+    --gray-100: #262626;
+    --gray-200: #404040;
+    --gray-300: #525252;
+    --gray-400: #737373;
+    --gray-500: #a3a3a3;
+    --gray-600: #d4d4d4;
+    --gray-700: #e5e5e5;
+    --gray-800: #f5f5f5;
+    --gray-900: #fafafa;
+  }
+}
+
+/* ===================================
+   COLOR UTILITY CLASSES
+   =================================== */
+
+@layer utilities {
+  /* Background colors with vibrant palette */
+  .bg-sage { background-color: var(--sage-400); }
+  .bg-sage-light { background-color: var(--sage-300); }
+  .bg-sage-dark { background-color: var(--sage-600); }
+
+  .bg-purple { background-color: var(--purple-500); }
+  .bg-pink { background-color: var(--pink-400); }
+  .bg-orange { background-color: var(--orange-400); }
+  .bg-teal { background-color: var(--teal-400); }
+  .bg-blue { background-color: var(--blue-400); }
+
+  /* Gradient backgrounds */
+  .bg-gradient-sage { background: var(--gradient-sage); }
+  .bg-gradient-purple { background: var(--gradient-purple); }
+  .bg-gradient-pink { background: var(--gradient-pink); }
+  .bg-gradient-sunset { background: var(--gradient-sunset); }
+  .bg-gradient-ocean { background: var(--gradient-ocean); }
+  .bg-gradient-forest { background: var(--gradient-forest); }
+  .bg-gradient-dawn { background: var(--gradient-dawn); }
+  .bg-gradient-fire { background: var(--gradient-fire); }
+  .bg-gradient-tropical { background: var(--gradient-tropical); }
+
+  /* Subtle gradient backgrounds */
+  .bg-gradient-subtle-sage { background: var(--gradient-subtle-sage); }
+  .bg-gradient-subtle-purple { background: var(--gradient-subtle-purple); }
+  .bg-gradient-subtle-pink { background: var(--gradient-subtle-pink); }
+
+  /* Animated gradients */
+  .bg-gradient-animated {
+    background: linear-gradient(270deg, var(--purple-500), var(--pink-400), var(--orange-400), var(--teal-400));
+    background-size: 800% 800%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Border colors */
+  .border-sage { border-color: var(--sage-400); }
+  .border-purple { border-color: var(--purple-500); }
+  .border-pink { border-color: var(--pink-400); }
+  .border-teal { border-color: var(--teal-400); }
+
+  /* Text colors */
+  .text-sage { color: var(--sage-600); }
+  .dark .text-sage { color: var(--sage-400); }
+
+  .text-purple { color: var(--purple-600); }
+  .dark .text-purple { color: var(--purple-400); }
+
+  .text-pink { color: var(--pink-600); }
+  .dark .text-pink { color: var(--pink-400); }
+
+  /* Colored shadows */
+  .shadow-sage { box-shadow: var(--shadow-sage); }
+  .shadow-sage-lg { box-shadow: var(--shadow-sage-lg); }
+  .shadow-purple { box-shadow: var(--shadow-purple); }
+  .shadow-purple-lg { box-shadow: var(--shadow-purple-lg); }
+  .shadow-pink { box-shadow: var(--shadow-pink); }
+  .shadow-pink-lg { box-shadow: var(--shadow-pink-lg); }
+  .shadow-success { box-shadow: var(--shadow-success); }
+  .shadow-warning { box-shadow: var(--shadow-warning); }
+  .shadow-danger { box-shadow: var(--shadow-danger); }
+
+  /* Glassmorphism with color tints */
+  .glass-sage {
+    background: rgba(139, 154, 125, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 154, 125, 0.2);
+  }
+
+  .glass-purple {
+    background: rgba(167, 139, 250, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+  }
+
+  .glass-pink {
+    background: rgba(244, 114, 182, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(244, 114, 182, 0.2);
+  }
+
+  /* Color overlays with opacity */
+  .overlay-sage {
+    background: rgba(139, 154, 125, 0.9);
+  }
+
+  .overlay-dark {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .overlay-light {
+    background: rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* ===================================
+   SEMANTIC COLOR COMPONENTS
+   =================================== */
+
+@layer components {
+  /* Status indicators */
+  .status-success {
+    @apply bg-success-100 text-success-700;
+    @apply dark:bg-success-900/30 dark:text-success-300;
+  }
+
+  .status-warning {
+    @apply bg-warning-100 text-warning-700;
+    @apply dark:bg-warning-900/30 dark:text-warning-300;
+  }
+
+  .status-error {
+    @apply bg-danger-100 text-danger-700;
+    @apply dark:bg-danger-900/30 dark:text-danger-300;
+  }
+
+  .status-info {
+    @apply bg-info-100 text-info-700;
+    @apply dark:bg-info-900/30 dark:text-info-300;
+  }
+
+  /* Color-coded badges */
+  .badge-sage {
+    background: var(--gradient-sage);
+    @apply text-white;
+  }
+
+  .badge-purple {
+    background: var(--gradient-purple);
+    @apply text-white;
+  }
+
+  .badge-pink {
+    background: var(--gradient-pink);
+    @apply text-white;
+  }
+
+  .badge-sunset {
+    background: var(--gradient-sunset);
+    @apply text-white;
+  }
+
+  /* Colorful cards */
+  .card-sage {
+    background: var(--gradient-subtle-sage);
+    @apply border-2 border-sage-200 dark:border-sage-800;
+  }
+
+  .card-purple {
+    background: var(--gradient-subtle-purple);
+    @apply border-2 border-purple-200 dark:border-purple-800;
+  }
+
+  .card-gradient {
+    background: var(--gradient-sage);
+    @apply text-white shadow-sage-lg;
+  }
+}
+
+/* ===================================
+   PET-SPECIFIC COLOR THEMES
+   =================================== */
+
+@layer components {
+  /* Dynamic theme classes (applied programmatically based on pet) */
+  .theme-dog {
+    --theme-primary: var(--orange-500);
+    --theme-light: var(--orange-300);
+    --theme-dark: var(--orange-700);
+    --theme-gradient: var(--gradient-orange);
+  }
+
+  .theme-cat {
+    --theme-primary: var(--purple-500);
+    --theme-light: var(--purple-300);
+    --theme-dark: var(--purple-700);
+    --theme-gradient: var(--gradient-purple);
+  }
+
+  .theme-rabbit {
+    --theme-primary: var(--pink-400);
+    --theme-light: var(--pink-200);
+    --theme-dark: var(--pink-600);
+    --theme-gradient: var(--gradient-pink);
+  }
+
+  .theme-bird {
+    --theme-primary: var(--blue-400);
+    --theme-light: var(--blue-200);
+    --theme-dark: var(--blue-600);
+    --theme-gradient: var(--gradient-blue);
+  }
+
+  .theme-fish {
+    --theme-primary: var(--teal-400);
+    --theme-light: var(--teal-200);
+    --theme-dark: var(--teal-600);
+    --theme-gradient: var(--gradient-ocean);
+  }
+
+  .theme-default {
+    --theme-primary: var(--sage-400);
+    --theme-light: var(--sage-300);
+    --theme-dark: var(--sage-600);
+    --theme-gradient: var(--gradient-sage);
+  }
+
+  /* Apply theme colors */
+  .theme-bg {
+    background-color: var(--theme-primary);
+  }
+
+  .theme-bg-gradient {
+    background: var(--theme-gradient);
+  }
+
+  .theme-text {
+    color: var(--theme-primary);
+  }
+
+  .theme-border {
+    border-color: var(--theme-primary);
+  }
+}

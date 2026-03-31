@@ -1,0 +1,486 @@
+/**
+ * Tailr Premium Typography System
+ * A sophisticated, hierarchical typography system with personality
+ */
+
+@layer base {
+  /* ===================================
+     FONT FAMILY DEFINITIONS
+     =================================== */
+
+  :root {
+    /* Primary font families */
+    --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
+
+    /* Typography spacing */
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0;
+    --letter-spacing-wide: 0.025em;
+
+    /* Line heights */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+  }
+
+  /* ===================================
+     DISPLAY TYPOGRAPHY (Hero sections)
+     =================================== */
+
+  .text-display-2xl {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: var(--letter-spacing-tight);
+    text-wrap: balance;
+  }
+
+  .text-display-xl {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: var(--letter-spacing-tight);
+    text-wrap: balance;
+  }
+
+  .text-display-lg {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .text-display {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* ===================================
+     HEADING TYPOGRAPHY
+     =================================== */
+
+  .text-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  .text-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .text-h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: var(--letter-spacing-normal);
+  }
+
+  .text-h4 {
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 1.75vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .text-h5 {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .text-h6 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  /* ===================================
+     BODY TYPOGRAPHY
+     =================================== */
+
+  .text-body-xl {
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    line-height: var(--line-height-relaxed);
+    font-weight: 400;
+  }
+
+  .text-body-lg {
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .text-body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .text-body-sm {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: var(--line-height-normal);
+    font-weight: 400;
+  }
+
+  /* ===================================
+     LABEL & UTILITY TYPOGRAPHY
+     =================================== */
+
+  .text-label-lg {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  .text-label {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  .text-label-sm {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .text-caption {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: var(--line-height-normal);
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .dark .text-caption {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .text-overline {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ===================================
+     MONOSPACE (Code, Data)
+     =================================== */
+
+  .text-mono-lg {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .text-mono {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: var(--line-height-normal);
+    font-weight: 400;
+  }
+
+  .text-mono-sm {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  /* ===================================
+     FONT WEIGHT UTILITIES
+     =================================== */
+
+  .font-thin { font-weight: 100; }
+  .font-extralight { font-weight: 200; }
+  .font-light { font-weight: 300; }
+  .font-normal { font-weight: 400; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
+  .font-extrabold { font-weight: 800; }
+  .font-black { font-weight: 900; }
+
+  /* ===================================
+     TYPOGRAPHY EFFECTS
+     =================================== */
+
+  /* Gradient text effects */
+  .text-gradient-sage {
+    background: linear-gradient(135deg, #8B9A7D 0%, #6d7e60 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-vibrant {
+    background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #fb923c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-sunset {
+    background: linear-gradient(135deg, #fbbf24 0%, #fb923c 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-ocean {
+    background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Text shadows for depth */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Text glow effects */
+  .text-glow-sage {
+    text-shadow: 0 0 20px rgba(139, 154, 125, 0.5);
+  }
+
+  .text-glow-vibrant {
+    text-shadow: 0 0 20px rgba(167, 139, 250, 0.6);
+  }
+
+  /* ===================================
+     RESPONSIVE TYPOGRAPHY
+     =================================== */
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .text-display-2xl { font-size: clamp(2rem, 8vw, 3rem); }
+    .text-display-xl { font-size: clamp(1.75rem, 7vw, 2.5rem); }
+    .text-display-lg { font-size: clamp(1.5rem, 6vw, 2rem); }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .text-display-2xl { font-size: clamp(2.5rem, 5vw, 4rem); }
+    .text-display-xl { font-size: clamp(2rem, 4vw, 3.5rem); }
+  }
+
+  /* ===================================
+     ACCESSIBILITY
+     =================================== */
+
+  /* Ensure text remains readable when user zooms */
+  html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Better text rendering */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .text-caption {
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .dark .text-caption {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  /* ===================================
+     SEMANTIC TYPOGRAPHY COMPONENTS
+     =================================== */
+
+  /* Quote styling */
+  .text-quote {
+    @apply text-body-lg italic;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .text-quote::before {
+    content: '"';
+    position: absolute;
+    left: 0;
+    top: -0.25rem;
+    font-size: 3rem;
+    line-height: 1;
+    opacity: 0.2;
+  }
+
+  /* Stat number styling */
+  .text-stat {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: var(--letter-spacing-tight);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Stat label */
+  .text-stat-label {
+    @apply text-label text-gray-600 dark:text-gray-400;
+  }
+
+  /* Badge text */
+  .text-badge {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  /* Link styling */
+  .text-link {
+    @apply text-sage-600 dark:text-sage-400;
+    @apply hover:text-sage-700 dark:hover:text-sage-300;
+    @apply underline decoration-2 underline-offset-2;
+    @apply transition-colors duration-200;
+  }
+
+  /* Emphasis */
+  .text-emphasis {
+    font-weight: 600;
+    color: inherit;
+  }
+
+  /* Muted text */
+  .text-muted {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .dark .text-muted {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Success text */
+  .text-success {
+    color: #10b981;
+  }
+
+  .dark .text-success {
+    color: #34d399;
+  }
+
+  /* Warning text */
+  .text-warning {
+    color: #f59e0b;
+  }
+
+  .dark .text-warning {
+    color: #fbbf24;
+  }
+
+  /* Error text */
+  .text-error {
+    color: #ef4444;
+  }
+
+  .dark .text-error {
+    color: #f87171;
+  }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+@layer utilities {
+  /* Text balance for better line breaks */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Truncate text with ellipsis */
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Multi-line truncate */
+  .text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* No wrap */
+  .text-nowrap {
+    white-space: nowrap;
+  }
+
+  /* Number formatting */
+  .text-numeric {
+    font-variant-numeric: tabular-nums;
+  }
+}
