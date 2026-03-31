@@ -159,20 +159,56 @@ function onTouchEnd() {
 </script>
 
 <style scoped>
-/* Using design system classes with minor customizations */
+/* Premium activity button with sophisticated styling */
 .activity-btn-modern {
   min-height: 100px;
   min-width: 44px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .activity-btn-modern {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.activity-btn-modern:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.07),
+    0 8px 20px rgba(139, 154, 125, 0.12);
+  border-color: rgba(139, 154, 125, 0.2);
+}
+
+.dark .activity-btn-modern:hover:not(:disabled) {
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(139, 154, 125, 0.15);
 }
 
 .activity-btn-modern:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .activity-btn-modern.button-has-count {
+  background: linear-gradient(135deg, #f0f4ed 0%, #e8ede4 100%);
+  border-color: rgba(139, 154, 125, 0.25);
+  box-shadow:
+    0 2px 4px rgba(139, 154, 125, 0.08),
+    0 4px 12px rgba(139, 154, 125, 0.12);
+}
+
+.dark .activity-btn-modern.button-has-count {
+  background: linear-gradient(135deg, #1f2b1a 0%, #161f12 100%);
   border-color: rgba(139, 154, 125, 0.3);
-  box-shadow: 0 4px 12px rgba(139, 154, 125, 0.15);
 }
 
 /* Medical button compact variant */
