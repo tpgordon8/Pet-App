@@ -4,6 +4,397 @@
 
 ---
 
+## Session: 2026-03-31 - Photo Timeline & Before/After Comparison
+
+### ✅ COMPLETED: Enhanced Photo Features
+
+**Duration:** ~1.5 hours
+**Status:** ✅ COMPLETE - Two new photo components implemented
+**Impact:** HIGH - Comprehensive photo viewing and analysis
+**Commit:** `03a18b8`
+
+### Context
+
+Working through high-priority features from roadmap. Started with photo gallery enhancements since PhotoGallery.vue component already existed. Identified missing features from roadmap:
+- Before/after photo comparisons ❌
+- Automatic timeline of pet's life ❌
+
+Implemented both features as separate, reusable Vue components integrated into DashboardView.
+
+**Files Created:** 2 (PetTimeline.vue, PhotoComparison.vue)
+**Files Modified:** 7 (DashboardView + 6 ESLint fixes)
+**Lines Added:** +1260
+**Lines Removed:** -13
+
+---
+
+### Technical Implementation Details
+
+#### 1. PetTimeline Component (`src/components/PetTimeline.vue`)
+
+**Problem:**
+- Users have photos and activities but no chronological life view
+- Milestones are mixed in regular activity feed
+- No visual way to see pet's growth and progression over time
+- Age context missing from activities
+
+**Solution:**
+Created timeline component (545 lines) that transforms activities into visual life events:
+
+**Core Logic:**
+```javascript
+const timelineEvents = computed(() => {
+  return props.activities
+    .filter(a => {
+      // Include milestones + photos + notes
+      return isMilestoneEvent(a) || a.photoUrl || a.notes
+    })
+    .map((activity, index, filteredArray) => {
+      // Add category, milestone flag, weight changes, age
+      const category = categorizeEvent(activity)
+      const weightChange = calculateWeightChange(activity, previousWeights)
+      const ageAtTime = calculateAgeAtTime(pet.birthday, activity.timestamp)
+
+      return {
+        ...activity,
+        category,
+        isMilestone: isMilestoneEvent(activity),
+        weightChange,
+        ageAtTime
+      }
+    })
+    .sort((a, b) => b.timestamp - a.timestamp)
+})
+```
+
+**Age Calculation:**
+- Days old (0-30 days)
+- Months old (1-23 months)
+- Years + months (24+ months)
+- Uses `differenceInMonths` and `differenceInDays` from date-fns
+
+**Weight Change Detection:**
+```javascript
+function calculateWeightChange(currentActivity, previousWeightActivity) {
+  const diff = currentWeight - previousWeight
+  return {
+    text: `${sign}${diff.toFixed(1)} ${unit}`,
+    class: diff > 0 ? 'text-emerald-600' : 'text-rose-600'
+  }
+}
+```
+
+**Event Categorization:**
+- **Medical** (red dot): Vet Visit, Vaccination, Weight Check, Meds
+- **Activity** (blue dot): Walk, outdoor activities
+- **Routine** (green dot): Food, Sleep, Poop, Pee
+
+**UI Features:**
+- Colored circular dots (3rem) with event emoji
+- Connecting lines between events (gradient fade)
+- Card-based content with elevation
+- Milestone star badge (⭐) with pulse animation
+- Medical data preview boxes
+- Clickable photos
+- Age display in italics
+- Responsive layout (mobile: 2.5rem dots, reduced spacing)
+
+**Animations:**
+```css
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+```
+
+#### 2. PhotoComparison Component (`src/components/PhotoComparison.vue`)
+
+**Problem:**
+- No way to compare before/after photos side-by-side
+- Weight changes hard to visualize
+- Grooming results need visual comparison
+- Medical treatment progress needs documentation
+
+**Solution:**
+Created comparison component (715 lines) with three view modes:
+
+**Photo Selection Logic:**
+```javascript
+// Auto-select first two photos on mount
+if (photoActivities.value.length >= 2) {
+  selectedBeforeId.value = photoActivities.value[1].id // Older
+  selectedAfterId.value = photoActivities.value[0].id // Newer
+}
+
+// Prevent selecting same photo twice
+<option :disabled="activity.id === selectedAfterId">
+```
+
+**View Modes:**
+
+**1. Side-by-Side** (Default)
+- Grid layout: `grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))`
+- Before badge (amber gradient): `linear-gradient(135deg, #f59e0b, #d97706)`
+- After badge (green gradient): `linear-gradient(135deg, #10b981, #059669)`
+- Photo cards with hover lift effect
+- Date and type labels
+
+**2. Slider** (Interactive)
+- Absolute positioning with clip width
+- Draggable handle with mouse/touch support
+- Visual slider button (⟷) in center
+- Before/after labels at edges
+
+Drag Implementation:
+```javascript
+function updateSliderPosition(e) {
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX
+  const container = e.target.closest('.slider-container')
+  const rect = container.getBoundingClientRect()
+  const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100))
+  sliderPosition.value = percentage
+}
+```
+
+**3. Stacked** (Mobile-optimized)
+- Vertical layout with arrow (↓) separator
+- Photo badges overlay on images
+- Dates below each photo
+- Full-width images on mobile
+
+**Time & Weight Difference:**
+```javascript
+// Time difference
+const timeDifference = computed(() => {
+  return formatDistanceStrict(after, before) // "3 months"
+})
+
+// Weight difference
+const weightDifference = computed(() => {
+  const diff = afterWeight - beforeWeight
+  return {
+    text: `${sign}${diff.toFixed(1)} ${unit}`,
+    class: diff > 0 ? 'weight-gain' : 'weight-loss'
+  }
+})
+```
+
+**Empty State:**
+- Requires minimum 2 photos
+- Large emoji (📸📸)
+- Helpful message about adding photos
+
+#### 3. DashboardView Integration
+
+**Added Imports:**
+```javascript
+import PetTimeline from '@/components/PetTimeline.vue'
+import PhotoComparison from '@/components/PhotoComparison.vue'
+```
+
+**Added Sections:**
+```vue
+<!-- Photo Comparison - Always visible -->
+<CollapsibleSection
+  title="Photo Comparison"
+  subtitle="Before & After comparisons"
+  icon="📸📸"
+  :default-collapsed="true"
+>
+  <PhotoComparison
+    :activities="activitiesStore.filteredActivities"
+    @open-photo="handleOpenPhoto"
+  />
+</CollapsibleSection>
+
+<!-- Pet Timeline - Only for individual pets -->
+<CollapsibleSection
+  v-if="petsStore.selectedPetId !== 'all'"
+  title="Pet Timeline"
+  :subtitle="`${petsStore.selectedPet?.name}'s life events`"
+  icon="📅"
+  :default-collapsed="true"
+>
+  <PetTimeline
+    :activities="activitiesStore.filteredActivities"
+    :pet="petsStore.selectedPet"
+    @open-photo="handleOpenPhoto"
+  />
+</CollapsibleSection>
+```
+
+**Photo Opening Handler:**
+```javascript
+function handleOpenPhoto(activity) {
+  if (activity.photoUrl) {
+    window.open(activity.photoUrl, '_blank', 'noopener,noreferrer')
+  }
+}
+```
+
+#### 4. ESLint Fixes (9 errors resolved)
+
+**useKeyboardShortcuts.js:**
+```javascript
+// Before: 'ctrl+r': (e) => { }
+// After: 'ctrl+r': () => { }
+```
+
+**usePullToRefresh.js:**
+```javascript
+// Removed unused: onMounted, onUnmounted
+import { ref } from 'vue'
+```
+
+**useStorage.js:**
+```javascript
+// Fixed prototype access
+// Before: localStorage.hasOwnProperty(key)
+// After: Object.prototype.hasOwnProperty.call(localStorage, key)
+```
+
+**theme.js:**
+```javascript
+// Removed unused: onUnmounted
+import { ref, watch } from 'vue'
+```
+
+**DashboardView.vue:**
+```javascript
+// Removed unused destructured variable
+// Before: reset: resetPagination
+const { hasMore, remainingCount, loadMore } = usePagination(...)
+```
+
+**Test Files:**
+- Removed unused `pageContent` variable
+- Removed unused `logs, errors` destructuring
+
+### Build & Testing
+
+**Build Results:**
+```bash
+✓ 835 modules transformed
+✓ built in 13.32s
+✓ DashboardView: 464.56 kB (gzip: 150.05 kB)
+✓ PWA precache: 39 entries (2260.89 KiB)
+```
+
+**ESLint:**
+```bash
+✓ 0 errors, 0 warnings
+✓ All files pass linting
+```
+
+**Bundle Impact:**
+- PetTimeline: ~8 KB (~3 KB gzipped)
+- PhotoComparison: ~10 KB (~4 KB gzipped)
+- Total impact: +18 KB (+7 KB gzipped)
+- Acceptable for two major features
+
+### Design Decisions
+
+**1. Timeline Only for Individual Pets**
+- Doesn't make sense for "All Pets" view
+- Each pet should have their own timeline
+- Conditionally rendered: `v-if="petsStore.selectedPetId !== 'all'"`
+
+**2. Photo Comparison for All Photos**
+- Allows cross-pet comparisons if needed
+- User can select any two photos
+- No pet filtering in component (uses filteredActivities from parent)
+
+**3. Three Comparison View Modes**
+- Side-by-side: Traditional, familiar
+- Slider: Interactive, precise comparison
+- Stacked: Mobile-friendly, space-efficient
+- Let users choose their preference
+
+**4. Auto-Select First Two Photos**
+- Reduces friction on first use
+- Users can still change selections
+- Newest (after) and second-newest (before) make logical sense
+
+**5. Weight Change Detection**
+- Only show if both photos are Weight Check activities
+- Color-coded: green=gain, red=loss
+- Useful for vet visits and health monitoring
+
+**6. Age Display on Timeline**
+- Contextualizes events (e.g., "first vet visit at 8 weeks old")
+- Helps track developmental milestones
+- Only shows if pet birthday is set
+
+### Learnings
+
+**1. Computed Properties for Complex Filtering**
+- Timeline filtering logic is complex (milestones OR photos OR notes)
+- Using computed property keeps template clean
+- Vue reactivity handles updates automatically
+
+**2. Event Categorization Pattern**
+- Simple object mapping for categories
+- Easy to extend with new activity types
+- Visual distinction through color coding
+
+**3. Slider Drag Handling**
+- Must handle both mouse and touch events
+- Clean up event listeners on drag end
+- Constrain percentage to 0-100 range
+- Use `getBoundingClientRect()` for accurate positioning
+
+**4. Date-fns Utilities**
+- `formatDistanceStrict()` for time differences (exact)
+- `differenceInMonths()` for age calculations
+- `differenceInDays()` for young pets
+- Consistent formatting across app
+
+**5. Mobile-First Responsive Design**
+- Start with mobile layout
+- Add complexity at larger breakpoints
+- Use CSS Grid with `auto-fit` and `minmax()`
+- Test at 375px (iPhone SE), 768px (tablet), 1024px+ (desktop)
+
+### Known Issues / Future Improvements
+
+**Timeline:**
+- [ ] Export timeline as PDF for vet
+- [ ] Filter timeline by event type
+- [ ] Search within timeline
+- [ ] Zoom into specific date range
+
+**Photo Comparison:**
+- [ ] Save favorite comparisons
+- [ ] Add text annotations
+- [ ] Share comparison via link
+- [ ] Support more than 2 photos (grid view)
+
+**General:**
+- [ ] Add keyboard shortcuts (arrow keys for slider)
+- [ ] Add undo/redo for slider position
+- [ ] Print-friendly CSS for timeline
+- [ ] Export comparison as image
+
+### Next Steps
+
+**Immediate:**
+- Update ROADMAP.md to mark features complete
+- Test with real user data
+- Gather user feedback on view modes
+
+**Future Features (Next Priority):**
+- Activity management (undo delete, custom types)
+- Google Authentication system
+- Accessibility audit and improvements
+
+---
+
 ## Session: 2026-03-31 - Complete UI/UX Design System Overhaul
 
 ### ✅ COMPLETED: Modern Design System Implementation
