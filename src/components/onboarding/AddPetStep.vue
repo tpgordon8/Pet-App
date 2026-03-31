@@ -71,7 +71,7 @@
           <span class="toggle-icon">{{ showOptional ? '▲' : '▼' }}</span>
         </button>
 
-        <transition name="expand">
+        <transition motion-reduce:transition-none name="expand">
           <div v-if="showOptional" class="optional-fields">
             <div class="form-group">
               <label for="pet-breed" class="form-label">Breed (Optional)</label>
@@ -85,7 +85,7 @@
               >
             </div>
           </div>
-        </transition>
+        </transition motion-reduce:transition-none>
       </div>
 
       <!-- Action Buttons -->
@@ -385,5 +385,14 @@ function handleSubmit() {
 
 .skip-button:hover {
   color: #10b981;
+}
+
+/* Accessibility: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }
 </style>

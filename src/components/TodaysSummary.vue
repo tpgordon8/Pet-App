@@ -8,7 +8,7 @@
     section-id="todays-summary"
   >
     <!-- Last Activity Insight -->
-    <div v-if="lastActivity" class="mb-4 p-3 gradient-bg-soft rounded-xl border-l-4 border-sage-400 hover-lift smooth-transition">
+    <div v-if="lastActivity" class="mb-4 p-3 gradient-bg-soft rounded-xl border-l-4 border-sage-400 hover-lift smooth-transition motion-reduce:transition-none">
       <div class="flex items-center gap-2">
         <span class="text-lg">⏰</span>
         <div class="flex-1 min-w-0">

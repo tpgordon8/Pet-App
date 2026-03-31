@@ -21,7 +21,7 @@
       <div class="flex items-center gap-2">
         <span v-if="badge" class="stat-badge">{{ badge }}</span>
         <span
-          class="chevron smooth-transition"
+          class="chevron smooth-transition motion-reduce:transition-none"
           :class="{ 'chevron-expanded': !isCollapsed }"
         >
           ▼

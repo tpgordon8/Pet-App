@@ -1,5 +1,5 @@
 <template>
-  <div class="empty-state animate-fade-in">
+  <div class="empty-state animate-fade-in motion-reduce:animate-none">
     <div class="empty-state-content">
       <!-- Animated icon -->
       <div class="empty-icon-wrapper">

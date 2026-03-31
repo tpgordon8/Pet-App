@@ -301,13 +301,13 @@ function handleSave() {
   @apply px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
     focus:outline-none focus:ring-2 focus:ring-sage-500 dark:focus:ring-sage-400
-    transition-colors;
+    transition-colors motion-reduce:transition-none;
   font-size: 16px; /* Prevents iOS zoom on focus */
   min-height: 44px; /* iOS touch target */
 }
 
 .btn {
-  @apply px-4 py-2 rounded-lg font-medium transition-all
+  @apply px-4 py-2 rounded-lg font-medium transition-all motion-reduce:transition-none
     disabled:opacity-50 disabled:cursor-not-allowed;
   min-height: 44px; /* iOS touch target */
   min-width: 44px;

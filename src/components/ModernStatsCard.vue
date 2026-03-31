@@ -137,7 +137,7 @@ const maxWeeklyValue = computed(() => {
 .stat-glow {
   @apply absolute inset-0 rounded-2xl opacity-50;
   background: radial-gradient(circle, rgba(139, 154, 125, 0.3) 0%, transparent 70%);
-  @apply animate-pulse;
+  @apply animate-pulse motion-reduce:animate-none;
 }
 
 .stat-content {
@@ -180,7 +180,7 @@ const maxWeeklyValue = computed(() => {
   @apply p-3 rounded-xl;
   @apply bg-white dark:bg-gray-800;
   @apply border border-gray-100 dark:border-gray-700;
-  @apply transition-all duration-200;
+  @apply transition-all motion-reduce:transition-none duration-200;
 }
 
 .stat-item-secondary:hover .stat-pill {
@@ -213,7 +213,7 @@ const maxWeeklyValue = computed(() => {
 .mini-progress-fill {
   @apply h-full rounded-full;
   @apply gradient-bg-sage;
-  @apply transition-all duration-500;
+  @apply transition-all motion-reduce:transition-none duration-500;
 }
 
 /* Weekly Chart */
@@ -246,7 +246,7 @@ const maxWeeklyValue = computed(() => {
   @apply w-full rounded-t-lg relative;
   @apply gradient-bg-sage;
   @apply min-h-[4px];
-  @apply transition-all duration-500;
+  @apply transition-all motion-reduce:transition-none duration-500;
   @apply cursor-pointer;
   animation: slideUp 0.5s ease-out;
 }
@@ -259,7 +259,7 @@ const maxWeeklyValue = computed(() => {
   @apply absolute -top-8 left-1/2 -translate-x-1/2;
   @apply bg-gray-900 dark:bg-white text-white dark:text-gray-900;
   @apply text-xs font-semibold px-2 py-1 rounded-lg;
-  @apply opacity-0 transition-opacity;
+  @apply opacity-0 transition-opacity motion-reduce:transition-none;
   @apply pointer-events-none;
   white-space: nowrap;
 }

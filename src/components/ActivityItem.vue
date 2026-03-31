@@ -18,7 +18,7 @@
 
     <!-- Activity Content -->
     <div
-      class="activity-item glass rounded-xl p-4 flex items-start gap-4 hover:shadow-glass transition-all"
+      class="activity-item glass rounded-xl p-4 flex items-start gap-4 hover:shadow-glass transition-all motion-reduce:transition-none"
       :style="swipeState.transform ? `transform: translateX(${swipeState.transform}px)` : ''"
     >
       <!-- Emoji -->
@@ -56,7 +56,7 @@
           v-if="activity.photoUrl"
           :src="activity.photoUrl"
           alt="Activity photo"
-          class="mt-2 rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+          class="mt-2 rounded-lg max-w-full h-auto cursor-pointer hover:opacity-90 transition-opacity motion-reduce:transition-none"
           @click="openPhoto(activity.photoUrl)"
         />
       </div>
@@ -400,5 +400,20 @@ function escapeRegex(string) {
 
 .dark :deep(.search-highlight) {
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.3) 100%);
+}
+
+/* Accessibility: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .swipe-delete-bg,
+  .action-btn {
+    transition: none;
+  }
+
+  .action-btn-edit:hover,
+  .action-btn-edit:active,
+  .action-btn-delete:hover,
+  .action-btn-delete:active {
+    transform: none;
+  }
 }
 </style>

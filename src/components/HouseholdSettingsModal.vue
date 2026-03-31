@@ -42,7 +42,7 @@
             <button
               v-if="householdStore.isOwner"
               @click="isEditingName ? saveName() : startEditName()"
-              class="rounded-lg px-4 py-2 font-medium transition-colors"
+              class="rounded-lg px-4 py-2 font-medium transition-colors motion-reduce:transition-none"
               :class="isEditingName
                 ? 'bg-sage-600 text-white hover:bg-sage-700'
                 : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'"
@@ -52,7 +52,7 @@
             <button
               v-if="isEditingName"
               @click="cancelEditName"
-              class="rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              class="rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors motion-reduce:transition-none"
             >
               Cancel
             </button>
@@ -71,7 +71,7 @@
             </div>
             <button
               @click="copyCode"
-              class="rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              class="rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors motion-reduce:transition-none"
             >
               {{ codeCopied ? '✓ Copied' : 'Copy' }}
             </button>
@@ -180,13 +180,13 @@
         <div class="flex gap-3">
           <button
             @click="closeModal"
-            class="flex-1 rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+            class="flex-1 rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors motion-reduce:transition-none"
           >
             Close
           </button>
           <button
             @click="handleLogout"
-            class="flex-1 rounded-lg bg-red-600 px-4 py-3 font-medium text-white hover:bg-red-700 transition-colors"
+            class="flex-1 rounded-lg bg-red-600 px-4 py-3 font-medium text-white hover:bg-red-700 transition-colors motion-reduce:transition-none"
           >
             Leave Household
           </button>

@@ -1,6 +1,6 @@
 <template>
   <div class="step-container">
-    <transition name="slide-fade" mode="out-in">
+    <transition motion-reduce:transition-none name="slide-fade" mode="out-in">
       <div :key="stepKey" class="step-content">
         <h2 v-if="title" class="step-title">
           {{ title }}
@@ -10,7 +10,7 @@
         </p>
         <slot></slot>
       </div>
-    </transition>
+    </transition motion-reduce:transition-none>
   </div>
 </template>
 
@@ -65,7 +65,7 @@ defineProps({
   color: #9ca3af;
 }
 
-/* Slide fade transition */
+/* Slide fade transition motion-reduce:transition-none */
 .slide-fade-enter-active {
   transition: all 300ms ease-out;
 }
@@ -82,5 +82,14 @@ defineProps({
 .slide-fade-leave-to {
   transform: translateX(-20px);
   opacity: 0;
+}
+
+/* Accessibility: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }
 </style>

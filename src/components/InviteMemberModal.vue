@@ -19,7 +19,7 @@
         <div class="mb-6 flex rounded-lg bg-gray-100 dark:bg-gray-700 p-1">
           <button
             @click="activeTab = 'link'"
-            class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+            class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none"
             :class="activeTab === 'link'
               ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow'
               : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'"
@@ -28,7 +28,7 @@
           </button>
           <button
             @click="activeTab = 'email'"
-            class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+            class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors motion-reduce:transition-none"
             :class="activeTab === 'email'
               ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow'
               : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'"
@@ -51,7 +51,7 @@
               />
               <button
                 @click="copyLink"
-                class="rounded-lg bg-sage-600 px-4 py-2 font-medium text-white hover:bg-sage-700 transition-colors"
+                class="rounded-lg bg-sage-600 px-4 py-2 font-medium text-white hover:bg-sage-700 transition-colors motion-reduce:transition-none"
               >
                 {{ linkCopied ? '✓ Copied' : 'Copy' }}
               </button>
@@ -73,7 +73,7 @@
               />
               <button
                 @click="copyCode"
-                class="rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                class="rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors motion-reduce:transition-none"
               >
                 {{ codeCopied ? '✓' : 'Copy' }}
               </button>
@@ -122,7 +122,7 @@
           <button
             @click="sendEmail"
             :disabled="isSendingEmail || !recipientEmail"
-            class="w-full rounded-lg bg-sage-600 px-4 py-3 font-medium text-white hover:bg-sage-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            class="w-full rounded-lg bg-sage-600 px-4 py-3 font-medium text-white hover:bg-sage-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors motion-reduce:transition-none"
           >
             {{ isSendingEmail ? 'Sending...' : 'Send Invitation Email' }}
           </button>
@@ -132,7 +132,7 @@
         <div class="mt-6">
           <button
             @click="closeModal"
-            class="w-full rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+            class="w-full rounded-lg bg-gray-200 dark:bg-gray-600 px-4 py-3 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors motion-reduce:transition-none"
           >
             Close
           </button>

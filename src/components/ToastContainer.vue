@@ -13,14 +13,14 @@
           <button
             v-if="toast.action"
             @click="handleAction(toast)"
-            class="mt-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/30 rounded-lg text-xs font-semibold transition-all touch-target"
+            class="mt-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/30 rounded-lg text-xs font-semibold transition-all motion-reduce:transition-none touch-target"
           >
             {{ toast.action.label }}
           </button>
         </div>
         <button
           @click="remove(toast.id)"
-          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors flex-shrink-0 touch-target"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors motion-reduce:transition-none flex-shrink-0 touch-target"
           aria-label="Dismiss notification"
           title="Dismiss"
         >
@@ -78,5 +78,18 @@ function toastIcon(type) {
 .toast-leave-to {
   opacity: 0;
   transform: translateX(100%) scale(0.8);
+}
+
+/* Accessibility: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .toast-enter-active,
+  .toast-leave-active {
+    transition: none;
+  }
+
+  .toast-enter-from,
+  .toast-leave-to {
+    transform: none;
+  }
 }
 </style>

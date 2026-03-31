@@ -9,7 +9,7 @@
         :key="emoji"
         type="button"
         @click="$emit('select', emoji)"
-        class="emoji-button p-3 text-3xl rounded-lg transition-all duration-200 hover:scale-110"
+        class="emoji-button p-3 text-3xl rounded-lg transition-all motion-reduce:transition-none duration-200 hover:scale-110"
         :class="selectedEmoji === emoji
           ? 'bg-sage-100 dark:bg-sage-900/30 ring-2 ring-sage-400 scale-110'
           : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'"

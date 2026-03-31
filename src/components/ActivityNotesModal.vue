@@ -61,7 +61,7 @@
         <!-- Upload button -->
         <label
           v-else
-          class="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-sage-500 dark:hover:border-sage-400 transition-colors"
+          class="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-sage-500 dark:hover:border-sage-400 transition-colors motion-reduce:transition-none"
         >
           <div class="text-center">
             <span class="text-4xl block mb-2">📸</span>
