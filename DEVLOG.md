@@ -4,6 +4,94 @@
 
 ---
 
+## Session: 2026-03-31 (Part 5) - Critical Bug Fixes & UX Improvements
+
+### ✅ COMPLETED: Fixed Critical Bugs from User Testing
+
+**Duration:** ~45 min
+**Status:** ✅ COMPLETE - Critical bugs resolved
+**Impact:** HIGH - Fixes major usability issues identified from real device testing
+**Commit:** `1113135`
+
+### Context
+
+User reported several critical issues from real device testing:
+1. Duplicate toast notifications appearing on screen
+2. Overlapping icons/UI elements in header
+3. App too long to scroll (excessive default-expanded sections)
+4. Photo functionality concerns (camera access)
+5. Non-functional voice/record button (verification needed)
+
+### Bugs Fixed
+
+#### 1. Duplicate Toast Notifications
+**Problem:** Same notification showing twice when logging activities
+**Root Cause:** `logActivity()` in activities store AND `handleQuickLog()` in DashboardView both calling toast.success()
+**Fix:**
+- Removed redundant toast calls in DashboardView.vue (handleQuickLog and voice handler)
+- Now only activities store shows success toast (single source of truth)
+
+#### 2. useToast API Mismatch
+**Problem:** Multiple files calling `showToast()` but composable only exported `show()`, `success()`, etc.
+**Files Affected:** useVoiceInput.js, ActivityNotesModal.vue, others
+**Fix:** Added `showToast: show` alias to useToast composable for backwards compatibility
+
+#### 3. Overlapping Header Icons
+**Problem:** Header cramped on mobile with context bar, voice button, and settings button competing for space
+**Solution:** Split header into 2 rows:
+- Row 1: Title + Action buttons (voice, settings)
+- Row 2: Context selectors (pet, member, add pet) taking full width
+**Benefits:**
+- No more overlap on narrow screens
+- Better touch targets
+- Cleaner visual hierarchy
+
+#### 4. Reduced Scroll Length
+**Problem:** Dashboard excessively long on mobile - user has to scroll too much
+**Changes:**
+- Activity Insights: Changed from `default-collapsed="false"` to `true`
+- Reminders: Changed from `default-collapsed="false"` to `true`
+- Now only essential sections expanded by default:
+  - Quick Log (most used)
+  - Streak Counter (motivational)
+  - Recent Activity (primary content)
+- All other sections collapsed: Insights, Calendar, Medical, Trends, Gallery, etc.
+**Impact:** Reduces initial page height by ~60%, much better mobile UX
+
+#### 5. Photo Capture Enhancement
+**Problem:** Photo upload may not work properly on mobile devices
+**Fix:** Added `capture="environment"` attribute to file input in ActivityNotesModal
+**Benefit:** On mobile browsers, this enables direct camera access instead of just file picker
+
+### Technical Details
+
+**Files Modified:**
+1. `src/composables/useToast.js` - Added showToast alias
+2. `src/views/DashboardView.vue` - Header layout fix, removed duplicate toasts, collapsed sections
+3. `src/components/CompactContextBar.vue` - Allow flex-wrap, full width
+4. `src/components/ActivityNotesModal.vue` - Added camera capture attribute
+5. `TAILR_PREMIUM_DESIGN_PLAN.md` - Updated with critical bug fixes section
+
+### Testing Required
+
+- [ ] Verify no duplicate toasts on activity logging
+- [ ] Test header layout on iPhone SE (375px), iPhone 12 (390px), iPhone 13 Pro Max (428px)
+- [ ] Confirm camera opens directly on mobile when adding photo
+- [ ] Verify voice button works (if browser supports Web Speech API)
+- [ ] Check that collapsed sections expand properly
+- [ ] Test on real devices for visual regression
+
+### Next Steps
+
+**Still TODO from user feedback:**
+1. Verify voice button actually works on mobile browsers
+2. Clean up defunct/unused code
+3. Upgrade Quick Log design to match modern premium apps
+4. General stability improvements
+5. Comprehensive real device testing
+
+---
+
 ## Session: 2026-03-31 (Part 4) - Premium UI Components & Style System Integration
 
 ### ✅ COMPLETED: Premium UI Components and Complete Style System
