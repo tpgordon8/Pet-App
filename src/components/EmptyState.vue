@@ -83,7 +83,7 @@ defineEmits(['action'])
 }
 
 .empty-icon {
-  @apply empty-state-icon;
+  @apply text-6xl mb-4 opacity-50;
   display: inline-block;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
@@ -124,11 +124,11 @@ defineEmits(['action'])
 }
 
 .empty-title {
-  @apply empty-state-title;
+  @apply text-xl font-semibold mb-2 text-gray-900 dark:text-white;
 }
 
 .empty-description {
-  @apply empty-state-description;
+  @apply text-gray-600 dark:text-gray-400 mb-6;
 }
 
 @keyframes gentle-bounce {

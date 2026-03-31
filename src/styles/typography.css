@@ -26,6 +26,38 @@
   }
 
   /* ===================================
+     ACCESSIBILITY & BASE STYLES
+     =================================== */
+
+  /* Ensure text remains readable when user zooms */
+  html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Better text rendering */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ===================================
+   TYPOGRAPHY UTILITY CLASSES
+   =================================== */
+
+@layer utilities {
+  /* ===================================
      DISPLAY TYPOGRAPHY (Hero sections)
      =================================== */
 
@@ -293,60 +325,6 @@
   }
 
   /* ===================================
-     RESPONSIVE TYPOGRAPHY
-     =================================== */
-
-  /* Mobile optimizations */
-  @media (max-width: 640px) {
-    .text-display-2xl { font-size: clamp(2rem, 8vw, 3rem); }
-    .text-display-xl { font-size: clamp(1.75rem, 7vw, 2.5rem); }
-    .text-display-lg { font-size: clamp(1.5rem, 6vw, 2rem); }
-  }
-
-  /* Tablet optimizations */
-  @media (min-width: 641px) and (max-width: 1024px) {
-    .text-display-2xl { font-size: clamp(2.5rem, 5vw, 4rem); }
-    .text-display-xl { font-size: clamp(2rem, 4vw, 3.5rem); }
-  }
-
-  /* ===================================
-     ACCESSIBILITY
-     =================================== */
-
-  /* Ensure text remains readable when user zooms */
-  html {
-    text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  /* Better text rendering */
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
-
-  /* Respect user's motion preferences */
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
-    .text-caption {
-      color: rgba(0, 0, 0, 0.8);
-    }
-
-    .dark .text-caption {
-      color: rgba(255, 255, 255, 0.8);
-    }
-  }
-
-  /* ===================================
      SEMANTIC TYPOGRAPHY COMPONENTS
      =================================== */
 
@@ -440,13 +418,42 @@
   .dark .text-error {
     color: #f87171;
   }
-}
 
-/* ===================================
-   UTILITY CLASSES
-   =================================== */
+  /* ===================================
+     HIGH CONTRAST MODE SUPPORT
+     =================================== */
 
-@layer utilities {
+  @media (prefers-contrast: high) {
+    .text-caption {
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .dark .text-caption {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  /* ===================================
+     RESPONSIVE TYPOGRAPHY
+     =================================== */
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .text-display-2xl { font-size: clamp(2rem, 8vw, 3rem); }
+    .text-display-xl { font-size: clamp(1.75rem, 7vw, 2.5rem); }
+    .text-display-lg { font-size: clamp(1.5rem, 6vw, 2rem); }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .text-display-2xl { font-size: clamp(2.5rem, 5vw, 4rem); }
+    .text-display-xl { font-size: clamp(2rem, 4vw, 3.5rem); }
+  }
+
+  /* ===================================
+     TEXT UTILITY CLASSES
+     =================================== */
+
   /* Text balance for better line breaks */
   .text-balance {
     text-wrap: balance;

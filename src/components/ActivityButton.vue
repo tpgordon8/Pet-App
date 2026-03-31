@@ -150,19 +150,23 @@ function onTouchEnd() {
 }
 
 .button-label {
-  @apply text-body font-semibold;
+  @apply text-base font-semibold leading-normal;
   @apply text-gray-900 dark:text-white;
   transition: color 0.2s;
 }
 
 .count-badge {
-  @apply stat-badge;
-  font-size: 0.75rem;
+  @apply inline-flex items-center gap-1.5 px-3 py-1.5;
+  @apply rounded-full text-xs font-semibold;
+  @apply bg-gradient-to-r from-sage-100 to-sage-50;
+  @apply dark:from-sage-900/30 dark:to-sage-800/20;
+  @apply text-sage-700 dark:text-sage-300;
   transition: all 0.2s;
 }
 
 .count-badge.count-active {
-  @apply badge-success;
+  @apply bg-green-100 text-green-700;
+  @apply dark:bg-green-900/20 dark:text-green-300;
 }
 
 /* Activity indicator dot */

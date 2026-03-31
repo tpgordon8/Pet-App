@@ -142,7 +142,15 @@ const lastActivity = computed(() => {
 
 <style scoped>
 .stat-item {
-  @apply stat-card hover-lift active-press;
+  /* Expanded stat-card, hover-lift, active-press styles */
+  @apply bg-white dark:bg-gray-800 rounded-2xl;
+  @apply transition-all duration-300;
+  @apply border border-gray-100 dark:border-gray-700;
+  @apply flex items-center gap-4;
+  @apply hover:border-sage-300 dark:hover:border-sage-600;
+  @apply hover:-translate-y-1;
+  @apply active:scale-95;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -150,10 +158,13 @@ const lastActivity = computed(() => {
   gap: 0.25rem;
   padding: 0.875rem 0.5rem;
   overflow: hidden;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .stat-item.stat-active {
-  @apply gradient-bg-soft;
+  background: linear-gradient(135deg, rgba(139, 154, 125, 0.1) 0%, rgba(139, 154, 125, 0.05) 100%);
   border-color: rgba(139, 154, 125, 0.4);
   box-shadow: 0 4px 12px rgba(139, 154, 125, 0.2);
 }

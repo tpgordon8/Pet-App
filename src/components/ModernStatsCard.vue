@@ -106,8 +106,20 @@ const maxWeeklyValue = computed(() => {
 
 <style scoped>
 .modern-stats-card {
-  @apply card-premium;
+  /* Expanded card-premium styles */
+  @apply bg-white dark:bg-gray-800 rounded-2xl p-6;
+  @apply transition-all duration-300;
+  @apply border border-gray-100 dark:border-gray-700;
   @apply space-y-6;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.modern-stats-card:hover {
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.07),
+    0 8px 16px rgba(0, 0, 0, 0.06);
 }
 
 .stats-grid {

@@ -122,7 +122,13 @@ const lastActivity = computed(() => {
 
 <style scoped>
 .stat-item {
-  @apply stat-card;
+  /* Expanded stat-card styles */
+  @apply bg-white dark:bg-gray-800 rounded-2xl;
+  @apply transition-all duration-300;
+  @apply border border-gray-100 dark:border-gray-700;
+  @apply flex items-center gap-4;
+  @apply hover:border-sage-300 dark:hover:border-sage-600;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -130,6 +136,9 @@ const lastActivity = computed(() => {
   gap: 0.25rem;
   padding: 0.875rem 0.5rem;
   overflow: hidden;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 4px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
 
