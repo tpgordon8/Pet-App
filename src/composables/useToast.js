@@ -4,6 +4,9 @@ import { ref } from 'vue'
 const toasts = ref([])
 let toastId = 0
 
+// Maximum number of toasts to show at once
+const MAX_TOASTS = 3
+
 export function useToast() {
   function show(message, type = 'info', duration = 3000, action = null) {
     const id = toastId++
@@ -13,6 +16,12 @@ export function useToast() {
       type, // 'info', 'success', 'error', 'warning'
       duration,
       action // { label: 'Undo', handler: () => {} }
+    }
+
+    // Limit number of toasts (remove oldest if exceeds max)
+    if (toasts.value.length >= MAX_TOASTS) {
+      const oldestToast = toasts.value[0]
+      remove(oldestToast.id)
     }
 
     toasts.value.push(toast)

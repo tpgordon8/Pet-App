@@ -5,6 +5,7 @@ import { ref as dbRef, push, onValue, remove, update } from 'firebase/database'
 import { useHouseholdStore } from './household'
 import { useToast } from '@/composables/useToast'
 import { useAnalytics } from '@/composables/useAnalytics'
+import { sanitizePetName } from '@/utils/sanitize'
 
 export const usePetsStore = defineStore('pets', () => {
   const householdStore = useHouseholdStore()
@@ -74,10 +75,14 @@ export const usePetsStore = defineStore('pets', () => {
       return false
     }
 
+    // Sanitize user input
+    const sanitizedName = sanitizePetName(name)
+    const sanitizedSpecies = sanitizePetName(species) // Same validation
+
     const pet = {
-      name: name.trim(),
+      name: sanitizedName,
       emoji,
-      species: species.trim(),
+      species: sanitizedSpecies,
       birthday: birthday || null,
       themeColor: themeColor || 'sage',
       createdAt: Date.now(),

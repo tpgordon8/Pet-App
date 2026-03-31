@@ -28,9 +28,12 @@
   "dependencies": {
     "@lemonsqueezy/lemonsqueezy.js": "^3.2.0",
     "@vueuse/core": "^10.9.0",
+    "bcryptjs": "^3.0.3",
+    "browser-image-compression": "^2.0.2",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.3.3",
     "firebase": "^10.14.1",
     "jspdf": "^2.5.1",
     "pinia": "^2.1.7",

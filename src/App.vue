@@ -3,6 +3,8 @@
     id="app"
     :class="{ 'dark': themeStore.darkMode }"
   >
+    <OfflineIndicator />
+    <PwaUpdatePrompt />
     <RouterView />
     <ToastContainer />
   </div>
@@ -12,6 +14,8 @@
 import { onErrorCaptured } from 'vue'
 import { RouterView } from 'vue-router'
 import ToastContainer from './components/ToastContainer.vue'
+import OfflineIndicator from './components/OfflineIndicator.vue'
+import PwaUpdatePrompt from './components/PwaUpdatePrompt.vue'
 import { useToast } from '@/composables/useToast'
 import { useThemeStore } from '@/stores/theme'
 

@@ -9,6 +9,8 @@ import { useToast } from '@/composables/useToast'
 import { useAnalytics } from '@/composables/useAnalytics'
 import { REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES } from '@/constants/activityTypes'
 import { getStorageJSON, setStorageJSON } from '@/composables/useStorage'
+import { processImage } from '@/utils/imageCompression'
+import { sanitizeActivityNotes } from '@/utils/sanitize'
 
 export const useActivitiesStore = defineStore('activities', () => {
   const householdStore = useHouseholdStore()
@@ -105,11 +107,19 @@ export const useActivitiesStore = defineStore('activities', () => {
 
   async function uploadPhoto(file) {
     try {
+      // Compress image before upload (saves bandwidth and storage costs)
+      toast.info('Compressing image...')
+      const compressedFile = await processImage(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920
+      })
+
       const timestamp = Date.now()
-      const filename = `${timestamp}-${file.name}`
+      const filename = `${timestamp}-${compressedFile.name}`
       const photoRef = storageRef(storage, `households/${householdStore.householdId}/activities/${filename}`)
 
-      await uploadBytes(photoRef, file)
+      toast.info('Uploading photo...')
+      await uploadBytes(photoRef, compressedFile)
       const url = await getDownloadURL(photoRef)
 
       return url
@@ -149,13 +159,16 @@ export const useActivitiesStore = defineStore('activities', () => {
         photoUrl = await uploadPhoto(photoFile, type)
       }
 
+      // Sanitize user input to prevent XSS
+      const sanitizedNotes = notes ? sanitizeActivityNotes(notes) : ''
+
       const activity = {
         type,
         emoji,
         timestamp: Date.now(),
         user: householdStore.currentMember,
         petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
-        notes
+        notes: sanitizedNotes
       }
 
       // Only add photoUrl if it exists

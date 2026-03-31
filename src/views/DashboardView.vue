@@ -159,6 +159,9 @@
             v-model="searchQueryRaw"
             type="text"
             placeholder="Search activities..."
+            data-search-input
+            aria-label="Search activities"
+            role="searchbox"
             class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
             style="font-size: 16px; min-height: 44px;"
           >
@@ -174,13 +177,27 @@
 
         <!-- Activity Feed -->
         <ActivityFeed
-          :activities="filteredActivities"
+          :activities="paginatedActivities"
           :pets="petsStore.pets"
           :show-pet-names="petsStore.selectedPetId === 'all'"
           :search-query="searchQuery"
           @delete="handleDelete"
           @edit="handleEdit"
         />
+
+        <!-- Load More Button -->
+        <div
+          v-if="hasMore"
+          class="mt-4 text-center"
+        >
+          <button
+            class="btn-load-more"
+            @click="loadMore"
+            aria-label="Load more activities"
+          >
+            Load More ({{ remainingCount }} remaining)
+          </button>
+        </div>
       </div>
 
       <!-- Activity Insights -->
@@ -396,6 +413,8 @@ import { useHaptic } from '@/composables/useHaptic'
 import { useTheme } from '@/composables/useTheme'
 import { useVoiceInput } from '@/composables/useVoiceInput'
 import { usePullToRefresh } from '@/composables/usePullToRefresh'
+import { usePagination } from '@/composables/usePagination'
+import { useGlobalKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
@@ -549,6 +568,21 @@ const filteredActivities = computed(() => {
     return false
   })
 })
+
+// Pagination for better performance with large activity lists
+const {
+  paginatedItems: paginatedActivities,
+  hasMore,
+  remainingCount,
+  loadMore,
+  reset: resetPagination
+} = usePagination(filteredActivities, {
+  initialPageSize: 50,
+  loadMoreSize: 25
+})
+
+// Use keyboard shortcuts
+useGlobalKeyboardShortcuts()
 
 onMounted(() => {
   // Start Firebase listeners for real-time sync
@@ -953,6 +987,35 @@ watch(() => voice.transcript, async (newTranscript) => {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Load More Button */
+.btn-load-more {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #8B9A7D 0%, #7a8970 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(139, 154, 125, 0.2);
+}
+
+.btn-load-more:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 154, 125, 0.3);
+}
+
+.btn-load-more:active {
+  transform: translateY(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-load-more {
+    background: linear-gradient(135deg, #9aab8c 0%, #8B9A7D 100%);
   }
 }
 </style>
