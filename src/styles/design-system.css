@@ -124,7 +124,7 @@
 @layer components {
   /* Premium card with depth */
   .card-premium {
-    @apply bg-white dark:bg-gray-800 rounded-2xl p-6;
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-5 sm:p-6;
     @apply elevation-2 hover:elevation-3;
     @apply transition-all duration-300;
     @apply border border-gray-100 dark:border-gray-700;

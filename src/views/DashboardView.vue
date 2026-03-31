@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen p-2 sm:p-3 pb-20">
+  <div class="min-h-screen p-4 sm:p-6 pb-24">
     <!-- Pull-to-Refresh Indicator -->
     <div
       v-if="pullToRefresh.isPulling.value || pullToRefresh.isRefreshing.value"
@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div class="max-w-4xl mx-auto space-y-3 sm:space-y-4 py-2 sm:py-4">
+    <div class="max-w-4xl mx-auto space-y-5 sm:space-y-6 py-3 sm:py-4">
       <!-- Compact Sticky Header -->
       <div class="card-compact sticky-header">
         <div class="flex items-center justify-between gap-2">
@@ -84,7 +84,7 @@
             {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
-        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
           <ActivityButton
             icon="poop"
             label="Poop"
