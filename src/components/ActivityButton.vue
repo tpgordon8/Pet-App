@@ -50,7 +50,7 @@ import {
   Stethoscope,
   Syringe,
   Scale,
-  Paw
+  PawPrint
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -106,11 +106,11 @@ const iconMap = {
   vet: Stethoscope,
   vaccination: Syringe,
   weight: Scale,
-  default: Paw
+  default: PawPrint
 }
 
 const iconComponent = computed(() => iconMap[props.icon] || iconMap.default)
-const iconSize = computed(() => window.innerWidth <= 640 ? 32 : 40)
+const iconSize = ref(40)
 
 function handleClick(event) {
   if (!props.disabled) {
@@ -184,7 +184,7 @@ function onTouchEnd() {
 .icon-container {
   display: flex;
   align-items: center;
-  justify-center;
+  justify-content: center;
 }
 
 .activity-icon {
