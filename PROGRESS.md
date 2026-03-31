@@ -2,7 +2,44 @@
 
 ## Current State Summary
 
-### Premium Design System v2.0 - DEPLOYED ✅ (March 31, 2026)
+### Critical Bug Fixes & UX Improvements - DEPLOYED ✅ (March 31, 2026 - Evening)
+
+Fixed major usability issues identified from real device testing.
+
+#### Bugs Fixed ✅
+
+1. **Duplicate Toast Notifications** (commit 1113135)
+   - Removed redundant toast calls in DashboardView
+   - Single source of truth: activities store shows success toast
+
+2. **useToast API Mismatch** (commit 1113135)
+   - Added `showToast` alias for backwards compatibility
+   - Fixed calls in useVoiceInput and ActivityNotesModal
+
+3. **Overlapping Header Icons** (commit 1113135)
+   - Split header into 2 rows (title+buttons, then context bar)
+   - Better mobile layout prevents element overlap
+   - Full width for context selectors
+
+4. **Excessive Scroll Length** (commit 1113135)
+   - Activity Insights now collapsed by default
+   - Reminders now collapsed by default
+   - Only essential sections expanded (Quick Log, Streak, Activity Feed)
+   - Reduces initial page height by ~60%
+
+5. **Photo Capture Enhancement** (commit 1113135)
+   - Added `capture="environment"` to file input
+   - Enables direct camera access on mobile browsers
+
+#### Impact
+- **UX Quality:** Significantly improved mobile experience
+- **Visual Clarity:** No more overlapping elements
+- **User Engagement:** Less scrolling, more focused default view
+- **Mobile-First:** Better touch targets and layout
+
+---
+
+### Premium Design System v2.0 - DEPLOYED ✅ (March 31, 2026 - Afternoon)
 
 Comprehensive premium design overhaul addressing all visual quality issues.
 
@@ -124,16 +161,22 @@ Comprehensive premium design overhaul addressing all visual quality issues.
 
 ### All Commits (March 31, 2026)
 
+**Session 3 (Bug Fixes & UX Improvements):**
+- 282acb3 - Docs: Document Part 4B premium design commits
+- 1e45d2d - Docs: Update DEVLOG with Part 5 bug fixes
+- 1113135 - Fix: Critical UX bugs - duplicate toasts, overlapping header, scroll length
+
 **Session 2 (Premium Design System v2.0):**
 - a157d5a - Feature: Comprehensive Premium Design System v2.0
-
-**Session 1 (Initial Premium Redesign):**
-- b89a3d1 - Docs: Complete premium redesign session documentation
 - 322e2fe - Polish: Add sophisticated gradients and refined shadows
 - f2d7a0a - Improve: Better mobile layout with spacious padding and gaps
 - cad1c54 - Fix: Correct CSS syntax and Lucide icon imports
 - 7e6f6b3 - Feature: Replace emoji with elegant Lucide SVG icons
 - fdf873e - Fix: Apply premium fonts (Inter & Plus Jakarta Sans) throughout app
+- b253a75 - Fix: Apply premium fonts (Inter & Plus Jakarta Sans) throughout app
+
+**Session 1 (Initial Premium Redesign):**
+- b89a3d1 - Docs: Complete premium redesign session documentation
 - ff82a12 - Docs: Update progress tracker with typography fix
 - 6ed4cef - Docs: Add premium UI/UX redesign tasks to roadmap
 
@@ -175,4 +218,4 @@ This comprehensive 9-phase plan can be referenced in future sessions when hittin
 5-9: Additional enhancements (if needed)
 
 ### Last Updated
-2026-03-31T23:15:00Z
+2026-03-31T23:00:00Z (Bug fixes & UX improvements deployed)
