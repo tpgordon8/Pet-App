@@ -565,6 +565,220 @@ await remove(activityRef)
 
 ---
 
+### Security Utilities (New - March 2026)
+
+**Password Hashing (`src/utils/passwordHash.js`):**
+```javascript
+import { hashPassword, verifyPassword, isBcryptHash } from '@/utils/passwordHash'
+
+// Hash a password (10 salt rounds, ~100ms)
+const hash = await hashPassword('mypassword')
+
+// Verify password against hash
+const isValid = await verifyPassword('mypassword', hash)
+
+// Check if string is already hashed
+if (isBcryptHash(storedValue)) {
+  // Already hashed
+}
+
+// Migrate plain text to hash (gradual migration)
+const migratedHash = await migrateToHash(plainOrHashedPassword)
+```
+
+**Input Sanitization (`src/utils/sanitize.js`):**
+```javascript
+import { 
+  sanitizeActivityNotes,
+  sanitizePetName,
+  sanitizeHouseholdName,
+  sanitizeSearchQuery,
+  sanitizeUrl
+} from '@/utils/sanitize'
+
+// Sanitize activity notes (max 500 chars, no HTML)
+const clean = sanitizeActivityNotes(userInput)
+
+// Sanitize pet name (max 50 chars, no HTML)
+const cleanName = sanitizePetName(input)
+
+// Validate and sanitize URL (only http/https/mailto)
+const safeUrl = sanitizeUrl(url) // Returns null if invalid
+```
+
+**Best Practices:**
+- **Always sanitize user input** before storing or displaying
+- **Hash all passwords** using bcryptjs (never store plain text)
+- **Validate URLs** before opening or redirecting
+- **Use specialized sanitizers** for different input types
+
+---
+
+### Performance Utilities (New - March 2026)
+
+**Image Compression (`src/utils/imageCompression.js`):**
+```javascript
+import { 
+  compressImage,
+  processImage,
+  validateImage,
+  needsCompression 
+} from '@/utils/imageCompression'
+
+// Compress image before upload
+const compressed = await compressImage(file, {
+  maxSizeMB: 1,
+  maxWidthOrHeight: 1920,
+  initialQuality: 0.8
+})
+
+// Validate then compress if needed (one-step)
+const processed = await processImage(file)
+
+// Check if compression needed
+if (needsCompression(file, 1)) {
+  // File larger than 1MB
+}
+
+// Validate image constraints
+const validation = await validateImage(file, {
+  maxSizeMB: 10,
+  allowedTypes: ['image/jpeg', 'image/png'],
+  maxWidth: 10000
+})
+```
+
+**Pagination (`src/composables/usePagination.js`):**
+```javascript
+import { usePagination } from '@/composables/usePagination'
+
+const { 
+  paginatedItems,
+  hasMore,
+  remainingCount,
+  loadMore,
+  reset 
+} = usePagination(allItems, {
+  initialPageSize: 50,
+  loadMoreSize: 25
+})
+
+// In template
+<div v-for="item in paginatedItems" :key="item.id">{{ item }}</div>
+<button v-if="hasMore" @click="loadMore">
+  Load More ({{ remainingCount }} remaining)
+</button>
+```
+
+**Request Deduplication (`src/composables/useRequestDeduplication.js`):**
+```javascript
+import { useRequestDeduplication } from '@/composables/useRequestDeduplication'
+
+const { dedupe, invalidate, clearCache } = useRequestDeduplication({
+  cacheTime: 60000, // 60 seconds
+  maxCacheSize: 100
+})
+
+// Multiple calls with same key = only 1 actual request
+const data = await dedupe('activities', async () => {
+  return await fetchFromFirebase()
+})
+
+// Invalidate specific cache entry
+invalidate('activities')
+
+// Clear all cache
+clearCache()
+```
+
+---
+
+### UX Composables (New - March 2026)
+
+**Keyboard Shortcuts (`src/composables/useKeyboardShortcuts.js`):**
+```javascript
+import { useGlobalKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+
+// In main component (e.g., DashboardView)
+useGlobalKeyboardShortcuts()
+
+// Available shortcuts:
+// Ctrl+K - Focus search
+// Escape - Close modal / Clear search
+// Ctrl+N - New activity (future)
+// Shift+? - Show keyboard help (future)
+```
+
+**Optimistic Updates (`src/composables/useOptimistic.js`):**
+```javascript
+import { useOptimisticList } from '@/composables/useOptimistic'
+
+const { list, optimisticAdd, optimisticRemove } = useOptimisticList()
+
+// Add item - appears immediately, syncs in background
+await optimisticAdd(
+  { type: 'Poop', emoji: '💩' },
+  async (item) => await addToFirebase(item)
+)
+
+// Remove item - disappears immediately, syncs in background
+await optimisticRemove(itemId, async (id) => await removeFromFirebase(id))
+
+// If Firebase fails, changes automatically roll back
+```
+
+**Safe Storage (`src/composables/useStorage.js`):**
+```javascript
+import { 
+  getStorageItem,
+  setStorageItem,
+  getStorageJSON,
+  setStorageJSON 
+} from '@/composables/useStorage'
+
+// Get with fallback
+const value = getStorageItem('key', 'default')
+
+// Set with error handling (handles QuotaExceededError)
+setStorageItem('key', 'value')
+
+// JSON helpers
+const obj = getStorageJSON('settings', { theme: 'light' })
+setStorageJSON('settings', { theme: 'dark' })
+```
+
+---
+
+### New Components (March 2026)
+
+**OfflineIndicator.vue:**
+- Auto-detects online/offline status
+- Slide-down banner at top of screen
+- Pulsing icon animation
+- ARIA live region for accessibility
+- Auto-dismisses when back online
+
+**PwaUpdatePrompt.vue:**
+- Detects new service worker updates
+- Beautiful slide-up prompt from bottom
+- "Update Now" or "Later" buttons
+- Periodic update checks (60s)
+- Snooze for 1 hour if dismissed
+
+**Usage:**
+```vue
+<!-- In App.vue -->
+<template>
+  <div id="app">
+    <OfflineIndicator />
+    <PwaUpdatePrompt />
+    <RouterView />
+  </div>
+</template>
+```
+
+---
+
 ## Testing Checklist
 
 When making changes, verify:
