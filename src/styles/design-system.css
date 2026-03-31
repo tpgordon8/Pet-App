@@ -582,3 +582,43 @@
     @apply dark:bg-sage-900/30 dark:text-sage-300;
   }
 }
+
+/* ===================================
+   RESPONSIVE ACTIVITY GRID
+   =================================== */
+
+@layer components {
+  /* Smart responsive grid for activity buttons */
+  .activity-grid-responsive {
+    display: grid;
+    gap: 0.75rem;  /* 12px - comfortable spacing */
+
+    /* iPhone SE (375px) and smaller: 2 columns */
+    /* Prevents cramped appearance on narrow screens */
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 400px) {
+    .activity-grid-responsive {
+      /* iPhone 12+ (390px+): 3 columns */
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;  /* 16px */
+    }
+  }
+
+  @media (min-width: 640px) {
+    .activity-grid-responsive {
+      /* Tablets: 4 columns */
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;  /* 20px */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .activity-grid-responsive {
+      /* Desktop: 6 columns for compact layout */
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1.5rem;  /* 24px */
+    }
+  }
+}

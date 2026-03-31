@@ -84,7 +84,7 @@
             {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
-        <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="activity-grid-responsive">
           <ActivityButton
             icon="poop"
             label="Poop"

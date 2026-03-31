@@ -4,6 +4,9 @@
 /* Import new design system */
 @import '../styles/design-system.css';
 
+/* Import extended color system */
+@import '../styles/colors-extended.css';
+
 /* Import premium typography system */
 @import '../styles/typography.css';
 

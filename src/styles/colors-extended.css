@@ -1,0 +1,197 @@
+/**
+ * Tailr Premium Color System
+ * Activity-type color coding for visual distinction and premium feel
+ */
+
+:root {
+  /* ===================================
+     ACTIVITY TYPE COLORS
+     =================================== */
+
+  /* Poop - Warm Brown */
+  --color-poop-primary: #8B7355;
+  --color-poop-light: #F5F1ED;
+  --color-poop-dark: #5C4A3A;
+  --color-poop-shadow: rgba(139, 115, 85, 0.15);
+
+  /* Pee - Bright Blue */
+  --color-pee-primary: #4A9EED;
+  --color-pee-light: #E8F4FD;
+  --color-pee-dark: #2B6BA8;
+  --color-pee-shadow: rgba(74, 158, 237, 0.15);
+
+  /* Food - Warm Orange */
+  --color-food-primary: #E67E22;
+  --color-food-light: #FDF1E8;
+  --color-food-dark: #B85A15;
+  --color-food-shadow: rgba(230, 126, 34, 0.15);
+
+  /* Sleep - Soft Purple */
+  --color-sleep-primary: #7B68EE;
+  --color-sleep-light: #F0EDFD;
+  --color-sleep-dark: #5447B8;
+  --color-sleep-shadow: rgba(123, 104, 238, 0.15);
+
+  /* Meds - Alert Red */
+  --color-meds-primary: #E74C3C;
+  --color-meds-light: #FDECEB;
+  --color-meds-dark: #B83629;
+  --color-meds-shadow: rgba(231, 76, 60, 0.15);
+
+  /* Walk - Fresh Green */
+  --color-walk-primary: #27AE60;
+  --color-walk-light: #E8F6EF;
+  --color-walk-dark: #1A7C43;
+  --color-walk-shadow: rgba(39, 174, 96, 0.15);
+
+  /* Vet - Medical Blue */
+  --color-vet-primary: #3498DB;
+  --color-vet-light: #EBF5FB;
+  --color-vet-dark: #2471A3;
+  --color-vet-shadow: rgba(52, 152, 219, 0.15);
+
+  /* Vaccination - Medical Purple */
+  --color-vaccination-primary: #9B59B6;
+  --color-vaccination-light: #F4ECF7;
+  --color-vaccination-dark: #6C3483;
+  --color-vaccination-shadow: rgba(155, 89, 182, 0.15);
+
+  /* Weight - Teal */
+  --color-weight-primary: #16A085;
+  --color-weight-light: #E8F6F3;
+  --color-weight-dark: #117A65;
+  --color-weight-shadow: rgba(22, 160, 133, 0.15);
+
+  /* ===================================
+     ACTIVITY COLOR UTILITIES
+     =================================== */
+
+  /* Default fallback (neutral sage) */
+  --activity-color-default: #8B9A7D;
+  --activity-color-default-light: #F0F4ED;
+  --activity-color-default-dark: #6D7E60;
+  --activity-color-default-shadow: rgba(139, 154, 125, 0.15);
+}
+
+/* Dark mode color adjustments for better contrast */
+.dark {
+  --color-poop-light: rgba(139, 115, 85, 0.2);
+  --color-pee-light: rgba(74, 158, 237, 0.2);
+  --color-food-light: rgba(230, 126, 34, 0.2);
+  --color-sleep-light: rgba(123, 104, 238, 0.2);
+  --color-meds-light: rgba(231, 76, 60, 0.2);
+  --color-walk-light: rgba(39, 174, 96, 0.2);
+  --color-vet-light: rgba(52, 152, 219, 0.2);
+  --color-vaccination-light: rgba(155, 89, 182, 0.2);
+  --color-weight-light: rgba(22, 160, 133, 0.2);
+
+  --color-poop-shadow: rgba(139, 115, 85, 0.25);
+  --color-pee-shadow: rgba(74, 158, 237, 0.25);
+  --color-food-shadow: rgba(230, 126, 34, 0.25);
+  --color-sleep-shadow: rgba(123, 104, 238, 0.25);
+  --color-meds-shadow: rgba(231, 76, 60, 0.25);
+  --color-walk-shadow: rgba(39, 174, 96, 0.25);
+  --color-vet-shadow: rgba(52, 152, 219, 0.25);
+  --color-vaccination-shadow: rgba(155, 89, 182, 0.25);
+  --color-weight-shadow: rgba(22, 160, 133, 0.25);
+}
+
+/* ===================================
+   ACTIVITY TYPE CLASSES
+   =================================== */
+
+/* Poop */
+.activity-poop {
+  --activity-color-primary: var(--color-poop-primary);
+  --activity-color-light: var(--color-poop-light);
+  --activity-color-dark: var(--color-poop-dark);
+  --activity-color-shadow: var(--color-poop-shadow);
+}
+
+/* Pee */
+.activity-pee {
+  --activity-color-primary: var(--color-pee-primary);
+  --activity-color-light: var(--color-pee-light);
+  --activity-color-dark: var(--color-pee-dark);
+  --activity-color-shadow: var(--color-pee-shadow);
+}
+
+/* Food */
+.activity-food {
+  --activity-color-primary: var(--color-food-primary);
+  --activity-color-light: var(--color-food-light);
+  --activity-color-dark: var(--color-food-dark);
+  --activity-color-shadow: var(--color-food-shadow);
+}
+
+/* Sleep */
+.activity-sleep {
+  --activity-color-primary: var(--color-sleep-primary);
+  --activity-color-light: var(--color-sleep-light);
+  --activity-color-dark: var(--color-sleep-dark);
+  --activity-color-shadow: var(--color-sleep-shadow);
+}
+
+/* Meds */
+.activity-meds {
+  --activity-color-primary: var(--color-meds-primary);
+  --activity-color-light: var(--color-meds-light);
+  --activity-color-dark: var(--color-meds-dark);
+  --activity-color-shadow: var(--color-meds-shadow);
+}
+
+/* Walk */
+.activity-walk {
+  --activity-color-primary: var(--color-walk-primary);
+  --activity-color-light: var(--color-walk-light);
+  --activity-color-dark: var(--color-walk-dark);
+  --activity-color-shadow: var(--color-walk-shadow);
+}
+
+/* Vet */
+.activity-vet {
+  --activity-color-primary: var(--color-vet-primary);
+  --activity-color-light: var(--color-vet-light);
+  --activity-color-dark: var(--color-vet-dark);
+  --activity-color-shadow: var(--color-vet-shadow);
+}
+
+/* Vaccination */
+.activity-vaccination {
+  --activity-color-primary: var(--color-vaccination-primary);
+  --activity-color-light: var(--color-vaccination-light);
+  --activity-color-dark: var(--color-vaccination-dark);
+  --activity-color-shadow: var(--color-vaccination-shadow);
+}
+
+/* Weight */
+.activity-weight {
+  --activity-color-primary: var(--color-weight-primary);
+  --activity-color-light: var(--color-weight-light);
+  --activity-color-dark: var(--color-weight-dark);
+  --activity-color-shadow: var(--color-weight-shadow);
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+.text-activity-color {
+  color: var(--activity-color-primary);
+}
+
+.bg-activity-color {
+  background-color: var(--activity-color-primary);
+}
+
+.bg-activity-light {
+  background-color: var(--activity-color-light);
+}
+
+.border-activity-color {
+  border-color: var(--activity-color-primary);
+}
+
+.shadow-activity {
+  box-shadow: 0 2px 8px var(--activity-color-shadow);
+}
