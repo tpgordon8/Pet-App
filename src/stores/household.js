@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { database, firestore } from '@/firebase/config'
+import { database, getFirestoreInstance } from '@/firebase/config'
 import { ref as dbRef, set, get, onValue } from 'firebase/database'
-import { collection, addDoc } from 'firebase/firestore'
 import { useAnalytics } from '@/composables/useAnalytics'
 
 export const useHouseholdStore = defineStore('household', () => {
@@ -287,6 +286,10 @@ export const useHouseholdStore = defineStore('household', () => {
 
     try {
       const inviteLink = `${window.location.origin}/join?code=${householdCode.value}`
+
+      // Lazy-load Firestore (only needed for email invitations)
+      const firestore = await getFirestoreInstance()
+      const { collection, addDoc } = await import('firebase/firestore')
 
       // Write to Firestore /mail collection (Firebase Extension listens here)
       const mailCollection = collection(firestore, 'mail')

@@ -136,14 +136,14 @@
           <!-- Export Button -->
           <button
             class="btn-export"
-            :title="searchQuery ? `Export ${filteredActivities.length} filtered activities to CSV` : 'Export all activities to CSV'"
+            :title="searchQueryRaw ? `Export ${filteredActivities.length} filtered activities to CSV` : 'Export all activities to CSV'"
             @click="exportActivitiesToCSV"
           >
             <span class="text-lg">📊</span>
             <span class="export-label">
               Export CSV
               <span
-                v-if="searchQuery"
+                v-if="searchQueryRaw"
                 class="export-count"
               >({{ filteredActivities.length }})</span>
             </span>
@@ -156,17 +156,17 @@
             <span class="text-gray-400 text-base">🔍</span>
           </div>
           <input
-            v-model="searchQuery"
+            v-model="searchQueryRaw"
             type="text"
             placeholder="Search activities..."
             class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
             style="font-size: 16px; min-height: 44px;"
           >
           <button
-            v-if="searchQuery"
+            v-if="searchQueryRaw"
             class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label="Clear search"
-            @click="searchQuery = ''"
+            @click="searchQueryRaw = ''"
           >
             <span class="text-lg">✕</span>
           </button>
@@ -384,6 +384,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+import { useDebouncedRef } from '@vueuse/core'
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
@@ -505,7 +506,9 @@ const showInviteModal = ref(false)
 const pendingActivity = ref({ type: '', emoji: '' })
 const pendingMedical = ref({ type: '', emoji: '' })
 const editingActivity = ref(null)
-const searchQuery = ref('')
+// Search query with debouncing (300ms) to avoid filtering on every keystroke
+const searchQueryRaw = ref('')
+const searchQuery = useDebouncedRef(searchQueryRaw, 300)
 
 // Computed: Photo count
 const photoCount = computed(() => {

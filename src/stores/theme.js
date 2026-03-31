@@ -4,12 +4,15 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 
 export const useThemeStore = defineStore('theme', () => {
   // State
   const darkMode = ref(false)
   const themePreference = ref('system') // 'light', 'dark', 'system'
+
+  // Store cleanup function for system theme watcher
+  let systemThemeCleanup = null
 
   /**
    * Initialize theme from localStorage or system preference
@@ -62,6 +65,12 @@ export const useThemeStore = defineStore('theme', () => {
    * Watch for system theme changes
    */
   function watchSystemTheme() {
+    // Clean up existing watcher first
+    if (systemThemeCleanup) {
+      systemThemeCleanup()
+      systemThemeCleanup = null
+    }
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
     const handler = (e) => {
@@ -73,8 +82,11 @@ export const useThemeStore = defineStore('theme', () => {
 
     mediaQuery.addEventListener('change', handler)
 
-    // Return cleanup function
-    return () => mediaQuery.removeEventListener('change', handler)
+    // Store cleanup function
+    systemThemeCleanup = () => mediaQuery.removeEventListener('change', handler)
+
+    // Return cleanup function for backwards compatibility
+    return systemThemeCleanup
   }
 
   /**
@@ -85,6 +97,12 @@ export const useThemeStore = defineStore('theme', () => {
     themePreference.value = preference
     localStorage.setItem('theme-preference', preference)
     applyTheme()
+
+    // Clean up existing system theme watcher if switching away from 'system'
+    if (preference !== 'system' && systemThemeCleanup) {
+      systemThemeCleanup()
+      systemThemeCleanup = null
+    }
 
     // Re-watch system theme if needed
     if (preference === 'system') {

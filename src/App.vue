@@ -1,7 +1,7 @@
 <template>
   <div
     id="app"
-    :class="{ 'dark': isDarkMode }"
+    :class="{ 'dark': themeStore.darkMode }"
   >
     <RouterView />
     <ToastContainer />
@@ -9,12 +9,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue'
+import { onErrorCaptured } from 'vue'
 import { RouterView } from 'vue-router'
 import ToastContainer from './components/ToastContainer.vue'
 import { useToast } from '@/composables/useToast'
+import { useThemeStore } from '@/stores/theme'
 
 const { showToast } = useToast()
+const themeStore = useThemeStore()
 
 // Global error boundary
 onErrorCaptured((err, instance, info) => {
@@ -29,36 +31,6 @@ onErrorCaptured((err, instance, info) => {
 
   // Return false to prevent error propagation
   return false
-})
-
-// Dark mode state (can be moved to a store later)
-const isDarkMode = ref(false)
-let darkModeMediaQuery = null
-let darkModeListener = null
-
-onMounted(() => {
-  // Check localStorage first
-  const savedTheme = localStorage.getItem('theme')
-  if (savedTheme) {
-    isDarkMode.value = savedTheme === 'dark'
-  } else {
-    // Check system preference
-    darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    isDarkMode.value = darkModeMediaQuery.matches
-
-    // Listen for changes
-    darkModeListener = (e) => {
-      isDarkMode.value = e.matches
-    }
-    darkModeMediaQuery.addEventListener('change', darkModeListener)
-  }
-})
-
-onUnmounted(() => {
-  // Clean up event listener to prevent memory leak
-  if (darkModeMediaQuery && darkModeListener) {
-    darkModeMediaQuery.removeEventListener('change', darkModeListener)
-  }
 })
 </script>
 

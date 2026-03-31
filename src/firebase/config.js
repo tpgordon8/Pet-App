@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app'
 import { getDatabase } from 'firebase/database'
-import { getFirestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import { getStorage } from 'firebase/storage'
 import { getAnalytics, isSupported } from 'firebase/analytics'
@@ -20,7 +19,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const database = getDatabase(app)
-const firestore = getFirestore(app)
 const auth = getAuth(app)
 const storage = getStorage(app)
 
@@ -34,4 +32,18 @@ if (typeof window !== 'undefined') {
   })
 }
 
-export { app, database, firestore, auth, storage, analytics }
+/**
+ * Lazy-load Firestore (only used for email invitations via Firebase Extensions)
+ * This keeps the main bundle smaller since Firestore is rarely needed
+ * @returns {Promise<Firestore>} Firestore instance
+ */
+let firestoreInstance = null
+export async function getFirestoreInstance() {
+  if (firestoreInstance) return firestoreInstance
+
+  const { getFirestore } = await import('firebase/firestore')
+  firestoreInstance = getFirestore(app)
+  return firestoreInstance
+}
+
+export { app, database, auth, storage, analytics }

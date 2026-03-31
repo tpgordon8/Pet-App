@@ -64,7 +64,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000
+    port: 5173  // Vite default port (was 3000, but docs said 5173)
   },
   build: {
     sourcemap: true,

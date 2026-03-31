@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { database, storage } from '@/firebase/config'
 import { ref as dbRef, push, onValue, remove, update } from 'firebase/database'
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -8,6 +8,7 @@ import { usePetsStore } from './pets'
 import { useToast } from '@/composables/useToast'
 import { useAnalytics } from '@/composables/useAnalytics'
 import { REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES } from '@/constants/activityTypes'
+import { getStorageJSON, setStorageJSON } from '@/composables/useStorage'
 
 export const useActivitiesStore = defineStore('activities', () => {
   const householdStore = useHouseholdStore()
@@ -18,7 +19,7 @@ export const useActivitiesStore = defineStore('activities', () => {
   const activities = ref([])
   const loading = ref(false)
   const listener = ref(null)
-  const offlineQueue = ref([])
+  const offlineQueue = ref(getStorageJSON('offlineQueue', []))
 
   // Computed - filtered by selected pet
   const filteredActivities = computed(() => {
@@ -298,25 +299,32 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
-  // Load offline queue from localStorage
+  // Load offline queue from localStorage (deprecated - now loaded on init)
   function loadOfflineQueue() {
-    const saved = localStorage.getItem('offlineQueue')
+    const saved = getStorageJSON('offlineQueue', [])
     if (saved) {
-      try {
-        offlineQueue.value = JSON.parse(saved)
-      } catch (error) {
-        console.error('Failed to load offline queue:', error)
-        // Clear corrupted queue data
-        offlineQueue.value = []
-        localStorage.removeItem('offlineQueue')
-        toast.error('Offline data was corrupted and has been cleared.')
-      }
+      offlineQueue.value = saved
     }
   }
 
-  // Save offline queue to localStorage
+  // Save offline queue to localStorage (deprecated - now auto-saved via watcher)
   function saveOfflineQueue() {
-    localStorage.setItem('offlineQueue', JSON.stringify(offlineQueue.value))
+    setStorageJSON('offlineQueue', offlineQueue.value)
+  }
+
+  // Auto-save offline queue to localStorage whenever it changes
+  watch(offlineQueue, (newQueue) => {
+    setStorageJSON('offlineQueue', newQueue)
+  }, { deep: true })
+
+  // Auto-sync offline queue when app comes back online
+  if (typeof window !== 'undefined') {
+    window.addEventListener('online', () => {
+      if (offlineQueue.value.length > 0) {
+        toast.info('Connection restored. Syncing offline activities...')
+        syncOfflineQueue()
+      }
+    })
   }
 
   return {
