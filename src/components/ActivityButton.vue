@@ -19,9 +19,11 @@
       :style="rippleStyle"
     ></span>
 
-    <span class="emoji-icon" :style="{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }">
-      {{ emoji }}
+    <!-- Icon (Lucide SVG) -->
+    <span class="icon-container" :style="{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }">
+      <component :is="iconComponent" :size="iconSize" :stroke-width="2.5" class="activity-icon" />
     </span>
+
     <span class="button-label">
       {{ label }}
     </span>
@@ -35,14 +37,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useHaptic } from '@/composables/useHaptic'
 import { useAnimations } from '@/composables/useAnimations'
+import {
+  Droplet,
+  Droplets,
+  UtensilsCrossed,
+  Moon,
+  Pill,
+  Footprints,
+  Stethoscope,
+  Syringe,
+  Scale,
+  Paw
+} from 'lucide-vue-next'
 
 const props = defineProps({
-  emoji: {
+  icon: {
     type: String,
-    required: true
+    required: true,
+    validator: (value) => [
+      'poop',
+      'pee',
+      'food',
+      'sleep',
+      'meds',
+      'walk',
+      'vet',
+      'vaccination',
+      'weight'
+    ].includes(value)
   },
   label: {
     type: String,
@@ -69,7 +94,23 @@ const { celebrateSuccess } = useAnimations()
 const isPressed = ref(false)
 const showRipple = ref(false)
 const rippleStyle = ref({})
-const buttonRef = ref(null)
+
+// Icon mapping
+const iconMap = {
+  poop: Droplet,
+  pee: Droplets,
+  food: UtensilsCrossed,
+  sleep: Moon,
+  meds: Pill,
+  walk: Footprints,
+  vet: Stethoscope,
+  vaccination: Syringe,
+  weight: Scale,
+  default: Paw
+}
+
+const iconComponent = computed(() => iconMap[props.icon] || iconMap.default)
+const iconSize = computed(() => window.innerWidth <= 640 ? 32 : 40)
 
 function handleClick(event) {
   if (!props.disabled) {
@@ -80,7 +121,7 @@ function handleClick(event) {
       celebrateSuccess(event.currentTarget, {
         duration: 300,
         scale: 1.05,
-        confetti: false // Can enable for special occasions
+        confetti: false
       })
     }
 
@@ -140,13 +181,28 @@ function onTouchEnd() {
   flex-shrink: 0;
 }
 
-.emoji-icon {
-  font-size: 2.5rem;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-center;
 }
 
-.activity-btn-modern:hover .emoji-icon {
+.activity-icon {
+  color: #6d7e60;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dark .activity-icon {
+  color: #8B9A7D;
+}
+
+.activity-btn-modern:hover .activity-icon {
   transform: scale(1.15) rotate(-5deg);
+  color: #8B9A7D;
+}
+
+.dark .activity-btn-modern:hover .activity-icon {
+  color: #a0b28f;
 }
 
 .button-label {
@@ -224,10 +280,6 @@ function onTouchEnd() {
     padding: 0.75rem;
   }
 
-  .emoji-icon {
-    font-size: 2rem;
-  }
-
   .button-label {
     font-size: 0.875rem;
   }
@@ -247,10 +299,6 @@ function onTouchEnd() {
   .activity-btn-modern {
     min-height: 80px;
     padding: 0.625rem;
-  }
-
-  .emoji-icon {
-    font-size: 1.75rem;
   }
 
   .button-label {

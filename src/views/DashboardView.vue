@@ -86,42 +86,42 @@
         </h3>
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
           <ActivityButton
-            emoji="💩"
+            icon="poop"
             label="Poop"
             :count="activitiesStore.stats.poop"
             :disabled="activitiesStore.loading"
             @click="showActivityNotes('Poop', '💩')"
           />
           <ActivityButton
-            emoji="💧"
+            icon="pee"
             label="Pee"
             :count="activitiesStore.stats.pee"
             :disabled="activitiesStore.loading"
             @click="showActivityNotes('Pee', '💧')"
           />
           <ActivityButton
-            emoji="🍖"
+            icon="food"
             label="Food"
             :count="activitiesStore.stats.food"
             :disabled="activitiesStore.loading"
             @click="showActivityNotes('Food', '🍖')"
           />
           <ActivityButton
-            emoji="😴"
+            icon="sleep"
             label="Sleep"
             :count="activitiesStore.stats.sleep"
             :disabled="activitiesStore.loading"
             @click="showActivityNotes('Sleep', '😴')"
           />
           <ActivityButton
-            emoji="💊"
+            icon="meds"
             label="Meds"
             :count="activitiesStore.stats.meds"
             :disabled="activitiesStore.loading"
             @click="showActivityNotes('Meds', '💊')"
           />
           <ActivityButton
-            emoji="🚶"
+            icon="walk"
             label="Walk"
             :count="activitiesStore.stats.walk"
             :disabled="activitiesStore.loading"
@@ -265,7 +265,7 @@
         <!-- Horizontal Scrolling Medical Buttons -->
         <div class="medical-buttons-scroll">
           <ActivityButton
-            emoji="🏥"
+            icon="vet"
             label="Vet Visit"
             :count="activitiesStore.stats.vetVisit"
             :disabled="activitiesStore.loading"
@@ -273,7 +273,7 @@
             @click="showMedicalModal('Vet Visit', '🏥')"
           />
           <ActivityButton
-            emoji="💉"
+            icon="vaccination"
             label="Vaccination"
             :count="activitiesStore.stats.vaccination"
             :disabled="activitiesStore.loading"
@@ -281,7 +281,7 @@
             @click="showMedicalModal('Vaccination', '💉')"
           />
           <ActivityButton
-            emoji="⚖️"
+            icon="weight"
             label="Weight Check"
             :count="activitiesStore.stats.weightCheck"
             :disabled="activitiesStore.loading"

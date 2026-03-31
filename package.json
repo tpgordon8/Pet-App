@@ -36,6 +36,7 @@
     "dompurify": "^3.3.3",
     "firebase": "^10.14.1",
     "jspdf": "^2.5.1",
+    "lucide-vue-next": "^1.0.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
