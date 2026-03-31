@@ -26,7 +26,7 @@ import {
 test.describe('Dashboard Visual Testing', () => {
   test.beforeEach(async ({ page }) => {
     // Set up console log capture for debugging
-    const { logs, errors } = captureConsoleLogs(page)
+    captureConsoleLogs(page)
 
     // Navigate to app
     await page.goto('/')

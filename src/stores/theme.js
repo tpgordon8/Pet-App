@@ -4,7 +4,7 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, watch, onUnmounted } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useThemeStore = defineStore('theme', () => {
   // State

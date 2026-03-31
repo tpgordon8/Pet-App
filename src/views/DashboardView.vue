@@ -7,9 +7,18 @@
       :style="{ height: `${pullToRefresh.pullDistance.value}px`, opacity: pullToRefresh.pullProgress.value }"
     >
       <div class="pull-to-refresh-content">
-        <span v-if="pullToRefresh.isRefreshing.value" class="spinner">⟳</span>
-        <span v-else-if="pullToRefresh.pullProgress.value >= 1" class="text-lg">↓</span>
-        <span v-else class="text-lg opacity-50">↓</span>
+        <span
+          v-if="pullToRefresh.isRefreshing.value"
+          class="spinner"
+        >⟳</span>
+        <span
+          v-else-if="pullToRefresh.pullProgress.value >= 1"
+          class="text-lg"
+        >↓</span>
+        <span
+          v-else
+          class="text-lg opacity-50"
+        >↓</span>
         <span class="text-sm ml-2">
           {{ pullToRefresh.isRefreshing.value ? 'Refreshing...' : pullToRefresh.pullProgress.value >= 1 ? 'Release to refresh' : 'Pull to refresh' }}
         </span>
@@ -192,8 +201,8 @@
         >
           <button
             class="btn-load-more"
-            @click="loadMore"
             aria-label="Load more activities"
+            @click="loadMore"
           >
             Load More ({{ remainingCount }} remaining)
           </button>
@@ -327,6 +336,36 @@
           :pets="petsStore.pets"
         />
       </CollapsibleSection>
+
+      <!-- Photo Comparison -->
+      <CollapsibleSection
+        title="Photo Comparison"
+        subtitle="Before & After comparisons"
+        icon="📸📸"
+        :default-collapsed="true"
+        section-id="photo-comparison"
+      >
+        <PhotoComparison
+          :activities="activitiesStore.filteredActivities"
+          @open-photo="handleOpenPhoto"
+        />
+      </CollapsibleSection>
+
+      <!-- Pet Timeline -->
+      <CollapsibleSection
+        v-if="petsStore.selectedPetId !== 'all'"
+        title="Pet Timeline"
+        :subtitle="`${petsStore.selectedPet?.name}'s life events`"
+        icon="📅"
+        :default-collapsed="true"
+        section-id="pet-timeline"
+      >
+        <PetTimeline
+          :activities="activitiesStore.filteredActivities"
+          :pet="petsStore.selectedPet"
+          @open-photo="handleOpenPhoto"
+        />
+      </CollapsibleSection>
     </div>
 
     <!-- Add Pet Modal -->
@@ -428,6 +467,8 @@ import RemindersWidget from '@/components/RemindersWidget.vue'
 import StreakCounter from '@/components/StreakCounter.vue'
 import CalendarView from '@/components/CalendarView.vue'
 import PhotoGallery from '@/components/PhotoGallery.vue'
+import PetTimeline from '@/components/PetTimeline.vue'
+import PhotoComparison from '@/components/PhotoComparison.vue'
 
 // Lazy-loaded heavy components (improves initial bundle size)
 // These are loaded asynchronously when needed, reducing main bundle by ~400KB
@@ -574,8 +615,7 @@ const {
   paginatedItems: paginatedActivities,
   hasMore,
   remainingCount,
-  loadMore,
-  reset: resetPagination
+  loadMore
 } = usePagination(filteredActivities, {
   initialPageSize: 50,
   loadMoreSize: 25
@@ -689,6 +729,13 @@ function handleEdit(activity) {
 async function handleSaveEdit(updates) {
   if (editingActivity.value) {
     await activitiesStore.updateActivity(editingActivity.value.id, updates)
+  }
+}
+
+function handleOpenPhoto(activity) {
+  // Open photo in new window/tab
+  if (activity.photoUrl) {
+    window.open(activity.photoUrl, '_blank', 'noopener,noreferrer')
   }
 }
 

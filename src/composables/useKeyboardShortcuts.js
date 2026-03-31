@@ -139,7 +139,7 @@ export function useGlobalKeyboardShortcuts() {
     },
 
     // Refresh
-    'ctrl+r': (e) => {
+    'ctrl+r': () => {
       // Let browser handle this (native refresh)
       // Just document it in help
     }

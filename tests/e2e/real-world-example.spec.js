@@ -211,8 +211,7 @@ test.describe('Real-World: Activity Logging', () => {
         await page.waitForTimeout(1500)
 
         // Verify note appears in feed
-        const pageContent = await page.content()
-        // Note: In real implementation, you'd verify the note appears
+        // Note: In real implementation, you'd verify the note appears in page.content()
         // For now, just verify the modal closed
         const modalStillVisible = await notesInput.isVisible().catch(() => false)
         expect(modalStillVisible).toBe(false)

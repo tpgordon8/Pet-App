@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 
 /**
  * Pull-to-refresh composable for mobile touch gestures
