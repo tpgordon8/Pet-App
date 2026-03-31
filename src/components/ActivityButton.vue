@@ -3,7 +3,7 @@
     @click="handleClick"
     @touchstart="onTouchStart"
     @touchend="onTouchEnd"
-    class="activity-button glass rounded-2xl p-6 flex flex-col items-center gap-3 relative overflow-hidden"
+    class="activity-btn-modern hover-lift active-press flex flex-col items-center gap-3 relative overflow-hidden"
     :class="[customClass, { 'button-pressed': isPressed, 'button-has-count': count > 0 }]"
     :disabled="disabled"
     :aria-label="`Log ${label} activity. ${count !== undefined ? count + ' logged today' : ''}`"
@@ -118,40 +118,24 @@ function onTouchEnd() {
 </script>
 
 <style scoped>
-.activity-button {
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+/* Using design system classes with minor customizations */
+.activity-btn-modern {
   min-height: 100px;
   min-width: 44px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid transparent;
 }
 
-.activity-button:disabled {
+.activity-btn-modern:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.activity-button:not(:disabled):hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(var(--theme-primary-rgb, 16, 185, 129), 0.25);
-  border-color: var(--theme-light);
-  background: var(--theme-gradient);
-  opacity: 0.15;
-}
-
-.activity-button:not(:disabled):active,
-.activity-button.button-pressed {
-  transform: translateY(-2px) scale(0.98);
-}
-
-.activity-button.button-has-count {
-  border-color: rgba(139, 154, 125, 0.2);
+.activity-btn-modern.button-has-count {
+  border-color: rgba(139, 154, 125, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 154, 125, 0.15);
 }
 
 /* Medical button compact variant */
-.activity-button.medical-button-compact {
+.activity-btn-modern.medical-button-compact {
   min-width: 140px;
   flex-shrink: 0;
 }
@@ -161,44 +145,24 @@ function onTouchEnd() {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.activity-button:hover .emoji-icon {
-  transform: scale(1.1) rotate(-5deg);
+.activity-btn-modern:hover .emoji-icon {
+  transform: scale(1.15) rotate(-5deg);
 }
 
 .button-label {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #374151;
+  @apply text-body font-semibold;
+  @apply text-gray-900 dark:text-white;
   transition: color 0.2s;
 }
 
-.dark .button-label {
-  color: #d1d5db;
-}
-
 .count-badge {
+  @apply stat-badge;
   font-size: 0.75rem;
-  color: #6b7280;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  background: rgba(0, 0, 0, 0.05);
   transition: all 0.2s;
 }
 
-.dark .count-badge {
-  color: #9ca3af;
-  background: rgba(255, 255, 255, 0.05);
-}
-
 .count-badge.count-active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.1) 100%);
-  color: #059669;
-  font-weight: 600;
-}
-
-.dark .count-badge.count-active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.15) 100%);
-  color: #10b981;
+  @apply badge-success;
 }
 
 /* Activity indicator dot */
@@ -251,7 +215,7 @@ function onTouchEnd() {
 }
 
 @media (max-width: 640px) {
-  .activity-button {
+  .activity-btn-modern {
     min-height: 85px;
     padding: 0.75rem;
   }
@@ -261,22 +225,22 @@ function onTouchEnd() {
   }
 
   .button-label {
-    font-size: 0.875rem;  /* 14px - improved readability */
+    font-size: 0.875rem;
   }
 
   .count-badge {
-    font-size: 0.75rem;  /* 12px - slightly larger for readability */
+    font-size: 0.75rem;
   }
 
   /* Medical compact variant on mobile */
-  .activity-button.medical-button-compact {
+  .activity-btn-modern.medical-button-compact {
     min-width: 120px;
   }
 }
 
 /* Very small screens (3-4 column grid) */
 @media (max-width: 390px) {
-  .activity-button {
+  .activity-btn-modern {
     min-height: 80px;
     padding: 0.625rem;
   }

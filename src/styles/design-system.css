@@ -1,0 +1,534 @@
+/**
+ * Tailr 2.0 Design System
+ * A comprehensive, modern design system with personality
+ */
+
+/* ===================================
+   1. TYPOGRAPHY SYSTEM
+   =================================== */
+
+@layer base {
+  /* Better font stack with personality */
+  :root {
+    --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+  }
+
+  /* Typography scale with better hierarchy */
+  .text-display-xl {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-lg {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+
+  .text-display {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .text-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .text-body-lg {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .text-body {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .text-caption {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .dark .text-caption {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* ===================================
+   2. ELEVATION & SHADOWS
+   =================================== */
+
+@layer utilities {
+  .elevation-1 {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.05),
+      0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .elevation-2 {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.06),
+      0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .elevation-3 {
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.07),
+      0 8px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .elevation-4 {
+    box-shadow:
+      0 8px 12px rgba(0, 0, 0, 0.08),
+      0 16px 32px rgba(0, 0, 0, 0.07);
+  }
+
+  .elevation-5 {
+    box-shadow:
+      0 16px 24px rgba(0, 0, 0, 0.09),
+      0 32px 64px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Colored shadows for brand elements */
+  .shadow-sage {
+    box-shadow: 0 8px 24px rgba(139, 154, 125, 0.25);
+  }
+
+  .shadow-purple {
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.3);
+  }
+
+  .shadow-pink {
+    box-shadow: 0 8px 24px rgba(244, 114, 182, 0.3);
+  }
+}
+
+/* ===================================
+   3. MODERN CARD DESIGNS
+   =================================== */
+
+@layer components {
+  /* Premium card with depth */
+  .card-premium {
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-6;
+    @apply elevation-2 hover:elevation-3;
+    @apply transition-all duration-300;
+    @apply border border-gray-100 dark:border-gray-700;
+  }
+
+  /* Glassmorphism card */
+  .card-glass {
+    @apply backdrop-blur-xl rounded-2xl p-6;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    @apply elevation-2;
+  }
+
+  .dark .card-glass {
+    background: rgba(30, 30, 30, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Gradient card with accent */
+  .card-gradient {
+    @apply rounded-2xl p-6 elevation-3;
+    background: linear-gradient(135deg, #8B9A7D 0%, #6d7e60 100%);
+    color: white;
+  }
+
+  /* Interactive card with hover effect */
+  .card-interactive {
+    @apply card-premium cursor-pointer;
+    @apply hover:scale-[1.02] hover:-translate-y-1;
+    @apply active:scale-[0.98] active:translate-y-0;
+  }
+
+  /* Stat card with icon */
+  .stat-card {
+    @apply card-premium;
+    @apply flex items-center gap-4;
+    @apply hover:border-sage-300 dark:hover:border-sage-600;
+  }
+
+  .stat-card-icon {
+    @apply w-12 h-12 rounded-xl;
+    @apply flex items-center justify-center;
+    @apply text-2xl;
+    background: linear-gradient(135deg, rgba(139, 154, 125, 0.15) 0%, rgba(139, 154, 125, 0.05) 100%);
+  }
+
+  .stat-card-value {
+    @apply text-display;
+    background: linear-gradient(135deg, #8B9A7D 0%, #6d7e60 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* ===================================
+   4. MODERN BUTTON DESIGNS
+   =================================== */
+
+@layer components {
+  /* Pill-shaped button */
+  .btn-pill {
+    @apply px-6 py-3 rounded-full font-semibold;
+    @apply transition-all duration-200;
+    @apply hover:scale-105 active:scale-95;
+    @apply min-h-[44px];
+  }
+
+  .btn-pill-primary {
+    @apply btn-pill;
+    background: linear-gradient(135deg, #8B9A7D 0%, #6d7e60 100%);
+    @apply text-white shadow-sage;
+    @apply hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .btn-pill-secondary {
+    @apply btn-pill;
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700;
+  }
+
+  /* Activity button with modern design */
+  .activity-btn-modern {
+    @apply relative overflow-hidden;
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-4;
+    @apply elevation-1 hover:elevation-2;
+    @apply transition-all duration-200;
+    @apply cursor-pointer select-none;
+    @apply border-2 border-transparent hover:border-sage-300;
+  }
+
+  .activity-btn-modern::before {
+    content: '';
+    @apply absolute inset-0 opacity-0;
+    background: linear-gradient(135deg, rgba(139, 154, 125, 0.1) 0%, rgba(139, 154, 125, 0.05) 100%);
+    @apply transition-opacity duration-200;
+  }
+
+  .activity-btn-modern:hover::before {
+    @apply opacity-100;
+  }
+
+  .activity-btn-modern:active {
+    @apply scale-95;
+  }
+
+  /* Icon button with ripple effect */
+  .btn-icon {
+    @apply w-12 h-12 rounded-xl;
+    @apply flex items-center justify-center;
+    @apply bg-gray-100 dark:bg-gray-800;
+    @apply hover:bg-gray-200 dark:hover:bg-gray-700;
+    @apply transition-colors duration-200;
+    @apply cursor-pointer;
+  }
+}
+
+/* ===================================
+   5. PROGRESS & DATA VISUALIZATION
+   =================================== */
+
+@layer components {
+  /* Modern progress bar */
+  .progress-bar {
+    @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+    background: linear-gradient(90deg, #8B9A7D 0%, #6d7e60 100%);
+  }
+
+  /* Circular progress */
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+
+  .progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease-out;
+    stroke: currentColor;
+    stroke-linecap: round;
+  }
+
+  /* Stat badge */
+  .stat-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5;
+    @apply rounded-full text-sm font-semibold;
+    @apply bg-gradient-to-r from-sage-100 to-sage-50;
+    @apply dark:from-sage-900/30 dark:to-sage-800/20;
+    @apply text-sage-700 dark:text-sage-300;
+  }
+
+  /* Trend indicator */
+  .trend-up {
+    @apply text-success flex items-center gap-1;
+  }
+
+  .trend-down {
+    @apply text-danger flex items-center gap-1;
+  }
+}
+
+/* ===================================
+   6. SMOOTH ANIMATIONS
+   =================================== */
+
+@layer utilities {
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===================================
+   7. EMPTY STATES
+   =================================== */
+
+@layer components {
+  .empty-state {
+    @apply text-center py-12 px-6;
+  }
+
+  .empty-state-icon {
+    @apply text-6xl mb-4 opacity-50;
+  }
+
+  .empty-state-title {
+    @apply text-xl font-semibold mb-2 text-gray-900 dark:text-white;
+  }
+
+  .empty-state-description {
+    @apply text-gray-600 dark:text-gray-400 mb-6;
+  }
+}
+
+/* ===================================
+   8. SKELETON LOADERS
+   =================================== */
+
+@layer components {
+  .skeleton {
+    @apply bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200;
+    @apply dark:from-gray-700 dark:via-gray-600 dark:to-gray-700;
+    @apply animate-shimmer rounded;
+    background-size: 200% 100%;
+  }
+
+  .skeleton-text {
+    @apply skeleton h-4 rounded;
+  }
+
+  .skeleton-title {
+    @apply skeleton h-6 rounded w-3/4;
+  }
+
+  .skeleton-avatar {
+    @apply skeleton rounded-full;
+  }
+
+  .skeleton-card {
+    @apply skeleton rounded-2xl;
+  }
+}
+
+/* ===================================
+   9. MICRO-INTERACTIONS
+   =================================== */
+
+@layer utilities {
+  .hover-lift {
+    @apply transition-transform duration-200;
+    @apply hover:-translate-y-1;
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-200;
+  }
+
+  .hover-glow:hover {
+    @apply shadow-lg shadow-sage-300/50;
+  }
+
+  .active-press {
+    @apply transition-transform duration-100;
+    @apply active:scale-95;
+  }
+
+  .smooth-transition {
+    @apply transition-all duration-300 ease-out;
+  }
+}
+
+/* ===================================
+   10. GRADIENT TEXT & BACKGROUNDS
+   =================================== */
+
+@layer utilities {
+  .gradient-text {
+    background: linear-gradient(135deg, #8B9A7D 0%, #6d7e60 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-vibrant {
+    background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-bg-sage {
+    background: linear-gradient(135deg, #8B9A7D 0%, #6d7e60 100%);
+  }
+
+  .gradient-bg-vibrant {
+    background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #fb923c 100%);
+  }
+
+  .gradient-bg-soft {
+    background: linear-gradient(135deg, rgba(139, 154, 125, 0.1) 0%, rgba(139, 154, 125, 0.05) 100%);
+  }
+}
+
+/* ===================================
+   11. MODERN INPUT FIELDS
+   =================================== */
+
+@layer components {
+  .input-modern {
+    @apply w-full px-4 py-3 rounded-xl;
+    @apply bg-gray-50 dark:bg-gray-800;
+    @apply border-2 border-gray-200 dark:border-gray-700;
+    @apply focus:border-sage-400 focus:ring-4 focus:ring-sage-100;
+    @apply dark:focus:ring-sage-900/30;
+    @apply transition-all duration-200;
+    @apply placeholder-gray-400 dark:placeholder-gray-500;
+  }
+
+  .input-modern:focus {
+    @apply bg-white dark:bg-gray-900;
+  }
+}
+
+/* ===================================
+   12. BADGE & PILL COMPONENTS
+   =================================== */
+
+@layer components {
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1;
+    @apply rounded-full text-xs font-semibold;
+  }
+
+  .badge-success {
+    @apply badge bg-success-light text-success-dark;
+    @apply dark:bg-success-dark/20 dark:text-success-light;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-light text-warning-dark;
+    @apply dark:bg-warning-dark/20 dark:text-warning-light;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-light text-danger-dark;
+    @apply dark:bg-danger-dark/20 dark:text-danger-light;
+  }
+
+  .badge-info {
+    @apply badge bg-sage-100 text-sage-700;
+    @apply dark:bg-sage-900/30 dark:text-sage-300;
+  }
+}

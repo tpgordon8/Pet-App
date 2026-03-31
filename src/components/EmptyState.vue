@@ -83,7 +83,7 @@ defineEmits(['action'])
 }
 
 .empty-icon {
-  font-size: 5rem;
+  @apply empty-state-icon;
   display: inline-block;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
@@ -124,24 +124,11 @@ defineEmits(['action'])
 }
 
 .empty-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.75rem;
-}
-
-.dark .empty-title {
-  color: #f9fafb;
+  @apply empty-state-title;
 }
 
 .empty-description {
-  font-size: 1rem;
-  color: #6b7280;
-  line-height: 1.6;
-}
-
-.dark .empty-description {
-  color: #9ca3af;
+  @apply empty-state-description;
 }
 
 @keyframes gentle-bounce {

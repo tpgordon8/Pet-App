@@ -8,14 +8,14 @@
     section-id="todays-summary"
   >
     <!-- Last Activity Insight -->
-    <div v-if="lastActivity" class="mb-4 p-3 bg-gradient-to-r from-sage-50 to-transparent dark:from-sage-900/20 dark:to-transparent rounded-xl border-l-4 border-sage-400">
+    <div v-if="lastActivity" class="mb-4 p-3 gradient-bg-soft rounded-xl border-l-4 border-sage-400 hover-lift smooth-transition">
       <div class="flex items-center gap-2">
         <span class="text-lg">⏰</span>
         <div class="flex-1 min-w-0">
-          <p class="text-xs font-medium text-gray-900 dark:text-white">
+          <p class="text-caption font-semibold text-gray-900 dark:text-white">
             Last {{ lastActivity.type }}
           </p>
-          <p class="text-xs text-gray-600 dark:text-gray-400">
+          <p class="text-caption text-gray-600 dark:text-gray-400">
             {{ lastActivity.timeAgo }}
           </p>
         </div>
@@ -142,38 +142,25 @@ const lastActivity = computed(() => {
 
 <style scoped>
 .stat-item {
+  @apply stat-card hover-lift active-press;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
   padding: 0.875rem 0.5rem;
-  border-radius: 0.75rem;
-  background: linear-gradient(135deg, rgba(243, 244, 246, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%);
-  border: 1px solid rgba(229, 231, 235, 0.6);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-.dark .stat-item {
-  background: linear-gradient(135deg, rgba(55, 65, 81, 0.3) 0%, rgba(31, 41, 55, 0.2) 100%);
-  border-color: rgba(75, 85, 99, 0.4);
-}
-
 .stat-item.stat-active {
-  background: linear-gradient(135deg, rgba(139, 154, 125, 0.15) 0%, rgba(109, 126, 96, 0.08) 100%);
-  border-color: rgba(139, 154, 125, 0.3);
-  box-shadow: 0 2px 8px rgba(139, 154, 125, 0.15);
+  @apply gradient-bg-soft;
+  border-color: rgba(139, 154, 125, 0.4);
+  box-shadow: 0 4px 12px rgba(139, 154, 125, 0.2);
 }
 
 .dark .stat-item.stat-active {
-  background: linear-gradient(135deg, rgba(139, 154, 125, 0.2) 0%, rgba(109, 126, 96, 0.12) 100%);
-  border-color: rgba(139, 154, 125, 0.4);
-}
-
-.stat-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(139, 154, 125, 0.5);
+  box-shadow: 0 4px 12px rgba(139, 154, 125, 0.3);
 }
 
 .stat-indicator {

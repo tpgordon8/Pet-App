@@ -65,14 +65,14 @@
       </div>
 
       <!-- PRIMARY ACTION: Quick Log Buttons -->
-      <div class="card-compact">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+      <div class="card-premium animate-slide-up">
+        <h3 class="text-heading text-gray-900 dark:text-white mb-3">
           Quick Log
           <span
             v-if="petsStore.selectedPet"
-            class="text-sage-600 dark:text-sage-400 text-xs"
+            class="stat-badge ml-2"
           >
-            • {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
+            {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
@@ -128,9 +128,9 @@
       />
 
       <!-- Activity Feed with Integrated Search -->
-      <div class="card-compact">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+      <div class="card-premium animate-slide-up">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-heading text-gray-900 dark:text-white">
             Recent Activity
           </h3>
           <!-- Export Button -->
@@ -162,7 +162,7 @@
             data-search-input
             aria-label="Search activities"
             role="searchbox"
-            class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-all"
+            class="input-modern"
             style="font-size: 16px; min-height: 44px;"
           >
           <button
@@ -401,7 +401,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
-import { useDebouncedRef } from '@vueuse/core'
+import { refDebounced } from '@vueuse/core'
 import { useHouseholdStore } from '@/stores/household'
 import { useActivitiesStore } from '@/stores/activities'
 import { usePetsStore } from '@/stores/pets'
@@ -527,7 +527,7 @@ const pendingMedical = ref({ type: '', emoji: '' })
 const editingActivity = ref(null)
 // Search query with debouncing (300ms) to avoid filtering on every keystroke
 const searchQueryRaw = ref('')
-const searchQuery = useDebouncedRef(searchQueryRaw, 300)
+const searchQuery = refDebounced(searchQueryRaw, 300)
 
 // Computed: Photo count
 const photoCount = computed(() => {

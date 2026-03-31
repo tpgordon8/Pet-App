@@ -1,6 +1,9 @@
 /* Import shared form styles */
 @import '../styles/forms.css';
 
+/* Import new design system */
+@import '../styles/design-system.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
