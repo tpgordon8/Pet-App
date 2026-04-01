@@ -4,6 +4,214 @@
 
 ---
 
+## Session: 2026-04-01 (Part 4) - 2026 Device Breakpoint Update
+
+### ✅ COMPLETED: Updated Breakpoints for Current 2026 Devices
+
+**Duration:** ~45 min  
+**Status:** ✅ COMPLETE - All device references updated to 2026 models  
+**Impact:** HIGH - Ensures breakpoints reflect actual current device market  
+**Commit:** Pending
+
+### Context
+
+User feedback: "There are several iPhones that are more current."
+
+**Issue:** Previous breakpoint implementation (Part 3) used iPhone 15/14 series and Samsung S24 series as reference devices. However, in April 2026, iPhone 16 series (released Sept 2025) and Samsung S25 series (released Jan 2026) are the actual current devices.
+
+### Research: 2026 Device Market
+
+#### iPhone 16 Series Viewports (Current 2026)
+
+Sources: [YesViz](https://yesviz.com/iphones.php), [Blisk](https://blisk.io/devices/)
+
+```
+iPhone 16 Pro Max  - 440px viewport  ← NEW (exceeds all previous ranges!)
+iPhone 16 Plus     - 430px viewport
+iPhone 16 Pro      - 402px viewport
+iPhone 16          - 393px viewport
+iPhone SE 3rd gen  - 375px viewport  (2022 model, still selling)
+```
+
+#### Samsung Galaxy S25 Series Viewports (Current 2026)
+
+Sources: [TinyFont ViewportDB](https://tinyfont.me/), [Phone Simulator](https://phone-simulator.com/)
+
+```
+Samsung S25 Ultra  - 412px viewport  (Conflicting: 412px vs 485px - chose 412px as most reliable)
+Samsung S25        - 360px viewport
+```
+
+#### Bestselling Android Phones 2025-2026
+
+Sources: [Accio Business](https://www.accio.com/business/), [Android Headlines](https://www.androidheadlines.com/)
+
+```
+1. Samsung Galaxy A16 5G  - 360px viewport  (5th overall, 1st Android)
+2. Samsung Galaxy A06 4G  - 360px viewport  (6th overall, 2nd Android - estimated from 720x1600 resolution)
+3. Samsung S25 Ultra      - 412px viewport  (9th overall)
+4. Google Pixel 9 Pro     - 412px viewport  (from Viewport Tester)
+5. Samsung S25            - 360px viewport
+```
+
+### Critical Finding: iPhone 16 Pro Max (440px)
+
+**Problem:** iPhone 16 Pro Max has a viewport of **440px**, which exceeds the previous largest breakpoint (413-430px).
+
+**Previous Desktop Threshold:** 431px+  
+**New Requirement:** Create breakpoint specifically for 431-440px range
+
+### Implementation: 8-Tier Breakpoint System
+
+**Changes Made:**
+
+1. **New Breakpoint Added:**
+```css
+/* Breakpoint 7: 431-440px - iPhone 16 Pro Max */
+@media (min-width: 431px) and (max-width: 440px) {
+  .dashboard-container { padding: 1.375rem; }      /* 22px */
+  .section-gap { margin-bottom: 1.5rem; }          /* 24px */
+  .card-premium { padding: 1.375rem; }             /* 22px */
+  .activity-grid-responsive { gap: 1.1875rem; }    /* 19px */
+}
+```
+
+2. **Desktop Threshold Extended:**
+```css
+/* Breakpoint 8: 441px+ - Tablets, Desktop */
+@media (min-width: 441px) {
+  /* Previous threshold was 431px+ */
+  padding: 1.5rem;  /* 24px */
+}
+```
+
+3. **Device Comments Updated Throughout:**
+- ≤360px: "Samsung S25, A16 5G, A06" (was "S24, A54")
+- 391-393px: "iPhone 16" (was "iPhone 15 Pro")
+- 394-412px: "iPhone 16 Pro, S25 Ultra, Pixel 9 Pro" (was "S24 Ultra, Pixel 8 Pro, 7a")
+- 413-430px: "iPhone 16 Plus" (was "iPhone 15/14 Pro Max")
+- **NEW** 431-440px: "iPhone 16 Pro Max"
+- 441px+: "Tablets, Desktop" (was "431px+")
+
+### Spacing Progression Analysis
+
+**Progressive 2px scaling maintained:**
+
+| Width Range | Container | Increment |
+|-------------|-----------|-----------|
+| ≤360px | 12px | baseline |
+| 361-375px | 14px | +2px |
+| 376-390px | 16px | +2px |
+| 391-393px | 16px | (same) |
+| 394-412px | 18px | +2px |
+| 413-430px | 20px | +2px |
+| **431-440px** | **22px** | **+2px** |
+| 441px+ | 24px | +2px |
+
+**Grid gap progression:**
+
+| Width Range | Grid Gap | Increment |
+|-------------|----------|-----------|
+| ≤360px | 10px | baseline |
+| 361-375px | 12px | +2px |
+| 376-393px | 14px | +2px |
+| 394-412px | 16px | +2px |
+| 413-430px | 18px | +2px |
+| **431-440px** | **19px** | **+1px** (smoother transition) |
+| 441px+ | 20px | +1px |
+
+### Design Decisions
+
+**Why 22px padding for iPhone 16 Pro Max?**
+- Maintains progressive 2px scaling pattern
+- Provides extra breathing room for largest viewport (440px)
+- Smooth transition to desktop spacing (24px at 441px+)
+
+**Why 19px grid gap instead of 18px or 20px?**
+- Avoids jarring jump from 18px (430px) to 20px (441px+)
+- Provides intermediate value for 440px viewport
+- 1px increment feels more natural at larger viewports
+
+**Samsung S25 Ultra: 412px vs 485px?**
+- Multiple sources reported conflicting viewports
+- Chose **412px** as most reliable (matches S24 Ultra pattern)
+- TinyFont ViewportDB listed "Logical CSS Viewport: 412px"
+- 485px may be misreading or non-standard configuration
+
+**Budget Android Phones (A16, A06):**
+- Both use 360px viewport (720px physical ÷ 2 DPR)
+- A16 and A06 were top 2 bestselling Android phones in 2025
+- Confirms 360px breakpoint is critical for market reach
+
+### Files Modified
+
+1. **src/styles/design-system.css:**
+   - Updated header comment: "Updated April 2026" with "top 5 iPhones (2026) + top 5 Android phones (2026)"
+   - Updated all 7 existing breakpoint device comments
+   - Added new 8th breakpoint (431-440px)
+   - Extended desktop threshold from 431px to 441px
+
+2. **DEVICE_BREAKPOINTS.md:**
+   - Updated "Supported Devices" tables with 2026 models
+   - Updated all 8 breakpoint definitions
+   - Updated spacing progression table (added 8th row)
+   - Removed duplicate "Border Radius Progression" section (consolidated into spacing table)
+   - Updated testing checklist with 2026 device priorities
+   - Added "Device Updates Made (April 2026)" section documenting changes
+
+### Verification
+
+**Build Test:**
+```bash
+npm run build
+✓ built in 14.78s
+✓ PWA v0.19.8
+✓ precache 39 entries
+```
+
+**CSS Output Verification:**
+```bash
+grep -o "441px" dist/assets/*.css
+✓ Found 441px in build (2 instances)
+
+grep -o "1\.375rem" dist/assets/*.css | wc -l
+✓ Found 4 instances (22px padding)
+
+grep -o "1\.1875rem" dist/assets/*.css | wc -l
+✓ Found 1 instance (19px gap)
+```
+
+### Learnings
+
+1. **Device lifecycles matter:** What's "current" changes every 6-12 months. iPhone releases in September, Samsung in January/February.
+
+2. **Viewport research challenges:** Different sources report different viewports for same device (e.g., S25 Ultra 412px vs 485px). Cross-reference multiple sources and choose most reliable.
+
+3. **Budget phones dominate sales:** Samsung A16 and A06 outsold flagship S25 Ultra. Optimizing for 360px viewport is crucial for market reach.
+
+4. **Breakpoint creep:** iPhone viewports keep growing. iPhone 16 Pro Max (440px) is the largest yet. May need another breakpoint in future for 450px+ phones.
+
+5. **Progressive scaling is forgiving:** 2px increments work well across all devices. Allows adding intermediate breakpoints (like 431-440px) without disrupting pattern.
+
+### Next Steps (Future)
+
+- **iPhone 17 series (Sept 2026):** Monitor viewport sizes, may need new breakpoint if >450px
+- **Samsung S26 series (Jan 2027):** Update references again next year
+- **Foldable phones:** Not yet addressed (Galaxy Fold has 374px closed, 884px open)
+- **Android tablets:** Currently lumped into 441px+ desktop breakpoint
+
+### Time Investment Breakdown
+
+- Research device viewports: ~15 min
+- Resolve conflicting data (S25 Ultra): ~5 min
+- Update design-system.css: ~10 min
+- Update DEVICE_BREAKPOINTS.md: ~10 min
+- Build verification: ~5 min
+
+**Total:** ~45 min
+
+---
+
 ## Session: 2026-04-01 (Part 3) - Comprehensive Device Breakpoints
 
 ### ✅ COMPLETED: Precise Breakpoints for Top 10 Mobile Devices

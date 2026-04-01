@@ -623,11 +623,12 @@
   }
 
   /* ===================================
-     PHASE 8: DEVICE-SPECIFIC SPACING
-     Optimized for top 5 iPhones + top 5 Android phones
+     PHASE 8: DEVICE-SPECIFIC SPACING (Updated April 2026)
+     Optimized for top 5 iPhones (2026) + top 5 Android phones (2026)
+     Progressive 2px scaling for smooth transitions
      =================================== */
 
-  /* Samsung Galaxy S24/A54 (360px) - Smallest Android flagship */
+  /* Samsung S25, Galaxy A16 5G, Galaxy A06 (360px) - Smallest Android devices */
   @media (max-width: 360px) {
     .dashboard-container {
       padding: 0.75rem;  /* 12px - maximize screen space */
@@ -648,7 +649,7 @@
     }
   }
 
-  /* iPhone SE 3rd gen (375px) */
+  /* iPhone SE 3rd gen (375px) - Still popular in 2026 */
   @media (min-width: 361px) and (max-width: 375px) {
     .dashboard-container {
       padding: 0.875rem;  /* 14px - compact but comfortable */
@@ -668,7 +669,7 @@
     }
   }
 
-  /* iPhone 14 (390px) */
+  /* iPhone 14 (390px) - Previous gen still widely used */
   @media (min-width: 376px) and (max-width: 390px) {
     .dashboard-container {
       padding: 1rem;  /* 16px - standard iOS spacing */
@@ -688,7 +689,7 @@
     }
   }
 
-  /* iPhone 15 Pro (393px) */
+  /* iPhone 16 (393px) - Current standard iPhone */
   @media (min-width: 391px) and (max-width: 393px) {
     .dashboard-container {
       padding: 1rem;  /* 16px */
@@ -708,10 +709,10 @@
     }
   }
 
-  /* Samsung S24 Ultra, Pixel 8 Pro, Pixel 7a (412px) */
+  /* iPhone 16 Pro (402px), Samsung S25 Ultra (412px), Pixel 9 Pro (412px) */
   @media (min-width: 394px) and (max-width: 412px) {
     .dashboard-container {
-      padding: 1.125rem;  /* 18px - generous Android spacing */
+      padding: 1.125rem;  /* 18px - generous spacing for flagships */
     }
 
     .section-gap {
@@ -728,7 +729,7 @@
     }
   }
 
-  /* iPhone 15 Pro Max, iPhone 14 Pro Max (430px) */
+  /* iPhone 16 Plus (430px) */
   @media (min-width: 413px) and (max-width: 430px) {
     .dashboard-container {
       padding: 1.25rem;  /* 20px - spacious for large iPhone */
@@ -748,8 +749,28 @@
     }
   }
 
-  /* Tablets and larger (> 430px) */
-  @media (min-width: 431px) {
+  /* iPhone 16 Pro Max (440px) - Largest current iPhone */
+  @media (min-width: 431px) and (max-width: 440px) {
+    .dashboard-container {
+      padding: 1.375rem;  /* 22px - extra spacious */
+    }
+
+    .section-gap {
+      margin-bottom: 1.5rem;  /* 24px */
+    }
+
+    .card-premium {
+      padding: 1.375rem;  /* 22px */
+      border-radius: 17.5px;
+    }
+
+    .activity-grid-responsive {
+      gap: 1.1875rem;  /* 19px */
+    }
+  }
+
+  /* Tablets and larger (> 440px) */
+  @media (min-width: 441px) {
     .dashboard-container {
       padding: 1.5rem;  /* 24px - desktop spacing */
     }
