@@ -11,6 +11,7 @@ import { REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES } from '@/constants/activityType
 import { getStorageJSON, setStorageJSON } from '@/composables/useStorage'
 import { processImage } from '@/utils/imageCompression'
 import { sanitizeActivityNotes } from '@/utils/sanitize'
+import { triggerConfetti } from '@/utils/confetti'
 
 export const useActivitiesStore = defineStore('activities', () => {
   const householdStore = useHouseholdStore()
@@ -189,6 +190,27 @@ export const useActivitiesStore = defineStore('activities', () => {
         trackMedicalActivity(type)
       } else {
         trackActivityLogged(type, activity.petId, !!notes, !!photoUrl)
+      }
+
+      // Celebration feedback
+      const isFirstOfDay = todayActivities.value.length === 1
+      const isMilestone = activities.value.length > 0 && (activities.value.length % 10 === 0)
+
+      // Trigger confetti for special moments
+      if (isFirstOfDay || isMilestone) {
+        // Get activity color from colors-extended.css
+        const colorMap = {
+          'Poop': '#8B7355',
+          'Pee': '#4A9EED',
+          'Food': '#E67E22',
+          'Sleep': '#7B68EE',
+          'Meds': '#E74C3C',
+          'Walk': '#27AE60',
+          'Vet Visit': '#3498DB',
+          'Vaccination': '#9B59B6',
+          'Weight Check': '#16A085'
+        }
+        triggerConfetti({ color: colorMap[type] || '#fb923c' })
       }
 
       toast.success(`${emoji} ${type} logged!`)

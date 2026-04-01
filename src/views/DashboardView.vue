@@ -79,7 +79,7 @@
 
       <!-- PRIMARY ACTION: Quick Log Buttons -->
       <div class="card-premium animate-slide-up">
-        <h3 class="text-heading text-gray-900 dark:text-white mb-3">
+        <h3 class="heading-secondary mb-3">
           Quick Log
           <span
             v-if="petsStore.selectedPet"
@@ -143,7 +143,7 @@
       <!-- Activity Feed with Integrated Search -->
       <div class="card-premium animate-slide-up">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-heading text-gray-900 dark:text-white">
+          <h3 class="heading-secondary">
             Recent Activity
           </h3>
           <!-- Export Button -->

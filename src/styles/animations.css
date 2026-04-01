@@ -647,6 +647,81 @@
 }
 
 /* ===================================
+   ENHANCED VISUAL FEEDBACK (Phase 6)
+   =================================== */
+
+/* Pulse success - for successful action feedback */
+.pulse-success {
+  animation: pulseSuccess 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pulseSuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Count up animation - for count badges */
+.count-up-animation {
+  animation: countUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes countUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icon bounce - subtle bounce on tap */
+.icon-bounce {
+  animation: iconBounce 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Card slide-in with stagger */
+.card-slide-in {
+  animation: cardSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger delays for sequential animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* ===================================
    ACCESSIBILITY - REDUCED MOTION
    =================================== */
 

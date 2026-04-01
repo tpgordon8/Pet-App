@@ -10,6 +10,9 @@
 /* Import premium typography system */
 @import '../styles/typography.css';
 
+/* Import refined typography hierarchy */
+@import '../styles/typography-refined.css';
+
 /* Import vibrant color system */
 @import '../styles/colors.css';
 

@@ -359,10 +359,10 @@ onUnmounted(() => {
   color: rgba(0, 0, 0, 0.5);
   border: 1px solid transparent;
 
-  /* Typography */
+  /* Typography - label-small */
   font-family: 'Inter', -apple-system, sans-serif;
-  font-size: 0.6875rem;  /* 11px */
-  font-weight: 700;
+  font-size: 0.75rem;  /* 12px */
+  font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 

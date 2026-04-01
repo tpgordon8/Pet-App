@@ -9,10 +9,10 @@
       <div class="flex items-center gap-3">
         <span v-if="icon" class="text-2xl">{{ icon }}</span>
         <div>
-          <h3 class="text-heading text-gray-900 dark:text-white">
+          <h3 class="heading-tertiary">
             {{ title }}
           </h3>
-          <p v-if="subtitle" class="text-caption text-gray-600 dark:text-gray-400">
+          <p v-if="subtitle" class="body-small">
             {{ subtitle }}
           </p>
         </div>
