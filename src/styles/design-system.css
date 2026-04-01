@@ -624,54 +624,147 @@
 
   /* ===================================
      PHASE 8: DEVICE-SPECIFIC SPACING
-     Premium spacing refinement for different screen sizes
+     Optimized for top 5 iPhones + top 5 Android phones
      =================================== */
 
-  /* iPhone SE and smaller (< 375px) */
-  @media (max-width: 374px) {
+  /* Samsung Galaxy S24/A54 (360px) - Smallest Android flagship */
+  @media (max-width: 360px) {
     .dashboard-container {
-      padding: 0.875rem;  /* 14px - compact but not cramped */
+      padding: 0.75rem;  /* 12px - maximize screen space */
     }
 
     .section-gap {
-      margin-bottom: 1rem;  /* 16px - tight but breathable */
+      margin-bottom: 0.875rem;  /* 14px - compact */
+    }
+
+    .card-premium {
+      padding: 0.75rem;  /* 12px */
+      border-radius: 12px;
+    }
+
+    /* Tighter grid on very narrow screens */
+    .activity-grid-responsive {
+      gap: 0.625rem;  /* 10px */
+    }
+  }
+
+  /* iPhone SE 3rd gen (375px) */
+  @media (min-width: 361px) and (max-width: 375px) {
+    .dashboard-container {
+      padding: 0.875rem;  /* 14px - compact but comfortable */
+    }
+
+    .section-gap {
+      margin-bottom: 1rem;  /* 16px */
     }
 
     .card-premium {
       padding: 0.875rem;  /* 14px */
       border-radius: 14px;
     }
+
+    .activity-grid-responsive {
+      gap: 0.75rem;  /* 12px */
+    }
   }
 
-  /* iPhone 12/13/14 (375px - 430px) */
-  @media (min-width: 375px) and (max-width: 430px) {
+  /* iPhone 14 (390px) */
+  @media (min-width: 376px) and (max-width: 390px) {
     .dashboard-container {
-      padding: 1rem;  /* 16px - standard mobile spacing */
+      padding: 1rem;  /* 16px - standard iOS spacing */
     }
 
     .section-gap {
-      margin-bottom: 1.25rem;  /* 20px - comfortable flow */
+      margin-bottom: 1.125rem;  /* 18px */
     }
 
     .card-premium {
-      padding: 1.125rem;  /* 18px - generous touch targets */
+      padding: 1rem;  /* 16px */
+      border-radius: 15px;
+    }
+
+    .activity-grid-responsive {
+      gap: 0.875rem;  /* 14px */
+    }
+  }
+
+  /* iPhone 15 Pro (393px) */
+  @media (min-width: 391px) and (max-width: 393px) {
+    .dashboard-container {
+      padding: 1rem;  /* 16px */
+    }
+
+    .section-gap {
+      margin-bottom: 1.125rem;  /* 18px */
+    }
+
+    .card-premium {
+      padding: 1rem;  /* 16px */
+      border-radius: 15px;
+    }
+
+    .activity-grid-responsive {
+      gap: 0.875rem;  /* 14px */
+    }
+  }
+
+  /* Samsung S24 Ultra, Pixel 8 Pro, Pixel 7a (412px) */
+  @media (min-width: 394px) and (max-width: 412px) {
+    .dashboard-container {
+      padding: 1.125rem;  /* 18px - generous Android spacing */
+    }
+
+    .section-gap {
+      margin-bottom: 1.25rem;  /* 20px */
+    }
+
+    .card-premium {
+      padding: 1.125rem;  /* 18px */
       border-radius: 16px;
     }
+
+    .activity-grid-responsive {
+      gap: 1rem;  /* 16px */
+    }
   }
 
-  /* Large phones & tablets (> 430px) */
-  @media (min-width: 431px) {
+  /* iPhone 15 Pro Max, iPhone 14 Pro Max (430px) */
+  @media (min-width: 413px) and (max-width: 430px) {
     .dashboard-container {
-      padding: 1.5rem;  /* 24px - spacious desktop feel */
+      padding: 1.25rem;  /* 20px - spacious for large iPhone */
     }
 
     .section-gap {
-      margin-bottom: 1.5rem;  /* 24px - clear section separation */
+      margin-bottom: 1.375rem;  /* 22px */
     }
 
     .card-premium {
-      padding: 1.5rem;  /* 24px - premium spacing */
+      padding: 1.25rem;  /* 20px */
+      border-radius: 17px;
+    }
+
+    .activity-grid-responsive {
+      gap: 1.125rem;  /* 18px */
+    }
+  }
+
+  /* Tablets and larger (> 430px) */
+  @media (min-width: 431px) {
+    .dashboard-container {
+      padding: 1.5rem;  /* 24px - desktop spacing */
+    }
+
+    .section-gap {
+      margin-bottom: 1.5rem;  /* 24px */
+    }
+
+    .card-premium {
+      padding: 1.5rem;  /* 24px */
       border-radius: 18px;
+    }
+
+    .activity-grid-responsive {
+      gap: 1.25rem;  /* 20px */
     }
   }
 }
