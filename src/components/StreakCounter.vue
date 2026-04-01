@@ -97,16 +97,45 @@ const streakEmoji = computed(() => {
 </script>
 
 <style scoped>
+/* Phase 9: Enhanced celebratory design */
 .streak-counter {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
+
+  /* More celebratory gradient background */
+  background: linear-gradient(
+    135deg,
+    #FEF3C7 0%,
+    #FDE68A 100%
+  );
+
+  /* Stronger border with golden tone */
+  border-color: rgba(245, 158, 11, 0.3);
+
+  /* Enhanced shadow for depth */
+  box-shadow:
+    0 2px 4px rgba(245, 158, 11, 0.1),
+    0 4px 12px rgba(245, 158, 11, 0.08),
+    0 8px 24px rgba(245, 158, 11, 0.06);
+}
+
+.dark .streak-counter {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15) 0%,
+    rgba(234, 88, 12, 0.1) 100%
+  );
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
 .streak-counter:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: rgba(251, 146, 60, 0.3);
+  transform: translateY(-3px);
+  box-shadow:
+    0 4px 8px rgba(245, 158, 11, 0.15),
+    0 8px 20px rgba(245, 158, 11, 0.12),
+    0 16px 32px rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.5);
 }
 
 /* Animated background decoration */
@@ -172,13 +201,16 @@ const streakEmoji = computed(() => {
 
 .streak-number {
   font-size: 2.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  font-weight: 900;  /* Bolder for emphasis */
+  /* Enhanced gradient with golden tones */
+  background: linear-gradient(135deg, #D97706 0%, #EA580C 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1;
   animation: pulse-number 2s ease-in-out infinite;
+  /* Add subtle text shadow for depth */
+  filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.3));
 }
 
 @keyframes pulse-number {
@@ -221,7 +253,7 @@ const streakEmoji = computed(() => {
   }
 }
 
-/* Achievement badge */
+/* Achievement badge with trophy glow */
 .achievement-badge {
   position: absolute;
   top: 8px;
@@ -231,20 +263,25 @@ const streakEmoji = computed(() => {
   padding: 0.25rem 0.625rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;  /* Bolder */
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
   z-index: 20;
   animation: badge-pulse 3s ease-in-out infinite;
+  /* Trophy icon glow effect */
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
 }
 
 @keyframes badge-pulse {
   0%, 100% {
     transform: scale(1);
     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
   }
   50% {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);
+    /* Enhanced glow on pulse */
+    filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
   }
 }
 

@@ -374,17 +374,24 @@ onUnmounted(() => {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Count badge active (count > 0) */
+/* Count badge active (count > 0) - Phase 9: Premium pill design */
 .count-badge.has-count {
   background: var(--activity-color-light, #e8f6ef);
   color: var(--activity-color-dark, #1a7c43);
   border-color: var(--activity-color-primary, #27ae60);
   font-weight: 800;
+  /* Enhanced shadow for depth */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08),
+              0 0 0 1px var(--activity-color-primary, #27ae60);
 }
 
 .dark .count-badge.has-count {
   background: var(--activity-color-primary, #27ae60);
   color: white;
+  font-weight: 800;
+  /* Stronger shadow in dark mode */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+              0 0 8px var(--activity-color-shadow, rgba(39, 174, 96, 0.4));
 }
 
 /* Activity indicator dot */

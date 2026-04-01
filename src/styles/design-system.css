@@ -621,4 +621,57 @@
       gap: 1.5rem;  /* 24px */
     }
   }
+
+  /* ===================================
+     PHASE 8: DEVICE-SPECIFIC SPACING
+     Premium spacing refinement for different screen sizes
+     =================================== */
+
+  /* iPhone SE and smaller (< 375px) */
+  @media (max-width: 374px) {
+    .dashboard-container {
+      padding: 0.875rem;  /* 14px - compact but not cramped */
+    }
+
+    .section-gap {
+      margin-bottom: 1rem;  /* 16px - tight but breathable */
+    }
+
+    .card-premium {
+      padding: 0.875rem;  /* 14px */
+      border-radius: 14px;
+    }
+  }
+
+  /* iPhone 12/13/14 (375px - 430px) */
+  @media (min-width: 375px) and (max-width: 430px) {
+    .dashboard-container {
+      padding: 1rem;  /* 16px - standard mobile spacing */
+    }
+
+    .section-gap {
+      margin-bottom: 1.25rem;  /* 20px - comfortable flow */
+    }
+
+    .card-premium {
+      padding: 1.125rem;  /* 18px - generous touch targets */
+      border-radius: 16px;
+    }
+  }
+
+  /* Large phones & tablets (> 430px) */
+  @media (min-width: 431px) {
+    .dashboard-container {
+      padding: 1.5rem;  /* 24px - spacious desktop feel */
+    }
+
+    .section-gap {
+      margin-bottom: 1.5rem;  /* 24px - clear section separation */
+    }
+
+    .card-premium {
+      padding: 1.5rem;  /* 24px - premium spacing */
+      border-radius: 18px;
+    }
+  }
 }
