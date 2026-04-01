@@ -33,10 +33,14 @@
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    /* Prevent pull-to-refresh on mobile (Safari compatibility) */
+    overscroll-behavior-y: contain;
   }
 
   body {
     @apply antialiased;
+    /* Prevent pull-to-refresh on mobile (Chrome/Edge compatibility) */
+    overscroll-behavior-y: contain;
     /* Premium typography */
     font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     /* iOS safe area insets for notched devices */
