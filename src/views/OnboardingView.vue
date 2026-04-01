@@ -208,7 +208,25 @@ async function createHouseholdAndPet() {
     currentStep.value = 'householdSetup'
   } catch (error) {
     console.error('Error creating household:', error)
-    toast.error(error.message || 'Failed to create household')
+
+    // Provide helpful, specific error messages
+    let userMessage = 'Failed to create household. '
+
+    if (error.message.includes('already exists')) {
+      userMessage = 'That household code is already taken. Please go back and choose a different code.'
+    } else if (error.message.includes('network') || error.message.includes('timeout') || error.message.includes('fetch')) {
+      userMessage = 'Network error. Please check your internet connection and try again.'
+    } else if (error.message.includes('permission') || error.message.includes('unauthorized')) {
+      userMessage = 'Permission error. Please contact support if this persists.'
+    } else if (error.message.includes('required')) {
+      userMessage = error.message // Validation errors are already descriptive
+    } else if (error.message) {
+      userMessage = error.message
+    } else {
+      userMessage += 'An unexpected error occurred. Please try again.'
+    }
+
+    toast.error(userMessage, { duration: 8000 }) // Longer duration for readability
   }
 }
 
@@ -228,7 +246,25 @@ async function joinExistingHousehold(data) {
     router.push('/dashboard')
   } catch (error) {
     console.error('Error joining household:', error)
-    toast.error(error.message || 'Failed to join household')
+
+    // Provide helpful, specific error messages
+    let userMessage = ''
+
+    if (error.message.includes('not found')) {
+      userMessage = 'Household not found. Please check the household code and try again.'
+    } else if (error.message.includes('Incorrect passcode')) {
+      userMessage = 'Incorrect passcode. Please check with the household owner.'
+    } else if (error.message.includes('network') || error.message.includes('timeout') || error.message.includes('fetch')) {
+      userMessage = 'Network error. Please check your internet connection and try again.'
+    } else if (error.message.includes('required')) {
+      userMessage = error.message // Validation errors are already descriptive
+    } else if (error.message) {
+      userMessage = error.message
+    } else {
+      userMessage = 'Failed to join household. Please try again.'
+    }
+
+    toast.error(userMessage, { duration: 8000 })
   }
 }
 
