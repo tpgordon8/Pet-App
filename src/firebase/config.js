@@ -23,13 +23,23 @@ const auth = getAuth(app)
 const storage = getStorage(app)
 
 // Initialize Analytics (only in browser, not in SSR)
+// Analytics is optional - gracefully handles missing measurementId
 let analytics = null
-if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app)
-    }
-  })
+if (typeof window !== 'undefined' && firebaseConfig.measurementId) {
+  isSupported()
+    .then((supported) => {
+      if (supported) {
+        analytics = getAnalytics(app)
+        console.log('Firebase Analytics initialized successfully')
+      } else {
+        console.warn('Firebase Analytics not supported in this browser')
+      }
+    })
+    .catch((error) => {
+      console.warn('Firebase Analytics initialization failed:', error.message)
+    })
+} else if (typeof window !== 'undefined') {
+  console.info('Firebase Analytics disabled (measurementId not configured)')
 }
 
 /**
