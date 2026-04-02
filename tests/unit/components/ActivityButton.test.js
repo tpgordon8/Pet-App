@@ -3,23 +3,23 @@ import { mount } from '@vue/test-utils'
 import ActivityButton from '@/components/ActivityButton.vue'
 
 describe('ActivityButton', () => {
-  it('renders with emoji and label', () => {
+  it('renders with icon and label', () => {
     const wrapper = mount(ActivityButton, {
       props: {
-        emoji: '💩',
+        icon: 'poop',
         label: 'Poop',
         count: 0
       }
     })
 
-    expect(wrapper.text()).toContain('💩')
     expect(wrapper.text()).toContain('Poop')
+    expect(wrapper.text()).toContain('0 today')
   })
 
   it('displays count when greater than 0', () => {
     const wrapper = mount(ActivityButton, {
       props: {
-        emoji: '💩',
+        icon: 'poop',
         label: 'Poop',
         count: 3
       }
@@ -31,7 +31,7 @@ describe('ActivityButton', () => {
   it('emits click event when clicked and not disabled', async () => {
     const wrapper = mount(ActivityButton, {
       props: {
-        emoji: '💩',
+        icon: 'poop',
         label: 'Poop',
         count: 0
       }
@@ -45,7 +45,7 @@ describe('ActivityButton', () => {
   it('does not emit click when disabled', async () => {
     const wrapper = mount(ActivityButton, {
       props: {
-        emoji: '💩',
+        icon: 'poop',
         label: 'Poop',
         count: 0,
         disabled: true
@@ -63,7 +63,7 @@ describe('ActivityButton', () => {
   it('applies disabled attribute when disabled prop is true', () => {
     const wrapper = mount(ActivityButton, {
       props: {
-        emoji: '💩',
+        icon: 'poop',
         label: 'Poop',
         count: 0,
         disabled: true
@@ -77,7 +77,7 @@ describe('ActivityButton', () => {
   it('applies custom class when provided', () => {
     const wrapper = mount(ActivityButton, {
       props: {
-        emoji: '💩',
+        icon: 'poop',
         label: 'Poop',
         count: 0,
         customClass: 'custom-button'
