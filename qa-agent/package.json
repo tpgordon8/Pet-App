@@ -1,0 +1,25 @@
+{
+  "name": "pet-app-qa-agent",
+  "version": "1.0.0",
+  "description": "Autonomous QA testing agent for Pet-App",
+  "main": "qa-agent.js",
+  "type": "module",
+  "scripts": {
+    "test": "node qa-agent.js",
+    "clean": "rm -rf screenshots/* reports/* test-assets/*"
+  },
+  "keywords": [
+    "qa",
+    "testing",
+    "playwright",
+    "autonomous"
+  ],
+  "author": "Pet-App Team",
+  "license": "MIT",
+  "dependencies": {
+    "@playwright/test": "^1.42.1",
+    "sharp": "^0.33.0",
+    "chalk": "^5.3.0",
+    "date-fns": "^4.1.0"
+  }
+}

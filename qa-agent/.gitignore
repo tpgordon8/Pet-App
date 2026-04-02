@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Test outputs
+reports/
+screenshots/
+test-assets/
+
+# Logs
+*.log
+npm-debug.log*
