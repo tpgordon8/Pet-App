@@ -2,6 +2,8 @@
 
 > **Purpose:** This document provides complete context for AI assistants working on the Pet-App project. Read this first to understand the project, architecture, workflow, and current state.
 
+> **Relationship to CLAUDE.md:** `CLAUDE.md` is the Claude Code–specific version of this document and adds Claude-specific sections (skills, session hooks, harness config, session workflow). This file (`AI_ASSISTANT_CONTEXT.md`) is the AI-agnostic canonical reference. **When they conflict, fix both files.** If you update project facts here, mirror those changes in `CLAUDE.md`.
+
 ---
 
 ## Project Overview
@@ -61,20 +63,23 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
 
 ## Database Schema
 
+> **Important:** All data is scoped under `/households/{householdId}/`. Never read from or write to root-level paths.
+
 ```javascript
-/pets/{petId}
+/households/{householdId}/pets/{petId}
   - name: string (e.g., "Luna")
   - species: string (e.g., "Dog")
   - emoji: string (e.g., "🐕")
   - createdAt: timestamp
 
-/activities/{activityId}
-  - type: "Poop" | "Pee" | "Food" | "Sleep" | "Meds" | "Vet Visit" | "Vaccination" | "Weight Check"
+/households/{householdId}/activities/{activityId}
+  - type: "Poop" | "Pee" | "Food" | "Sleep" | "Meds" | "Walk" | "Vet Visit" | "Vaccination" | "Weight Check"
   - emoji: string (e.g., "💩", "🏥")
   - timestamp: Unix timestamp
   - user: "Tara" | "Meag"
-  - petId: string (references /pets/{petId})
-  - notes: string (optional, for regular activities)
+  - petId: string (references /households/{householdId}/pets/{petId})
+  - notes: string (optional, max 500 chars)
+  - photoUrl: string (optional, Firebase Storage URL)
   - medicalData: object (optional, for medical activities)
     // For Vet Visit:
     - notes: string
@@ -86,6 +91,11 @@ Tailr is a modern web-based pet activity tracking application with real-time syn
     - weight: number
     - unit: "lbs" | "kg"
     - notes: string
+```
+
+**Firebase path used in code** (`src/stores/activities.js`):
+```javascript
+dbRef(database, `households/${householdStore.householdId}/activities`)
 ```
 
 ---
@@ -145,6 +155,10 @@ Pet-App/
 │   │   └── config.js
 │   └── assets/             # Static assets (CSS, images)
 │       └── main.css        # Global styles + TailwindCSS
+│
+│   ├── constants/          # Shared constants
+│   │   ├── activityTypes.js     # REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES, ACTIVITY_EMOJIS
+│   │   └── uiConstants.js       # UI-related constants
 │
 ├── public/                 # Static files (served as-is)
 │   └── favicon.ico
@@ -330,6 +344,54 @@ await remove(activityRef)
 - `currentMember` - Currently active member
 - `members` - Array of household members
 
+**remindersStore (`src/stores/reminders.js`):**
+- `reminders` - Array of all reminders (synced from Firebase)
+- `upcomingReminders` - Computed reminders due soon
+- `overdueReminders` - Computed past-due reminders
+- Handles reminder creation, completion, and deletion
+
+**themeStore (`src/stores/theme.js`):**
+- `isDark` - Current dark mode state
+- `initializeTheme()` - Reads system preference and localStorage on startup
+- `applyTheme()` - Applies theme to document root
+- `toggleTheme()` - Switches between light/dark and persists preference
+
+### Confetti (`src/utils/confetti.js`)
+
+Lightweight DOM-based confetti animation (no external library). Triggered automatically on activity log.
+
+```javascript
+import { triggerConfetti } from '@/utils/confetti'
+triggerConfetti() // burst of celebration particles
+```
+
+### Activity Type Constants (`src/constants/activityTypes.js`)
+
+**Always use these constants** instead of raw strings when referencing activity types:
+
+```javascript
+import { REGULAR_ACTIVITIES, MEDICAL_ACTIVITIES, ACTIVITY_EMOJIS, isMedicalActivity } from '@/constants/activityTypes'
+
+// Regular types: 'Poop', 'Pee', 'Food', 'Sleep', 'Meds', 'Walk'
+REGULAR_ACTIVITIES.POOP   // 'Poop'
+REGULAR_ACTIVITIES.WALK   // 'Walk'
+
+// Medical types: 'Vet Visit', 'Vaccination', 'Weight Check'
+MEDICAL_ACTIVITIES.VET_VISIT  // 'Vet Visit'
+
+// Emoji lookup
+ACTIVITY_EMOJIS[REGULAR_ACTIVITIES.POOP]  // '💩'
+
+// Type checks
+isMedicalActivity('Vet Visit')   // true
+isEditableActivity('Walk')       // true (only regular activities are editable)
+```
+
+**When adding a new activity type:**
+1. Add to the appropriate constant object in `activityTypes.js`
+2. Add its emoji to `ACTIVITY_EMOJIS`
+3. Reference it everywhere via the constant, never as a raw string
+
 ---
 
 ## Security Utilities (March 2026)
@@ -453,57 +515,145 @@ invalidate('activities')
 
 ---
 
-## UX Composables (March 2026)
+## Composables Reference
 
-### Keyboard Shortcuts (`src/composables/useKeyboardShortcuts.js`)
+All composables live in `src/composables/`. **Check here before writing new logic** — the functionality you need likely already exists.
 
+### `useToast.js`
+Global toast notification manager with auto-dismiss and action support.
+```javascript
+import { useToast } from '@/composables/useToast'
+const toast = useToast()
+toast.show('Activity logged!', 'success')
+```
+
+### `useKeyboardShortcuts.js`
+Global keyboard shortcut registration for the dashboard.
 ```javascript
 import { useGlobalKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
-
-// In main component (e.g., DashboardView)
 useGlobalKeyboardShortcuts()
-
-// Available shortcuts:
-// Ctrl+K - Focus search
-// Escape - Close modal / Clear search
-// Ctrl+N - New activity (future)
+// Ctrl+K → focus search | Escape → close modal/clear search
 ```
 
-### Optimistic Updates (`src/composables/useOptimistic.js`)
-
+### `useOptimistic.js`
+Optimistic UI updates — item appears immediately, syncs to Firebase in background, auto-rolls back on failure.
 ```javascript
 import { useOptimisticList } from '@/composables/useOptimistic'
-
-const { list, optimisticAdd, optimisticRemove } = useOptimisticList()
-
-// Add item - appears immediately, syncs in background
-await optimisticAdd(
-  { type: 'Poop', emoji: '💩' },
-  async (item) => await addToFirebase(item)
-)
-
-// If Firebase fails, changes automatically roll back
+const { optimisticAdd, optimisticRemove } = useOptimisticList()
+await optimisticAdd({ type: 'Poop', emoji: '💩' }, async (item) => await addToFirebase(item))
 ```
 
-### Safe Storage (`src/composables/useStorage.js`)
-
+### `useStorage.js`
+Safe localStorage wrapper with fallbacks and QuotaExceededError handling.
 ```javascript
-import { 
-  getStorageItem,
-  setStorageItem,
-  getStorageJSON,
-  setStorageJSON 
-} from '@/composables/useStorage'
-
-// Get with fallback
+import { getStorageItem, setStorageItem, getStorageJSON, setStorageJSON } from '@/composables/useStorage'
 const value = getStorageItem('key', 'default')
-
-// Set with error handling (handles QuotaExceededError)
-setStorageItem('key', 'value')
-
-// JSON helpers
 const obj = getStorageJSON('settings', { theme: 'light' })
-setStorageJSON('settings', { theme: 'dark' })
+```
+
+### `usePagination.js`
+Paginated list composable for large activity feeds.
+```javascript
+import { usePagination } from '@/composables/usePagination'
+const { paginatedItems, hasMore, remainingCount, loadMore } = usePagination(allItems, {
+  initialPageSize: 50, loadMoreSize: 25
+})
+```
+
+### `useRequestDeduplication.js`
+Deduplicates concurrent Firebase requests and caches results.
+```javascript
+import { useRequestDeduplication } from '@/composables/useRequestDeduplication'
+const { dedupe, invalidate } = useRequestDeduplication({ cacheTime: 60000 })
+const data = await dedupe('activities', async () => fetchFromFirebase())
+```
+
+### `useActivityInsights.js`
+Computes activity statistics and trend insights (today's/week's counts by type).
+```javascript
+import { useActivityInsights } from '@/composables/useActivityInsights'
+const { todayStats, weekStats } = useActivityInsights()
+```
+
+### `useTheme.js`
+Theme color palette configuration with light/dark mode support.
+```javascript
+import { useTheme } from '@/composables/useTheme'
+// Provides THEME_COLORS and theme utility functions
+```
+
+### `useStreaks.js`
+Calculates and tracks activity streak achievements (3/7/14+ day milestones).
+```javascript
+import { useStreaks, ACHIEVEMENTS } from '@/composables/useStreaks'
+const { currentStreak, earnedBadges } = useStreaks()
+```
+
+### `useIcons.js`
+Maps activity types and UI elements to their icon/emoji representations.
+```javascript
+import { activityIcons, uiIcons } from '@/composables/useIcons'
+// Use instead of hardcoding emojis inline
+```
+
+### `usePdfExport.js`
+Generates medical history PDFs for pets using jsPDF. **Use this before adding PDF logic.**
+```javascript
+import { usePdfExport } from '@/composables/usePdfExport'
+const { generateMedicalPdf } = usePdfExport()
+await generateMedicalPdf(pet, medicalActivities)
+```
+
+### `useAnalytics.js`
+Firebase Analytics wrapper for tracking custom events and page views.
+```javascript
+import { useAnalytics } from '@/composables/useAnalytics'
+const { trackActivityLogged, trackMedicalActivity, trackPageView } = useAnalytics()
+```
+
+### `useErrorHandler.js`
+Centralized error handling with user-friendly messages and automatic toast notifications.
+```javascript
+import { useErrorHandler } from '@/composables/useErrorHandler'
+const { handleError } = useErrorHandler()
+// Wraps Firebase errors into readable messages
+```
+
+### `useAnimations.js`
+Reusable micro-interaction animations (bounces, transitions, confetti trigger).
+```javascript
+import { useAnimations } from '@/composables/useAnimations'
+const { celebrateSuccess } = useAnimations()
+```
+
+### `useHaptic.js`
+Mobile haptic feedback via the Vibration API (light/medium/heavy patterns).
+```javascript
+import { useHaptic } from '@/composables/useHaptic'
+const { light, medium, heavy } = useHaptic()
+light() // on button tap
+```
+
+### `useCsvExport.js`
+Converts pet activities to CSV with proper escaping. **Use before writing any CSV logic.**
+```javascript
+import { useCsvExport } from '@/composables/useCsvExport'
+const { activitiesToCSV } = useCsvExport()
+const csv = activitiesToCSV(activities)
+```
+
+### `useVoiceInput.js`
+Web Speech API wrapper for voice-to-text transcription in notes fields.
+```javascript
+import { useVoiceInput } from '@/composables/useVoiceInput'
+const { transcript, isListening, startListening, stopListening } = useVoiceInput()
+```
+
+### `usePullToRefresh.js`
+Mobile pull-to-refresh gesture handler with configurable threshold and resistance.
+```javascript
+import { usePullToRefresh } from '@/composables/usePullToRefresh'
+const { isPulling, pullDistance } = usePullToRefresh(onRefresh)
 ```
 
 ---
@@ -556,7 +706,7 @@ setStorageJSON('settings', { theme: 'dark' })
 - Real-time Firebase sync across devices
 - Offline queue with automatic sync when online
 - Photo attachments with Firebase Storage
-- Activity notes (optional, 200 char limit)
+- Activity notes (optional, 500 char limit)
 - Dark mode support (auto-detect + manual toggle)
 - PWA support with offline capabilities
 
@@ -692,11 +842,11 @@ export const useStoreNameStore = defineStore('storeName', () => {
 
 ### Branch Rules
 
-**Current working branch:** `claude/pet-activity-logger-Etaqb`
+**Branch naming convention:** `claude/<feature-description>-<sessionId>`
 
-- Always develop on feature branches
-- Never push to `main` without explicit permission
-- Create descriptive branch names
+- Always develop on feature branches, never push directly to `main`
+- Branch names must follow the convention above (the session ID suffix is required by the remote)
+- Example: `claude/pet-activity-logger-Etaqb` (where `Etaqb` is the session ID)
 
 ### Commit Message Format
 
@@ -704,9 +854,14 @@ export const useStoreNameStore = defineStore('storeName', () => {
 <type>: <short description>
 
 <detailed description if needed>
-
-https://claude.ai/code/session_017CfZdSweXvYneu5A49hDE3
 ```
+
+**Type prefixes:**
+- `Feature:` — new functionality
+- `Fix:` — bug fix
+- `Update:` — enhancement to existing feature
+- `Refactor:` — code cleanup without behavior change
+- `Docs:` — documentation only
 
 **Examples:**
 - `Feature: Add activity logger with filtering`
@@ -753,23 +908,24 @@ npm run deploy:all
 
 See ROADMAP.md for full details. Key priorities:
 
-**✅ Recently Completed:**
+**✅ Completed (see ROADMAP.md for full history):**
 - ✅ Activity notes field
-- ✅ Photo attachments
+- ✅ Photo attachments (Firebase Storage)
 - ✅ Edit activity functionality
 - ✅ Medical tracking (Vet Visit, Vaccination, Weight Check)
+- ✅ Pet edit/delete functionality
+- ✅ Activity search/filter by keyword
+- ✅ CSV export
+- ✅ PDF reports for medical history
+- ✅ Health insights & activity analytics
+- ✅ Smart reminders
+- ✅ Weight trend visualization
+- ✅ Streaks & achievement badges
+- ✅ Voice input for notes
+- ✅ Pull-to-refresh
+- ✅ Design overhaul & mobile UX enhancements
 
-**High Impact - TODO:**
-- Activity search/filter by keyword
-- CSV export with all filters
-- PDF reports for vet visits
-- Weight trend chart visualization
-
-**Medium Impact - TODO:**
-- Vaccination due date reminders
-- Activity pattern insights
-- Bulk operations (delete multiple activities)
-- Data export/import for backup
+**See ROADMAP.md for current TODO priorities.**
 
 ---
 
@@ -804,8 +960,8 @@ npm run lint
 # Check current branch
 git branch --show-current
 
-# Create and switch to feature branch
-git checkout -b feature/branch-name
+# Create and switch to feature branch (follow naming convention)
+git checkout -b claude/<feature-name>-<sessionId>
 
 # Stage changes
 git add <files>
@@ -813,8 +969,8 @@ git add <files>
 # Commit with message
 git commit -m "Type: Description"
 
-# Push to remote
-git push -u origin <branch-name>
+# Push to remote (must match branch naming convention)
+git push -u origin claude/<feature-name>-<sessionId>
 
 # Check status
 git status
@@ -938,8 +1094,9 @@ tpgordon8/Pet-App
 ---
 
 **Last Updated:** 2026-04-06  
-**Document Version:** 1.0  
-**Maintained By:** AI Assistant Context
+**Document Version:** 1.1  
+**Maintained By:** AI Assistant / Project Team  
+**Related:** See also `CLAUDE.md` for Claude Code–specific additions
 
 ---
 
