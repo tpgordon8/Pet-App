@@ -124,7 +124,6 @@ export class ActionSelector {
 
     if (unexploredButtons.length > 0) {
       const button = unexploredButtons[0];
-      const selector = `${button.selector}:nth-child(${button.index + 1})`;
 
       return {
         type: 'click-button',
@@ -364,7 +363,7 @@ export class ActionSelector {
     this.stateTracker.logActivity(action.target);
 
     // Verify photo persisted
-    const photosBugs = await this.bugDetector.detectPhotoUploadIssues(action.target);
+    await this.bugDetector.detectPhotoUploadIssues(action.target);
 
     logger.success(`Logged ${action.target} with photo`);
     return true;

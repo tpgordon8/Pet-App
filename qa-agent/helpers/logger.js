@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { format } from 'date-fns';
 
 /**
  * Color-coded logger for QA agent
