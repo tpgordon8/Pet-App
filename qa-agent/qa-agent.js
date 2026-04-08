@@ -181,7 +181,6 @@ class QAAgent {
     logger.info(`  Log:  ${paths.logPath}`);
 
     // Print bug summary
-    const bugsBySeverity = state.bugsBySeverity;
     const totalBugs = state.summary.bugsFound;
 
     if (totalBugs >= 5) {

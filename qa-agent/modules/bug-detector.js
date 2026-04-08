@@ -292,7 +292,7 @@ export class BugDetector {
         const elements = document.querySelectorAll('button, a, input');
 
         // Check for zero-size elements
-        elements.forEach((el, index) => {
+        elements.forEach((el) => {
           const rect = el.getBoundingClientRect();
 
           if (rect.width === 0 || rect.height === 0) {
