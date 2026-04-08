@@ -98,7 +98,7 @@
                 placeholder="Additional details..."
               />
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {{ form.notes.length }}/200 characters
+                {{ form.notes.length }}/200
               </p>
             </div>
 
@@ -277,7 +277,7 @@ function close() {
 }
 
 .modal-enter-active .modal-content {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               opacity 0.25s ease;
 }
 

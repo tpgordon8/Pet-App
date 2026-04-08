@@ -83,7 +83,7 @@
           Quick Log
           <span
             v-if="petsStore.selectedPet"
-            class="stat-badge ml-2"
+            class="stat-badge ml-2 max-w-[120px] truncate inline-block align-middle"
           >
             {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
@@ -175,8 +175,7 @@
             data-search-input
             aria-label="Search activities"
             role="searchbox"
-            class="input-modern"
-            style="font-size: 16px; min-height: 44px;"
+            class="input-modern text-base min-h-[44px]"
           >
           <button
             v-if="searchQueryRaw"
@@ -1034,6 +1033,13 @@ watch(() => voice.transcript, async (newTranscript) => {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    opacity: 0.6;
   }
 }
 

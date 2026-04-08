@@ -261,7 +261,7 @@ function handleClick(event) {
 
 /* Animated icons */
 .icon-animated {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .icon-animated:hover {

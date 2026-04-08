@@ -19,13 +19,6 @@
     @keydown.enter="handleClick"
     @keydown.space.prevent="handleClick"
   >
-    <!-- Ripple effect -->
-    <span
-      v-if="showRipple"
-      class="ripple-effect"
-      :style="rippleStyle"
-    ></span>
-
     <!-- Icon (Lucide SVG) -->
     <span class="icon-container">
       <component
@@ -50,7 +43,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 import { useHaptic } from '@/composables/useHaptic'
 import { useAnimations } from '@/composables/useAnimations'
 import {
@@ -105,9 +99,7 @@ const haptic = useHaptic()
 const { celebrateSuccess } = useAnimations()
 
 const isPressed = ref(false)
-const showRipple = ref(false)
-const rippleStyle = ref({})
-const windowWidth = ref(window.innerWidth)
+const { width: windowWidth } = useWindowSize()
 
 // Icon mapping
 const iconMap = {
@@ -160,140 +152,73 @@ function handleClick(event) {
   }
 }
 
-function onTouchStart(event) {
+function onTouchStart() {
   if (props.disabled) return
-
   isPressed.value = true
-
-  // Create ripple effect
-  const button = event.currentTarget
-  const rect = button.getBoundingClientRect()
-  const touch = event.touches[0]
-  const x = touch.clientX - rect.left
-  const y = touch.clientY - rect.top
-
-  rippleStyle.value = {
-    left: `${x}px`,
-    top: `${y}px`,
-  }
-
-  showRipple.value = true
-
-  setTimeout(() => {
-    showRipple.value = false
-  }, 600)
 }
 
 function onTouchEnd() {
   isPressed.value = false
 }
 
-// Handle window resize for responsive icon sizing
-function handleResize() {
-  windowWidth.value = window.innerWidth
-}
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-})
 </script>
 
 <style scoped>
-/* Premium activity button with color-coded design */
+/* Activity button — flat, solid, calm */
+.activity-btn-premium:focus-visible {
+  outline: 2px solid var(--activity-color-primary, #6d7e60);
+  outline-offset: 2px;
+}
+
 .activity-btn-premium {
-  /* Base styling */
   min-height: 100px;
   min-width: 44px;
   padding: 1rem 0.75rem;
   border-radius: 1rem;
 
-  /* Enhanced gradient background */
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.92) 100%
-  );
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
-  /* Stronger border */
-  border: 1.5px solid rgba(0, 0, 0, 0.10);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 
-  /* Multi-layer shadow for depth */
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.06),
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    0 8px 20px rgba(0, 0, 0, 0.02);
-
-  /* Smooth transitions */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Remove default button styling */
   cursor: pointer;
   user-select: none;
 }
 
 /* Dark mode */
 .dark .activity-btn-premium {
-  background: linear-gradient(
-    135deg,
-    rgba(55, 65, 81, 0.95) 0%,
-    rgba(31, 41, 55, 0.9) 100%
-  );
-
-  border-color: rgba(255, 255, 255, 0.12);
-
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.25),
-    0 8px 20px rgba(0, 0, 0, 0.2);
+  background: #1f2937;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Hover state */
+/* Hover state — subtle lift */
 .activity-btn-premium:hover:not(:disabled) {
-  transform: translateY(-3px);
-
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.08),
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 12px 28px var(--activity-color-shadow, rgba(0, 0, 0, 0.04));
-
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-color: var(--activity-color-primary, rgba(0, 0, 0, 0.15));
 }
 
 .dark .activity-btn-premium:hover:not(:disabled) {
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.4),
-    0 4px 12px var(--activity-color-shadow, rgba(0, 0, 0, 0.3)),
-    0 12px 28px var(--activity-color-shadow, rgba(0, 0, 0, 0.25));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Active state (has count > 0) */
+/* Press state */
+.activity-btn-premium.button-pressed {
+  transform: scale(0.97);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Active state (count > 0) — solid tint, no gradient */
 .activity-btn-premium.button-active {
-  background: linear-gradient(
-    135deg,
-    var(--activity-color-light, #f0f4ed) 0%,
-    rgba(255, 255, 255, 0.95) 100%
-  );
-
-  border-color: var(--activity-color-primary, rgba(139, 154, 125, 0.3));
-  border-width: 2px;
-
-  box-shadow:
-    0 2px 4px var(--activity-color-shadow, rgba(139, 154, 125, 0.1)),
-    0 4px 12px var(--activity-color-shadow, rgba(139, 154, 125, 0.08)),
-    0 8px 24px var(--activity-color-shadow, rgba(139, 154, 125, 0.06));
+  background: var(--activity-color-light, #f0f4ed);
+  border-color: var(--activity-color-primary, rgba(139, 154, 125, 0.4));
+  box-shadow: 0 1px 3px var(--activity-color-shadow, rgba(139, 154, 125, 0.15));
 }
 
 .dark .activity-btn-premium.button-active {
-  background: linear-gradient(
-    135deg,
-    var(--activity-color-light, rgba(139, 154, 125, 0.2)) 0%,
-    rgba(55, 65, 81, 0.95) 100%
-  );
-
+  background: color-mix(in srgb, var(--activity-color-primary, #6d7e60) 15%, #1f2937);
   border-color: var(--activity-color-primary, rgba(139, 154, 125, 0.4));
 }
 
@@ -320,16 +245,17 @@ onUnmounted(() => {
 /* Activity icon */
 .activity-icon {
   color: var(--activity-color-primary, #6d7e60);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-}
-
-.dark .activity-icon {
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+  transition: transform 0.15s ease;
 }
 
 .activity-btn-premium:hover:not(:disabled) .activity-icon {
-  transform: scale(1.15) rotate(-5deg);
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activity-btn-premium:hover:not(:disabled) .activity-icon {
+    transform: none;
+  }
 }
 
 /* Button label */
@@ -401,35 +327,14 @@ onUnmounted(() => {
   right: 0.5rem;
   width: 6px;
   height: 6px;
-  background: var(--activity-color-primary, #10b981);
+  background: var(--activity-color-primary, #6d7e60);
   border-radius: 50%;
-  box-shadow: 0 0 6px var(--activity-color-shadow, rgba(16, 185, 129, 0.5));
-  animation: pulse-indicator 2s ease-in-out infinite;
+  animation: pulse-indicator 3s ease-in-out infinite;
 }
 
-/* Ripple effect */
-.ripple-effect {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--activity-color-primary, rgba(139, 154, 125, 0.4));
-  opacity: 0.5;
-  transform: translate(-50%, -50%);
-  animation: ripple 0.6s ease-out;
-  pointer-events: none;
-}
-
-@keyframes ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0.6;
-  }
-  100% {
-    width: 200px;
-    height: 200px;
-    opacity: 0;
+@media (prefers-reduced-motion: reduce) {
+  .activity-indicator {
+    animation: none;
   }
 }
 

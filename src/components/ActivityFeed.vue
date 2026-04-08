@@ -18,7 +18,7 @@
     />
 
     <!-- Activity list -->
-    <div v-else class="space-y-3">
+    <div v-else class="space-y-3" aria-live="polite" aria-label="Activity log">
       <!-- Group by date -->
       <div
         v-for="group in groupedActivities"

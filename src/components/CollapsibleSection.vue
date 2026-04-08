@@ -12,7 +12,7 @@
           <h3 class="heading-tertiary">
             {{ title }}
           </h3>
-          <p v-if="subtitle" class="body-small">
+          <p v-if="subtitle" class="body-small truncate max-w-[200px] sm:max-w-xs">
             {{ subtitle }}
           </p>
         </div>
@@ -95,7 +95,7 @@ function toggleCollapsed() {
 .chevron {
   font-size: 0.875rem;
   color: #6b7280;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
   display: inline-block;
 }

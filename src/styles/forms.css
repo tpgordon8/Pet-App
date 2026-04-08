@@ -123,20 +123,20 @@
 /* Buttons - Primary */
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, rgb(124 139 130) 0%, rgb(104 119 110) 100%);
+  background: rgb(107 122 95); /* sage-600 equivalent */
   color: white;
   border: none;
   border-radius: 0.75rem;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: rgb(88 101 78); /* sage-700 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary:active:not(:disabled) {

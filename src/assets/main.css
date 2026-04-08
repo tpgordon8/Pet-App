@@ -75,19 +75,28 @@
 
 /* Custom component styles */
 @layer components {
-  /* Enhanced glassmorphism effect with better depth */
+  /* Solid card backgrounds — reserved glassmorphism only for modal overlays */
   .glass {
-    @apply bg-white/75 dark:bg-gray-900/75 backdrop-blur-xl;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08),
-                0 1px 3px 0 rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    @apply bg-white dark:bg-gray-900;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06),
+                0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
+  .dark .glass {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* glass-strong: used only for modals/overlays where blur makes sense */
   .glass-strong {
-    @apply bg-white/85 dark:bg-gray-900/85 backdrop-blur-2xl;
-    box-shadow: 0 20px 50px 0 rgba(31, 38, 135, 0.12),
-                0 2px 8px 0 rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    @apply bg-white dark:bg-gray-900;
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
+                0 1px 4px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .dark .glass-strong {
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   /* Button styles with minimum touch target enforcement */
@@ -99,10 +108,10 @@
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-sage-400 to-sage-500 text-white;
-    @apply hover:from-sage-500 hover:to-sage-600;
-    @apply shadow-lg hover:shadow-xl;
-    @apply transform hover:-translate-y-0.5 transition-all duration-200;
+    @apply bg-sage-500 text-white;
+    @apply hover:bg-sage-600;
+    @apply shadow-sm hover:shadow-md;
+    @apply transition-all duration-150;
   }
 
   .btn-secondary {
@@ -113,15 +122,15 @@
   }
 
   .btn-danger {
-    @apply bg-gradient-to-r from-danger to-danger-dark text-white;
-    @apply hover:from-danger-dark hover:to-danger;
-    @apply shadow-lg hover:shadow-xl;
+    @apply bg-red-500 text-white;
+    @apply hover:bg-red-600;
+    @apply shadow-sm hover:shadow-md;
   }
 
   .btn-success {
-    @apply bg-gradient-to-r from-success to-success-dark text-white;
-    @apply hover:from-success-dark hover:to-success;
-    @apply shadow-lg hover:shadow-xl;
+    @apply bg-emerald-500 text-white;
+    @apply hover:bg-emerald-600;
+    @apply shadow-sm hover:shadow-md;
   }
 
   /* Input styles with better visual feedback */
@@ -133,32 +142,36 @@
     @apply min-h-[44px]; /* Accessibility: minimum touch target */
   }
 
-  /* Card styles with enhanced depth */
+  /* Card styles — three sizes, all solid */
   .card {
     @apply glass rounded-2xl p-4 sm:p-6;
-    @apply transition-all duration-300;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06),
-                0 1px 4px rgba(0, 0, 0, 0.04);
+    @apply transition-shadow duration-200;
   }
 
   .card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08),
-                0 2px 6px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08),
+                0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-compact {
+    @apply glass rounded-xl p-3;
+    @apply transition-shadow duration-200;
+  }
+
+  .card-expanded {
+    @apply glass rounded-2xl p-6 sm:p-8;
+    @apply transition-shadow duration-200;
   }
 
   /* Interactive card variant */
   .card-interactive {
     @apply card cursor-pointer;
-    @apply hover:-translate-y-1 hover:shadow-xl;
+    @apply hover:shadow-md;
   }
 }
 
 /* Custom utilities */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
   /* Animation utilities */
   .animate-in {
     animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -173,11 +186,11 @@
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: scaleIn 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .animate-bounce {
-    animation: bounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation: bounce 0.3s ease-out;
   }
 
   .animate-shake {

@@ -57,7 +57,7 @@
         :aria-label="`Select ${pet.name}, ${pet.species || 'pet'}`"
       >
         <span class="text-lg">{{ pet.emoji }}</span>
-        <span class="text-sm font-medium">{{ pet.name }}</span>
+        <span class="text-sm font-medium max-w-[80px] truncate">{{ pet.name }}</span>
         <span v-if="selectedPetId === pet.id" class="checkmark">✓</span>
       </button>
     </div>

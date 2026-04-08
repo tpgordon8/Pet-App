@@ -95,8 +95,8 @@ defineEmits(['action'])
 .decoration-circle {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(139, 154, 125, 0.1) 50%, transparent 70%);
-  animation: float 3s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(139, 154, 125, 0.12) 0%, transparent 70%);
+  animation: float 4s ease-in-out infinite;
 }
 
 .decoration-1 {
@@ -136,18 +136,27 @@ defineEmits(['action'])
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
 }
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0) scale(1);
-    opacity: 0.3;
+    transform: translateY(0);
+    opacity: 0.2;
   }
   50% {
-    transform: translateY(-15px) scale(1.1);
-    opacity: 0.5;
+    transform: translateY(-8px);
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty-icon-pulse {
+    animation: none;
+  }
+  .decoration-circle {
+    animation: none;
   }
 }
 

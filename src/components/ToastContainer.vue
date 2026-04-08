@@ -4,10 +4,14 @@
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        class="toast glass-strong rounded-xl shadow-xl p-4 flex items-start gap-3 animate-in"
+        class="toast rounded-xl shadow-sm p-4 flex items-start gap-3 animate-in border"
         :class="toastClass(toast.type)"
+        role="alert"
+        :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
       >
-        <span class="text-2xl flex-shrink-0">{{ toastIcon(toast.type) }}</span>
+        <span class="flex-shrink-0 mt-0.5" :aria-label="toastAriaLabel(toast.type)">
+          <component :is="toastIconComponent(toast.type)" :size="18" aria-hidden="true" />
+        </span>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium">{{ toast.message }}</p>
           <button
@@ -32,6 +36,7 @@
 </template>
 
 <script setup>
+import { CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 
 const { toasts, remove } = useToast()
@@ -45,22 +50,22 @@ function handleAction(toast) {
 
 function toastClass(type) {
   const classes = {
-    success: 'border-l-4 border-emerald-500 bg-gradient-to-r from-emerald-50/95 to-emerald-100/80 dark:from-emerald-900/40 dark:to-emerald-800/30 text-emerald-900 dark:text-emerald-100',
-    error: 'border-l-4 border-rose-500 bg-gradient-to-r from-rose-50/95 to-rose-100/80 dark:from-rose-900/40 dark:to-rose-800/30 text-rose-900 dark:text-rose-100',
-    warning: 'border-l-4 border-amber-500 bg-gradient-to-r from-amber-50/95 to-amber-100/80 dark:from-amber-900/40 dark:to-amber-800/30 text-amber-900 dark:text-amber-100',
-    info: 'border-l-4 border-sage-500 bg-gradient-to-r from-sage-50/95 to-sage-100/80 dark:from-sage-900/40 dark:to-sage-800/30 text-sage-900 dark:text-sage-100'
+    success: 'bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950 dark:border-emerald-800 dark:text-emerald-100',
+    error: 'bg-rose-50 border-rose-200 text-rose-900 dark:bg-rose-950 dark:border-rose-800 dark:text-rose-100',
+    warning: 'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-100',
+    info: 'bg-sage-50 border-sage-200 text-sage-900 dark:bg-sage-900 dark:border-sage-700 dark:text-sage-100'
   }
   return classes[type] || classes.info
 }
 
-function toastIcon(type) {
-  const icons = {
-    success: '🎉',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️'
-  }
-  return icons[type] || icons.info
+function toastIconComponent(type) {
+  const icons = { success: CheckCircle, error: XCircle, warning: AlertTriangle, info: Info }
+  return icons[type] || Info
+}
+
+function toastAriaLabel(type) {
+  const labels = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' }
+  return labels[type] || 'Notification'
 }
 </script>
 

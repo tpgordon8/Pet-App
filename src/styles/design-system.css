@@ -130,17 +130,11 @@
     @apply border border-gray-100 dark:border-gray-700;
   }
 
-  /* Glassmorphism card */
+  /* Solid card with soft border — no blur */
   .card-glass {
-    @apply backdrop-blur-xl rounded-2xl p-6;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    @apply bg-white dark:bg-gray-800 rounded-2xl p-6;
+    @apply border border-gray-100 dark:border-gray-700;
     @apply elevation-2;
-  }
-
-  .dark .card-glass {
-    background: rgba(30, 30, 30, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   /* Gradient card with accent */
@@ -153,8 +147,9 @@
   /* Interactive card with hover effect */
   .card-interactive {
     @apply card-premium cursor-pointer;
-    @apply hover:scale-[1.02] hover:-translate-y-1;
-    @apply active:scale-[0.98] active:translate-y-0;
+    @apply hover:-translate-y-0.5 hover:elevation-3;
+    @apply active:scale-[0.99] active:translate-y-0;
+    @apply transition-all duration-150;
   }
 
   /* Stat card with icon */
@@ -305,7 +300,7 @@
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: scaleIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .animate-shimmer {
