@@ -4,7 +4,7 @@ Comprehensive E2E test for Tailr signup flow
 Tests the complete onboarding process from welcome to dashboard
 """
 
-from playwright.sync_api import sync_playwright, expect
+from playwright.sync_api import sync_playwright
 import time
 import random
 import string
@@ -66,7 +66,7 @@ def test_signup_flow():
                 create_button = page.wait_for_selector('text=/create/i', timeout=10000)
                 print("   ✓ Found Create button")
                 page.screenshot(path='/tmp/03_welcome.png', full_page=True)
-            except:
+            except Exception:
                 print("   ⚠ Create button not found, checking page content...")
                 print(f"   Page content preview: {page.content()[:500]}")
                 page.screenshot(path='/tmp/03_error.png', full_page=True)
@@ -93,7 +93,7 @@ def test_signup_flow():
                 dog_emoji = page.locator('text="🐕"').first
                 dog_emoji.click()
                 print("   ✓ Selected dog emoji")
-            except:
+            except Exception:
                 print("   ⚠ Emoji selector not found, trying alternative method...")
                 # Try clicking emoji picker if exists
                 emoji_buttons = page.locator('button[class*="emoji"]').all()
@@ -106,7 +106,7 @@ def test_signup_flow():
                 species_select = page.locator('select, input[placeholder*="species" i]').first
                 species_select.fill("Dog")
                 print("   ✓ Selected species: Dog")
-            except:
+            except Exception:
                 print("   ⚠ Species field not found (may be optional)")
 
             page.screenshot(path='/tmp/05_pet_filled.png', full_page=True)
@@ -129,7 +129,7 @@ def test_signup_flow():
                 print("   ✓ Skipped personalization")
                 page.wait_for_load_state('networkidle')
                 time.sleep(1)
-            except:
+            except Exception:
                 # Try Continue button
                 try:
                     continue_button = page.locator('button:has-text("Continue"), button:has-text("Next")').first
@@ -137,7 +137,7 @@ def test_signup_flow():
                     print("   ✓ Continued through personalization")
                     page.wait_for_load_state('networkidle')
                     time.sleep(1)
-                except:
+                except Exception:
                     print("   ⚠ No skip/continue button found, may already be past this step")
 
             page.screenshot(path='/tmp/07_create_account.png', full_page=True)
@@ -164,7 +164,7 @@ def test_signup_flow():
                 household_code = f"{test_name.upper()}2026"
                 household_input.fill(household_code)
                 print(f"   ✓ Entered household code: {household_code}")
-            except:
+            except Exception:
                 print("   ℹ Household code field not found (will auto-generate)")
 
             page.screenshot(path='/tmp/08_account_filled.png', full_page=True)
@@ -232,7 +232,7 @@ def test_signup_flow():
                 time.sleep(1)
                 page.screenshot(path='/tmp/10_dashboard.png', full_page=True)
                 print("   ✓ Reached dashboard")
-            except:
+            except Exception:
                 print("   ℹ No dashboard button found (may already be on final screen)")
                 page.screenshot(path='/tmp/10_final.png', full_page=True)
 
@@ -240,10 +240,10 @@ def test_signup_flow():
             print("\n" + "="*60)
             print("📊 TEST RESULTS")
             print("="*60)
-            print(f"✓ Successfully navigated through signup flow")
+            print("✓ Successfully navigated through signup flow")
             print(f"✓ Created household for user: {test_name}")
             print(f"✓ Final URL: {page.url}")
-            print(f"✓ Screenshots saved to /tmp/")
+            print("✓ Screenshots saved to /tmp/")
 
             if errors:
                 print(f"\n⚠ {len(errors)} page errors detected")
