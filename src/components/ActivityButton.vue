@@ -444,6 +444,137 @@ onUnmounted(() => {
   }
 }
 
+/* ===================================================
+   Per-activity color coding via CSS custom properties
+   These feed into all the button states above
+   =================================================== */
+
+/* Poop — warm brown */
+.activity-poop {
+  --activity-color-primary: #92400e;
+  --activity-color-light:   #fef3c7;
+  --activity-color-dark:    #78350f;
+  --activity-color-shadow:  rgba(146, 64, 14, 0.22);
+}
+.dark .activity-poop {
+  --activity-color-primary: #fbbf24;
+  --activity-color-light:   rgba(251, 191, 36, 0.18);
+  --activity-color-dark:    #f59e0b;
+  --activity-color-shadow:  rgba(251, 191, 36, 0.25);
+}
+
+/* Pee — amber yellow */
+.activity-pee {
+  --activity-color-primary: #d97706;
+  --activity-color-light:   #fef9c3;
+  --activity-color-dark:    #b45309;
+  --activity-color-shadow:  rgba(217, 119, 6, 0.22);
+}
+.dark .activity-pee {
+  --activity-color-primary: #fcd34d;
+  --activity-color-light:   rgba(252, 211, 77, 0.18);
+  --activity-color-dark:    #fbbf24;
+  --activity-color-shadow:  rgba(252, 211, 77, 0.25);
+}
+
+/* Food — fresh green */
+.activity-food {
+  --activity-color-primary: #16a34a;
+  --activity-color-light:   #dcfce7;
+  --activity-color-dark:    #15803d;
+  --activity-color-shadow:  rgba(22, 163, 74, 0.22);
+}
+.dark .activity-food {
+  --activity-color-primary: #4ade80;
+  --activity-color-light:   rgba(74, 222, 128, 0.18);
+  --activity-color-dark:    #22c55e;
+  --activity-color-shadow:  rgba(74, 222, 128, 0.25);
+}
+
+/* Sleep — soft violet */
+.activity-sleep {
+  --activity-color-primary: #7c3aed;
+  --activity-color-light:   #ede9fe;
+  --activity-color-dark:    #6d28d9;
+  --activity-color-shadow:  rgba(124, 58, 237, 0.22);
+}
+.dark .activity-sleep {
+  --activity-color-primary: #a78bfa;
+  --activity-color-light:   rgba(167, 139, 250, 0.18);
+  --activity-color-dark:    #8b5cf6;
+  --activity-color-shadow:  rgba(167, 139, 250, 0.25);
+}
+
+/* Meds — rose red */
+.activity-meds {
+  --activity-color-primary: #e11d48;
+  --activity-color-light:   #ffe4e6;
+  --activity-color-dark:    #be123c;
+  --activity-color-shadow:  rgba(225, 29, 72, 0.22);
+}
+.dark .activity-meds {
+  --activity-color-primary: #fb7185;
+  --activity-color-light:   rgba(251, 113, 133, 0.18);
+  --activity-color-dark:    #f43f5e;
+  --activity-color-shadow:  rgba(251, 113, 133, 0.25);
+}
+
+/* Walk — ocean teal */
+.activity-walk {
+  --activity-color-primary: #0891b2;
+  --activity-color-light:   #cffafe;
+  --activity-color-dark:    #0e7490;
+  --activity-color-shadow:  rgba(8, 145, 178, 0.22);
+}
+.dark .activity-walk {
+  --activity-color-primary: #22d3ee;
+  --activity-color-light:   rgba(34, 211, 238, 0.18);
+  --activity-color-dark:    #06b6d4;
+  --activity-color-shadow:  rgba(34, 211, 238, 0.25);
+}
+
+/* Vet — medical red */
+.activity-vet {
+  --activity-color-primary: #dc2626;
+  --activity-color-light:   #fee2e2;
+  --activity-color-dark:    #b91c1c;
+  --activity-color-shadow:  rgba(220, 38, 38, 0.22);
+}
+.dark .activity-vet {
+  --activity-color-primary: #f87171;
+  --activity-color-light:   rgba(248, 113, 113, 0.18);
+  --activity-color-dark:    #ef4444;
+  --activity-color-shadow:  rgba(248, 113, 113, 0.25);
+}
+
+/* Vaccination — electric purple */
+.activity-vaccination {
+  --activity-color-primary: #9333ea;
+  --activity-color-light:   #f3e8ff;
+  --activity-color-dark:    #7e22ce;
+  --activity-color-shadow:  rgba(147, 51, 234, 0.22);
+}
+.dark .activity-vaccination {
+  --activity-color-primary: #c084fc;
+  --activity-color-light:   rgba(192, 132, 252, 0.18);
+  --activity-color-dark:    #a855f7;
+  --activity-color-shadow:  rgba(192, 132, 252, 0.25);
+}
+
+/* Weight — warm orange */
+.activity-weight {
+  --activity-color-primary: #ea580c;
+  --activity-color-light:   #ffedd5;
+  --activity-color-dark:    #c2410c;
+  --activity-color-shadow:  rgba(234, 88, 12, 0.22);
+}
+.dark .activity-weight {
+  --activity-color-primary: #fb923c;
+  --activity-color-light:   rgba(251, 146, 60, 0.18);
+  --activity-color-dark:    #f97316;
+  --activity-color-shadow:  rgba(251, 146, 60, 0.25);
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .activity-btn-premium {
