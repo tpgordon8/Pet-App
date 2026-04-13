@@ -72,7 +72,6 @@ test.describe('Mobile: Viewport & Responsiveness', () => {
         // Buttons should have at least 4px between them
         const verticalGap = Math.abs(box2.y - (box1.y + box1.height))
         const horizontalGap = Math.abs(box2.x - (box1.x + box1.width))
-        const minGap = Math.min(verticalGap, horizontalGap)
         expect(Math.max(verticalGap, horizontalGap)).toBeGreaterThanOrEqual(0)
         // At least one dimension should have reasonable gap
         expect(box1.width > 0 || box1.height > 0).toBe(true)

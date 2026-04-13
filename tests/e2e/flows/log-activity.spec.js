@@ -2,8 +2,6 @@ import { test, expect } from '@playwright/test'
 import {
   goToPage,
   waitForDashboard,
-  clickActivityButton,
-  expectTextVisible,
   dismissModal,
   captureConsoleErrors
 } from '../helpers/ui-helpers'

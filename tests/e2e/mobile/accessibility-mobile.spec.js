@@ -23,9 +23,6 @@ test.describe('Mobile: Accessibility', () => {
 
     // Something should be focused after Tab
     if (focusedStyles && focusedStyles.tag !== 'BODY') {
-      const hasFocusStyle =
-        (focusedStyles.outlineWidth && focusedStyles.outlineWidth !== '0px') ||
-        (focusedStyles.boxShadow && focusedStyles.boxShadow !== 'none')
       // Focus indicator should exist (warn but don't hard-fail on all browsers)
       expect(focusedStyles.tag).toBeTruthy()
     }

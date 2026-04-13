@@ -120,9 +120,6 @@ test.describe('Visual Regression: Layout Detection', () => {
     await page.waitForLoadState('networkidle')
 
     // Nav or footer should be present and visible
-    const nav = page.locator('nav, footer, [role="navigation"]').first()
-    const hasNav = await nav.count() > 0
-
     // App may not have traditional nav (it's a single-page app) — just check it loads
     const body = page.locator('body')
     await expect(body).toBeVisible()

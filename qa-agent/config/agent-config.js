@@ -43,7 +43,7 @@ export const CONFIG = {
     xssImg: '<img src=x onerror=alert(1)>',
     longString: 'A'.repeat(1000),
     emojiSpam: '😀'.repeat(100),
-    specialChars: '\n\r\t\0\\\'\"',
+    specialChars: '\n\r\t\0\\\'"',
     sqlInjection: '\' OR 1=1 --',
     nullByte: 'test\0test',
     unicode: '🔥💩🚀✨🎉',

@@ -1,9 +1,18 @@
 <template>
   <div class="home-root min-h-screen flex flex-col overflow-hidden">
     <!-- Animated background blobs -->
-    <div class="blob blob-1" aria-hidden="true"></div>
-    <div class="blob blob-2" aria-hidden="true"></div>
-    <div class="blob blob-3" aria-hidden="true"></div>
+    <div
+      class="blob blob-1"
+      aria-hidden="true"
+    />
+    <div
+      class="blob blob-2"
+      aria-hidden="true"
+    />
+    <div
+      class="blob blob-3"
+      aria-hidden="true"
+    />
 
     <!-- Main hero content -->
     <main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-16 sm:py-24">
@@ -28,12 +37,30 @@
       </p>
 
       <!-- Floating pet avatars -->
-      <div class="pet-row mb-10 animate-fade-in" aria-hidden="true">
-        <span class="pet-avatar" title="Dog">🐕</span>
-        <span class="pet-avatar" title="Cat">🐈</span>
-        <span class="pet-avatar" title="Rabbit">🐇</span>
-        <span class="pet-avatar" title="Bird">🐦</span>
-        <span class="pet-avatar" title="Fish">🐠</span>
+      <div
+        class="pet-row mb-10 animate-fade-in"
+        aria-hidden="true"
+      >
+        <span
+          class="pet-avatar"
+          title="Dog"
+        >🐕</span>
+        <span
+          class="pet-avatar"
+          title="Cat"
+        >🐈</span>
+        <span
+          class="pet-avatar"
+          title="Rabbit"
+        >🐇</span>
+        <span
+          class="pet-avatar"
+          title="Bird"
+        >🐦</span>
+        <span
+          class="pet-avatar"
+          title="Fish"
+        >🐠</span>
       </div>
 
       <!-- Feature pills -->
@@ -52,7 +79,10 @@
           @click="$router.push('/onboarding')"
         >
           Get Started
-          <span class="cta-arrow" aria-hidden="true">→</span>
+          <span
+            class="cta-arrow"
+            aria-hidden="true"
+          >→</span>
         </button>
         <p class="text-center text-sm text-gray-400 dark:text-gray-500 mt-4">
           Free for pet parents · No account needed
