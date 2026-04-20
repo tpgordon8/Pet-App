@@ -32,13 +32,14 @@ export default defineConfig({
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
     ['list'],
-    ['json', { outputFile: 'test-results/results.json' }]
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }]
   ],
 
   // Shared settings for all projects
   use: {
-    // Base URL for all tests
-    baseURL: 'http://localhost:5173',
+    // Base URL for all tests — preview server (4173) in CI, dev server (5173) locally
+    baseURL: process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173',
 
     // Collect trace when retrying failed test
     trace: 'on-first-retry',
@@ -54,9 +55,11 @@ export default defineConfig({
   },
 
   // Web server configuration
+  // In CI: serve the pre-built dist/ (Firebase creds are baked in from the build step)
+  // Locally: use the dev server with hot reload
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    command: process.env.CI ? 'npm run preview' : 'npm run dev',
+    url: process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     stdout: 'pipe',

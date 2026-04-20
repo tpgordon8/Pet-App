@@ -130,7 +130,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     }
   }
 
-  async function logActivity(type, emoji, notes = '', photoFile = null, medicalData = null) {
+  async function logActivity(type, emoji, notes = '', photoFile = null, medicalData = null, timerData = null, customTimestamp = null) {
     if (!householdStore.householdId || !householdStore.memberName) {
       toast.error('Please sign in first')
       return false
@@ -166,7 +166,7 @@ export const useActivitiesStore = defineStore('activities', () => {
       const activity = {
         type,
         emoji,
-        timestamp: Date.now(),
+        timestamp: customTimestamp ?? Date.now(),
         user: householdStore.currentMember,
         petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
         notes: sanitizedNotes
@@ -180,6 +180,12 @@ export const useActivitiesStore = defineStore('activities', () => {
       // Add medical data if provided
       if (medicalData) {
         activity.medicalData = medicalData
+      }
+
+      // Add dose timer if provided (Meds only)
+      if (timerData) {
+        activity.nextDoseAt = timerData.nextDoseAt
+        activity.nextDoseDurationHours = timerData.nextDoseDurationHours
       }
 
       const activitiesRef = dbRef(database, `households/${householdStore.householdId}/activities`)
@@ -223,7 +229,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         const activity = {
           type,
           emoji,
-          timestamp: Date.now(),
+          timestamp: customTimestamp ?? Date.now(),
           user: householdStore.currentMember,
           petId: petsStore.selectedPetId === 'all' ? 'default' : petsStore.selectedPetId,
           notes

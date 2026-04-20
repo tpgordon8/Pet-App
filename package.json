@@ -23,7 +23,12 @@
     "doc-sync": "bash scripts/doc-sync.sh",
     "deploy:rules": "firebase deploy --only database",
     "deploy:hosting": "firebase deploy --only hosting",
-    "deploy:all": "firebase deploy"
+    "deploy:all": "firebase deploy",
+    "test:unit:ui": "vitest --ui",
+    "test:e2e:desktop": "playwright test --project=chromium",
+    "test:e2e:mobile": "playwright test --project=mobile-chrome",
+    "test:e2e:ios": "playwright test --project=mobile-safari",
+    "test:all": "npm run lint && npm run build && npm run test:unit:run && npm run test:e2e"
   },
   "dependencies": {
     "@lemonsqueezy/lemonsqueezy.js": "^3.2.0",

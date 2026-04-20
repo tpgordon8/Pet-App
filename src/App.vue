@@ -51,11 +51,27 @@ body {
 
 #app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  transition: background 0.3s ease;
+  /* Warm sage-to-cream gradient with a breath of mint */
+  background:
+    linear-gradient(
+      145deg,
+      #f9fafb 0%,
+      #f0f7ee 35%,
+      #fdf6ff 65%,
+      #fffbf0 100%
+    );
+  transition: background 0.4s ease;
 }
 
 #app.dark {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  /* Deep navy-charcoal with a subtle sage undertone */
+  background:
+    linear-gradient(
+      145deg,
+      #0d1117 0%,
+      #111a14 35%,
+      #12101a 65%,
+      #14110a 100%
+    );
 }
 </style>
