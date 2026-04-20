@@ -88,6 +88,10 @@
             {{ petsStore.selectedPet.emoji }} {{ petsStore.selectedPet.name }}
           </span>
         </h3>
+        <MedsTimerBanner
+          :activities="activitiesStore.sortedActivities"
+          @dismiss="handleDismissMedsTimer"
+        />
         <div class="activity-grid-responsive">
           <ActivityButton
             icon="poop"
@@ -461,6 +465,7 @@ import { useGlobalKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 // Eager-loaded lightweight components (used immediately on page load)
 import ActivityButton from '@/components/ActivityButton.vue'
+import MedsTimerBanner from '@/components/MedsTimerBanner.vue'
 import CompactContextBar from '@/components/CompactContextBar.vue'
 import TodaysSummary from '@/components/TodaysSummary.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
@@ -700,7 +705,10 @@ async function handleSaveActivity(data) {
     pendingActivity.value.type,
     pendingActivity.value.emoji,
     data.notes,
-    data.photo
+    data.photo,
+    null,
+    data.timerData ?? null,
+    data.timestamp ?? null
   )
 }
 
@@ -715,14 +723,21 @@ function showMedicalModal(type, emoji) {
   showMedicalModalRef.value = true
 }
 
-async function handleSaveMedical(medicalData) {
+async function handleSaveMedical({ medicalData, timestamp }) {
   await activitiesStore.logActivity(
     pendingMedical.value.type,
     pendingMedical.value.emoji,
-    '', // no notes field for medical activities
-    null, // no photo
-    medicalData
+    '',
+    null,
+    medicalData,
+    null,
+    timestamp ?? null
   )
+}
+
+function handleDismissMedsTimer(activityId) {
+  // Clear the timer by removing nextDoseAt from the activity
+  activitiesStore.updateActivity(activityId, { nextDoseAt: null, nextDoseDurationHours: null })
 }
 
 function handleEdit(activity) {

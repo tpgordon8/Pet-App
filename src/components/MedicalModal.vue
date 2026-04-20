@@ -21,6 +21,34 @@
         </button>
       </div>
 
+      <!-- Backdate picker -->
+      <div class="backdate-row mb-4">
+        <button class="backdate-toggle" @click="showDatePicker = !showDatePicker">
+          <span class="text-sm">🕐</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400">
+            {{ showDatePicker ? 'Logging for:' : (isBackdated ? backdateLabel : 'Logging now') }}
+          </span>
+          <span class="backdate-caret" :class="{ open: showDatePicker }">▾</span>
+        </button>
+        <button
+          v-if="isBackdated && !showDatePicker"
+          class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-1"
+          @click="resetDate"
+          aria-label="Reset to now"
+        >✕</button>
+      </div>
+      <div v-if="showDatePicker" class="mb-4">
+        <input
+          v-model="customDateStr"
+          type="datetime-local"
+          :max="maxDateStr"
+          :min="minDateStr"
+          class="input w-full"
+          style="font-size:16px"
+        />
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Up to 30 days in the past</p>
+      </div>
+
       <!-- Vet Visit Form -->
       <div v-if="activityType === 'Vet Visit'" class="space-y-4">
         <div>
@@ -167,16 +195,46 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 
 const formData = ref({
-  // Vet Visit
   vetNotes: '',
   cost: null,
-  // Vaccination
   vaccineName: '',
   vaccineNotes: '',
-  // Weight Check
   weight: null,
   unit: 'lbs',
   weightNotes: ''
+})
+
+const showDatePicker = ref(false)
+const customDateStr = ref('')
+const maxDateStr = ref('')
+const minDateStr = ref('')
+
+function toDatetimeLocal(ts) {
+  const d = new Date(ts)
+  const pad = n => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function resetDate() {
+  customDateStr.value = maxDateStr.value
+  showDatePicker.value = false
+}
+
+const isBackdated = computed(() => {
+  if (!customDateStr.value || !maxDateStr.value) return false
+  return customDateStr.value < maxDateStr.value
+})
+
+const backdateLabel = computed(() => {
+  if (!customDateStr.value) return ''
+  const d = new Date(customDateStr.value)
+  return d.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+})
+
+const resolvedTimestamp = computed(() => {
+  if (!customDateStr.value) return null
+  const ts = new Date(customDateStr.value).getTime()
+  return isNaN(ts) ? null : ts
 })
 
 const isValid = computed(() => {
@@ -192,10 +250,14 @@ const isValid = computed(() => {
   return false
 })
 
-// Reset form when modal opens
 watch(() => props.show, (newVal) => {
   if (newVal) {
     resetForm()
+    const now = Date.now()
+    maxDateStr.value = toDatetimeLocal(now)
+    minDateStr.value = toDatetimeLocal(now - 30 * 24 * 3600 * 1000)
+    customDateStr.value = maxDateStr.value
+    showDatePicker.value = false
   }
 })
 
@@ -238,12 +300,47 @@ function handleSave() {
     }
   }
 
-  emit('save', medicalData)
+  emit('save', { medicalData, timestamp: resolvedTimestamp.value })
   emit('close')
 }
 </script>
 
 <style scoped>
+.backdate-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.backdate-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.backdate-toggle:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+:is(.dark) .backdate-toggle:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+.backdate-caret {
+  font-size: 10px;
+  color: #9ca3af;
+  transition: transform 0.2s;
+}
+.backdate-caret.open {
+  transform: rotate(180deg);
+}
+
 /* Modal backdrop with smooth animations */
 .modal-backdrop {
   position: fixed;
